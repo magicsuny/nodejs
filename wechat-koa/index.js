@@ -3,11 +3,11 @@
  */
 
 var crypto=require("crypto"),
- debug = require('debug')('WechatCore'),
-  AccessTokenService = require('./accessTokenService'),
-  memoryStore = require('./store/memory-store'),
-  mongoStore = require('./store/mongo-store'),
-  messageEnging = require('./messageEnging'),
+ debug = require('debug')('wechat-koa'),
+  AccessTokenService = require('./lib/accessTokenService'),
+  memoryStore = require('./lib/store/memory-store'),
+  mongoStore = require('./lib/store/mongo-store'),
+  messageEnging = require('./lib/messageEngine'),
   https = require('https');
 
 var WechatCore = function(options) {

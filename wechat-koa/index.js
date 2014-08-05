@@ -4,6 +4,7 @@
 
 var crypto=require("crypto"),
  debug = require('debug')('wechat-koa'),
+  url = require('url'),
   AccessTokenService = require('./lib/accessTokenService'),
   memoryStore = require('./lib/store/memory-store'),
   mongoStore = require('./lib/store/mongo-store'),
@@ -22,7 +23,7 @@ var WechatCore = function(options) {
       throw err;
     }
     if('mongo'==options.store.type.toLowerCase()){
-      this._store = mongoStore.create({});
+      this._store = mongoStore.create(options.store);
     }
   }
   this._appId = options.appId;

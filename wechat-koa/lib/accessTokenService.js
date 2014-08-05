@@ -2,7 +2,6 @@
  * Created by sunharuka on 14-7-31.
  */
 var https = require('https');
-var config = require('../../config');
 
 var AccessTokenService = function(ctx){
   this._ctx = ctx;
@@ -12,6 +11,7 @@ var AccessTokenService = function(ctx){
 }
 
 AccessTokenService.prototype.request = function(){
+  var self = this;
   var options = {
     hostname: 'api.weixin.qq.com',
     port: 443,
@@ -20,13 +20,14 @@ AccessTokenService.prototype.request = function(){
   };
 
   var req = https.request(options, function(res) {
+
     var body = "";
     res.on('data', function(data) {
       body+=data;
     }).on('end',function(){
       body = JSON.parse(body);
       if(body.access_token){
-        this.saveAccessToken();
+        self.saveAccessToken();
       }
     });
   });

@@ -1,0 +1,27 @@
+{
+  "name": "wechat-koa",
+  "version": "0.0.1",
+  "description": "wechat service module with koa",
+  "main": "index.js",
+  "scripts": {
+    "test": "NODE_ENV=test node --harmony"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/magicsuny/nodejs/tree/master/wechat-koa.git"
+  },
+  "keywords": [
+    "wechat",
+    "koa"
+  ],
+  "author": "magicsuny",
+  "license": "ISC",
+  "dependencies": {
+    "mongodb": "~1.3.23",
+    "bluebird": "~0.11.5-1",
+    "debug": "~0.7.4"
+  },
+  "devDependencies": {
+
+  }
+}

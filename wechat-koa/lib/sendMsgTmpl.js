@@ -68,6 +68,6 @@ exports.renderMsg = function (msg) {
       '<Url><![CDATA['+msg.url+']]></Url>' +
       '</item>'
   };
-  return msgTmpl[msg.type];
+  return msgTmpl[msg.msgType];
 };
 

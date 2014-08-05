@@ -3,6 +3,7 @@
  */
 
 var crypto=require("crypto"),
+  co = require('co'),
  debug = require('debug')('wechat-koa'),
   url = require('url'),
   AccessTokenService = require('./lib/accessTokenService'),
@@ -12,6 +13,7 @@ var crypto=require("crypto"),
   https = require('https');
 
 var WechatCore = function(options) {
+  var self = this;
   this._store = options.store;
   if(!options.store||!options.store.type){
     this._store = memoryStore.create();
@@ -29,8 +31,14 @@ var WechatCore = function(options) {
   this._appId = options.appId;
   this._appSecret = options.appSecret;
   this._token = options.token;
-  this.accessTokenService = new AccessTokenService(this);
-  this.accessTokenService.register();
+  /**
+   * 执行accessToken注册
+   */
+  co(function*(){
+    self.accessTokenService = new AccessTokenService(self);
+    console.log('yield register');
+    yield self.accessTokenService.register();
+  })();
 };
 
 /**
@@ -71,12 +79,13 @@ WechatCore.prototype.checkSignature = function (req_url){
  * @param menuJson
  * @param accessToken
  */
-WechatCore.prototype.createMenu = function (menuJson){
-
+WechatCore.prototype.createMenu = function*(menuJson){
+  var accessToken = yield this.accessTokenService.loadAccessToken();
+  console.log(accessToken);
   var options = {
     hostname: 'api.weixin.qq.com',
     port: 443,
-    path: '/cgi-bin/menu/create?access_token='+this.accessTokenService.loadAccessToken(),
+    path: '/cgi-bin/menu/create?access_token='+accessToken,
     method: 'POST'
   };
 
@@ -110,3 +119,7 @@ WechatCore.prototype.on = messageEnging.on;
 
 
 module.exports = WechatCore;
+
+process.on('exit',function(){
+
+})

@@ -44,7 +44,6 @@ var EVENT_TYPE = 'Event';
 function parseMessage(data, fn, scope) {
   return function (next) {
     parser.once('end', function (result) {
-      console.log('parse end');
       var err = null;
       if (result) {
         var obj = {};
@@ -64,14 +63,18 @@ function parseMessage(data, fn, scope) {
       } else {
         err = new Error();
         err.code = 101;
-        err.message = "解析消息失败";
+        err.message = "消息为空！";
       }
       next(err, obj);
+    });
+    parser.once('error',function(err,result){
+      next(err, result);
     });
     parser.parseString(data);
   }
 
 }
+
 
 function buildMessage(data) {
   return sendMsgTmpl.renderMsg(data);

@@ -1,6 +1,6 @@
 {
   "name": "wechat-koa",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "wechat service module with koa",
   "main": "index.js",
   "scripts": {

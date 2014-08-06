@@ -7,6 +7,7 @@ var EventEmitter = require('events').EventEmitter;
 var parser = new xml2js.Parser({explicitRoot: false});
 var sendMsgTmpl = require('./sendMsgTmpl');
 var event = new EventEmitter();
+event.setMaxListeners(20);
 var MES_TYPE = 'MsgType';
 var EVENT_TYPE = 'Event';
 

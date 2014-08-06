@@ -24,7 +24,7 @@ function* requestUserInfo(openId){
     err.message = response.errmsg;
     throw err;
   }else{
-    return res;
+    return response;
   }
 }
 

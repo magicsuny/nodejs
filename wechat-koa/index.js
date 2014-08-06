@@ -69,7 +69,7 @@ WechatCore.prototype.checkSignature = function (req_url){
   hasher.update(original);
   var scyptoString=hasher.digest('hex');
   if (signature == scyptoString) {
-    return echostr;
+    return echostr||true;
   }else {
     console.log('Signature is invalidate!!');
     return false;

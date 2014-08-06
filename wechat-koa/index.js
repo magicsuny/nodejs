@@ -51,6 +51,7 @@ var WechatCore = function(options) {
 WechatCore.prototype.checkSignature = function (req_url){
   var query = url.parse(req_url,true).query;
   if(!query){
+    console.log('checkSignature request url ERROR!');
     return false;
   }
   var signature = query.signature;
@@ -70,6 +71,7 @@ WechatCore.prototype.checkSignature = function (req_url){
   if (signature == scyptoString) {
     return echostr;
   }else {
+    console.log('Signature is invalidate!!');
     return false;
   }
 }
@@ -116,6 +118,8 @@ WechatCore.prototype.build = messageEnging.build;
 WechatCore.prototype.sendCustomServiceMsg = messageEnging.sendCustomServiceMsg;
 
 WechatCore.prototype.on = messageEnging.on;
+
+WechatCore.prototype.once = messageEnging.once;
 
 WechatCore.prototype.requestUserInfo = userInfoService.requestUserInfo;
 

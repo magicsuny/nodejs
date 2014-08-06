@@ -28,11 +28,11 @@ function* requestUserInfo(openId){
   }
 }
 
-/**
- * 监听用户地理位置信息
- */
-messageEnging.on('LOCATIONEvent',function(err,obj){
-
-});
+///**
+// * 监听用户地理位置信息
+// */
+//messageEnging.on('LOCATIONEvent',function(err,obj){
+//
+//});
 
 exports.requestUserInfo = requestUserInfo;

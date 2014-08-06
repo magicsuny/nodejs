@@ -43,7 +43,8 @@ var EVENT_TYPE = 'Event';
 
 function parseMessage(data, fn, scope) {
   return function (next) {
-    parser.addListener('end', function (result) {
+    parser.once('end', function (result) {
+      console.log('parse end');
       var err = null;
       if (result) {
         var obj = {};
@@ -108,8 +109,12 @@ function* sendCustomServiceMsg(accessToken, msg) {
 function on(eventName, fn) {
   event.on(eventName, fn);
 }
+function once(eventName, fn) {
+  event.once(eventName, fn);
+}
 
 exports.parse = parseMessage;
 exports.build = buildMessage;
 exports.sendCustomServiceMsg = sendCustomServiceMsg;
+exports.once = once;
 exports.on = on;

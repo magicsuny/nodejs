@@ -10,6 +10,28 @@ var AccessTokenService = function(ctx){
   this._appSecret = ctx._appSecret;
   this._store = ctx._store;
 }
+/**
+ * oauth2.0 授权获取网页accessToken
+ * @param code oauth2.0登录后返回的code值
+ * @returns {*}
+ */
+AccessTokenService.prototype.oAuthRequest = function *(code){
+  var self = this;
+  var options = {
+    url: 'https://api.weixin.qq.com/sns/oauth2/access_token?appid='+this._appId+'&secret='+this._appSecret+'&code='+code+'&grant_type=authorization_code',
+    method: 'GET'
+  };
+  var res = yield coRequest(options);
+  if(res.body){
+    var body = JSON.parse(res.body);
+    if(body.errcode){
+      throw new Error(body.errcode,body.errmsg);
+    }else{
+      return body;
+    }
+  }
+}
+
 
 AccessTokenService.prototype.request = function *(){
   var self = this;

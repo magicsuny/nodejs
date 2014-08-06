@@ -123,6 +123,9 @@ WechatCore.prototype.once = messageEnging.once;
 
 WechatCore.prototype.requestUserInfo = userInfoService.requestUserInfo;
 
+WechatCore.prototype.oAuthAccessTokenRequest = function*(code){
+  return yield this.accessTokenService.oAuthRequest(code);
+}
 
 module.exports = WechatCore;
 

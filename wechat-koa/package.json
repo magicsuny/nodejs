@@ -1,6 +1,6 @@
 {
   "name": "wechat-koa",
-  "version": "0.0.8",
+  "version": "0.1.0",
   "description": "wechat service module with koa",
   "main": "index.js",
   "scripts": {
@@ -8,7 +8,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git://github.com/magicsuny/nodejs/tree/master/koa-wechat.git"
+    "url": "git://github.com/magicsuny/nodejs/tree/master/wechat-koa.git"
   },
   "keywords": [
     "wechat"
@@ -24,8 +24,8 @@
     "co-request": ">=0.2.0",
     "co": ">=3.1.0"
   },
+  "homepage": "https://github.com/magicsuny/nodejs/tree/master/wechat-koa",
   "devDependencies": {},
-  "readme": "ERROR: No README data found!",
   "readmeFilename": "README.md",
   "_id": "wechat-koa@0.0.1",
   "_shasum": "6c7447f106337a1f2a4c2891c8b5f79646b9f8cd",

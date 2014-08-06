@@ -7,6 +7,7 @@ var crypto=require("crypto"),
  debug = require('debug')('wechat-koa'),
   url = require('url'),
   AccessTokenService = require('./lib/accessTokenService'),
+  userInfoService = require('./lib/userInfoService'),
   memoryStore = require('./lib/store/memory-store'),
   mongoStore = require('./lib/store/mongo-store'),
   messageEnging = require('./lib/messageEngine'),
@@ -36,6 +37,7 @@ var WechatCore = function(options) {
    */
   co(function*(){
     self.accessTokenService = new AccessTokenService(self);
+
     console.log('yield register');
     yield self.accessTokenService.register();
   })();
@@ -62,8 +64,6 @@ WechatCore.prototype.checkSignature = function (req_url){
   oriArray.sort();
 
   var original = oriArray[0]+oriArray[1]+oriArray[2];
-  console.log("Original Str:"+original);
-  console.log("signature:"+signature);
   var hasher=crypto.createHash("sha1");
   hasher.update(original);
   var scyptoString=hasher.digest('hex');
@@ -116,6 +116,8 @@ WechatCore.prototype.build = messageEnging.build;
 WechatCore.prototype.sendCustomServiceMsg = messageEnging.sendCustomServiceMsg;
 
 WechatCore.prototype.on = messageEnging.on;
+
+WechatCore.prototype.requestUserInfo = userInfoService.requestUserInfo;
 
 
 module.exports = WechatCore;

@@ -26,10 +26,11 @@ AccessTokenService.prototype.request = function *(){
   var res = yield coRequest(options);
   if(res.body){
     var body = JSON.parse(res.body);
-    if(body.access_token){
-      yield self.saveAccessToken(body.access_token);
+    if(body.errcode){
+      throw new Error(body.errcode,body.errmsg);
     }else{
-      throw new Error(body);
+      yield self.saveAccessToken(body.access_token);
+      return body.access_token;
     }
   }
 //  var req = https.request(options, function(res) {
@@ -80,10 +81,18 @@ AccessTokenService.prototype.register = function *() {
   console.log('AccessTokenService registered!')
   this._interval = setInterval(function(){
     co(function*(){
-      yield self.request();
+      try{
+        yield self.request();
+      }catch(e){
+        console.log(e);
+      }
     })();
   },1000*7000);
-  yield this.request();
+  try {
+    yield this.request();
+  }catch(e){
+    console.log(e);
+  }
 
 }
 

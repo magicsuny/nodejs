@@ -1,10 +1,10 @@
 /**
  * Created by sunharuka on 14-7-31.
  */
-var xml2js=require("xml2js");
+var xml2js = require("xml2js");
 var coRequest = require('co-request');
 var EventEmitter = require('events').EventEmitter;
-var parser = new xml2js.Parser({explicitRoot:false});
+var parser = new xml2js.Parser({explicitRoot: false});
 var sendMsgTmpl = require('./sendMsgTmpl');
 var event = new EventEmitter();
 var MES_TYPE = 'MsgType';
@@ -40,36 +40,46 @@ var EVENT_TYPE = 'Event';
 //  parser.parseString(data);
 //}
 
-function parseMessage (data,fn,scope){
-  return function(next){
-    parser.addListener('end', function(result) {
+function parseMessage(data, fn, scope) {
+  return function (next) {
+    parser.addListener('end', function (result) {
       var err = null;
-      if(result){
+      if (result) {
         var obj = {};
-        for(var item in result){
+        for (var item in result) {
           obj[item] = result[item][0];
         }
-      }else{
+        process.nextTick(function(){
+          if (obj[MES_TYPE] != 'event') {
+            //emit Msg event .eg textMsg imageMsg
+            event.emit(obj[MES_TYPE] + 'Msg', err, obj);
+          } else {
+            //emit event .eg subscribeEvent LOCATIONEvent
+            event.emit(obj[EVENT_TYPE] + 'Event', err, obj);
+          }
+        });
+
+      } else {
         err = new Error();
         err.code = 101;
         err.message = "解析消息失败";
       }
-      next(err,obj);
+      next(err, obj);
     });
     parser.parseString(data);
   }
 
 }
 
-function buildMessage(data){
-    return sendMsgTmpl.renderMsg(data);
+function buildMessage(data) {
+  return sendMsgTmpl.renderMsg(data);
 }
 
-function* sendCustomServiceMsg(accessToken,msg){
+function* sendCustomServiceMsg(accessToken, msg) {
   var options = {
-    url: 'https://api.weixin.qq.com/cgi-bin/message/custom/send?access_token='+accessToken,
+    url: 'https://api.weixin.qq.com/cgi-bin/message/custom/send?access_token=' + accessToken,
     method: 'POST',
-    body:msg
+    body: msg
   };
   var res = coRequest(options);
   console.log(res);
@@ -94,8 +104,8 @@ function* sendCustomServiceMsg(accessToken,msg){
 //  });
 }
 
-function on(eventName,fn){
-  event.on(eventName,fn);
+function on(eventName, fn) {
+  event.on(eventName, fn);
 }
 
 exports.parse = parseMessage;

@@ -1,6 +1,6 @@
 {
   "name": "wechat-koa",
-  "version": "0.1.9",
+  "version": "0.2.0",
   "description": "wechat service module with koa",
   "main": "index.js",
   "scripts": {
@@ -22,12 +22,15 @@
     "bluebird": ">=0.11.5-1",
     "debug": ">=0.7.4",
     "co-request": ">=0.2.0",
-    "co": ">=3.1.0"
+    "co": ">=3.1.0",
+    "xml2js":"*"
   },
   "homepage": "https://github.com/magicsuny/nodejs/tree/master/wechat-koa",
   "devDependencies": {},
   "readmeFilename": "README.md",
-  "_id": "wechat-koa@0.0.1",
+  "_id": "wechat-koa@0.1.9",
   "_shasum": "6c7447f106337a1f2a4c2891c8b5f79646b9f8cd",
-  "_from": "wechat-koa@*"
+  "_from": "wechat-koa@*",
+  "readme": "# wechat-koa\n\n基于生成器开发的微信公众平台组件，用于koa框架\n\n## Installation\n\n```\n$ npm install wechat-koa\n```\n\n## Example\n\n初始化对象\n\n\n```\nvar WechatKoa = require('wechat-koa');\nvar wechatKoa = new WechatKoa({\n  store: {type: 'mongo',url:'mongodb://127.0.0.1:27017/db'},\n  appId: 'your appId',\n  appSecret: 'your appSecret',\n  token: 'your appToken'\n});\n```\n\n\n微信验证方法\n\n\n```\nfunction* signature() {\n    if (this.req.url) {\n      var echostr = wechatKoa.checkSignature(this.req.url)\n      if (echostr) {\n        this.body = echostr;\n      } else {\n        this.status = 500;\n        this.body = \"Bad Token!\";\n      }\n    }\n  }\n```\n\n消息解析回复\n\n```\nfunction* onWechatMsg(){\n\tvar msg = yield wechatKoa.parse(postQuery);\n\tvar responesMsg = {\n      \"toUserName\":msg.FromUserName,\n      \"fromUserName\":msg.ToUserName,\n      \"createTime\":new Date().toTimeString(),\n      \"msgType\":\"text\",\n      \"content\":\"reponse text\"\n    };\n     this.type = 'application/xml'\n    this.body = wechatKoa.build(responesMsg);\n}\n```\n\n# License\n\n  MIT",
+  "_resolved": "https://registry.npmjs.org/wechat-koa/-/wechat-koa-0.1.9.tgz"
 }

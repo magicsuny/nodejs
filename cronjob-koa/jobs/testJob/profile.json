@@ -1,0 +1,5 @@
+{
+  "schedule":"*/1 * * * * *",
+  "script":"index.js",
+  "timezone":"Asia/Shanghai"
+}

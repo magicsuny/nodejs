@@ -1,0 +1,96 @@
+/**
+ * Created by sunharuka on 15/10/10.
+ */
+var config = require('./config');
+var CronJob = require('cron').CronJob;
+var cp = require('child_process');
+var path = require('path');
+var relative = './';
+
+
+
+var onJobStart = function(option){
+  return function(){
+    var script = option.script;
+    var scriptPath = path.resolve(__dirname, relative, script);
+    try{
+
+      var okmsg = '', failmsg = '';
+      var p = cp.spawn(scriptPath, [], {stdio:'pipe'});
+
+      script = ['[', script, ']'].join('');
+
+      p.on('error', function(err){
+        logger.error(script, err);
+        failmsg = err.toString();
+        if( !client.workerDB ) return;
+        client.workerDB.collection('jobStatus')
+          .updateOne({script:option.script},
+          {$set:{state:'error', lastUpdate:new Date(), lastMessage:failmsg}},
+          {upsert:true});
+
+
+      });
+
+      p.on('close', function (code) {
+        logger.info(script, 'exit with code:', code);
+        if( !client.workerDB ) return;
+        client.workerDB.collection('jobStatus')
+          .updateOne({script:option.script},
+          {$set:{state:failmsg ? 'error':'ok', lastUpdate:new Date(), lastMessage: failmsg || okmsg}},
+          {upsert:true});
+
+      });
+
+      p.stdout.on('data', function (data) {
+        data = data.toString();
+        okmsg += data;
+        logger.info(script, data);
+      });
+
+      p.stderr.on('data', function (data) {
+        data = data.toString();
+        failmsg += data;
+        logger.error(script, data);
+      });
+
+    }catch(err){
+      logger.error('spawn "', scriptPath, '" error', err );
+    }
+  }
+};
+
+var onJobStop = function(option){
+  return function(){
+
+  }
+};
+
+var run = function(){
+  if(cronProfile.tasks && cronProfile.tasks.length > 0){
+    cronProfile.tasks.forEach(function(task){
+      /*
+       * * * * * *
+       Seconds: 0-59
+       Minutes: 0-59
+       Hours: 0-23
+       Day of Month: 1-31
+       Months: 0-11
+       Day of Week: 0-6
+       */
+      var cronTime = task.crontab;
+      var timezone = task.timezone;
+      var script = task.script;
+
+      try{
+        var job = new CronJob(cronTime, onJobStart({script:script}), onJobStop({script:script}), true, timezone);
+      }catch(e){
+        logger.error('Error create cron', script, e);
+      }
+
+    });
+  }
+};
+
+
+run();

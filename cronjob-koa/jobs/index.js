@@ -5,7 +5,7 @@ var CronJob = require('cron').CronJob;
 var cp = require('child_process');
 var path = require('path');
 var fs = require('fs');
-var jobRootPath = path.resolve(__dirname,'./');
+var jobRootPath = path.resolve(__dirname, './');
 /**
  * 检索任务
  * @returns {*}
@@ -19,15 +19,15 @@ var scanJobs = function*() {
       let jobs = [];
       let pending = list.length;
       list.forEach(function (file) {
-        let filePath = path.resolve(jobRootPath,file);
+        let filePath = path.resolve(jobRootPath, file);
         fs.stat(filePath, function (err, stats) {
           if (err) return reject(err);
           if (stats && stats.isDirectory()) {
-            try{
-              let jobDetail = require(path.resolve(filePath,'profile'));
+            try {
+              let jobDetail = require(path.resolve(filePath, 'profile'));
               jobDetail.path = file;
               jobs.push(jobDetail);
-            }catch(ex){
+            } catch (ex) {
               console.log(ex);
               return;
             }
@@ -47,12 +47,12 @@ var scanJobs = function*() {
  * @param options
  * @returns {Function}
  */
-var onJobStart = function(options){
+var onJobStart = function (options) {
   "use strict";
-  return function(){
-    let scriptPath = path.resolve(jobRootPath,options.path, options.script);
-    var p = cp.spawn(scriptPath, [], {stdio:'pipe'});
-    p.on('error', function(err){
+  return function () {
+    let scriptPath = path.resolve(jobRootPath, options.path, options.script);
+    var p = cp.spawn(scriptPath, [], {stdio: 'pipe'});
+    p.on('error', function (err) {
 
     });
     p.on('close', function (code) {
@@ -67,16 +67,16 @@ var onJobStart = function(options){
   };
 };
 
-var onJobDone = function(){
+var onJobDone = function () {
   "use strict";
-  return function(){
+  return function () {
 
   };
 };
 
-var defineJob = function(job) {
+var defineJob = function (job) {
   "use strict";
-  if(!job){
+  if (!job) {
     return false;
   }
   /*
@@ -92,20 +92,32 @@ var defineJob = function(job) {
   var timezone = job.timezone;
 
   try {
-    let _j = new CronJob(cronTime, onJobStart({script: job.script,path:job.path}), onJobDone({script: job.script,path:job.path}), true, timezone);
+    let _j = new CronJob(cronTime, onJobStart({script: job.script, path: job.path}), onJobDone({
+      script: job.script,
+      path  : job.path
+    }), true, timezone);
   } catch (e) {
     //logger.error('Error create cron', script, e);
   }
 
 };
 
-var initJobs = function *(){
+var initJobs = function *() {
   "use strict";
   let jobs = yield scanJobs();
-  jobs.forEach(function(job){
-      defineJob(job);
+  jobs.forEach(function (job) {
+    defineJob(job);
   });
 };
+
+/**
+ * 校验任务合法性
+ */
+var verifyJob = function () {
+  "use strict";
+
+};
+
 
 initJobs();
 

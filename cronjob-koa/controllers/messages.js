@@ -8,16 +8,14 @@ var messages = [
 ];
 
 var render = views(__dirname + '/../views', {
-  map: { html: 'swig' }
+  map: { html: 'ejs' }
 });
 
 module.exports.home = function *home() {
-  let d = yield jobs.initJobs();
   this.body = yield render('list', { 'messages': messages });
 };
 
 module.exports.list = function *list() {
-
   this.body = yield messages;
 };
 

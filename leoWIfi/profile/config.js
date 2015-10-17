@@ -1,12 +1,7 @@
-/**
- * Created by zhaohailong on 5/5/15.
- */
-
-
 var winston = require('winston');
 var logFile = {
-    info : '/var/log/yuan/info.log',
-    error: '/var/log/yuan/error.log'
+    info : '/var/log/leowifi/info.log',
+    error: '/var/log/leowifi/error.log'
 };
 var _       = require('underscore');
 
@@ -37,7 +32,7 @@ global.log = global.logger = new (winston.Logger)({transports: transports});
 
 //API version
 exports.apiVersion = 1;
-
+exports.app_id = 'wifi';
 //manager cookie name
 exports.managerCookieName = 'YCNP';
 exports.cookieMaxAge = 7 * 24 * 60 * 60 * 1000;

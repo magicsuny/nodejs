@@ -31,7 +31,7 @@ app.use(morgan('dev'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: false}));
 app.use(cookieParser());
-app.use(express.static(path.join(__dirname, 'public'), {
+app.use('/wifi',express.static(path.join(__dirname, 'public'), {
   'setHeaders': function (res, path, stat) {
     if (path.indexOf('.json') > 0) {
       console.log('path:', path);
@@ -42,8 +42,8 @@ app.use(express.static(path.join(__dirname, 'public'), {
 //app.use(cm.sessionSetting);
 app.use(compression({threshold: 512}));
 //app.use(favicon('public/img/logo.png'));
-app.use('/v1', v1);
-app.use('/v2', v2);
+app.use('/wifi/v1', v1);
+app.use('/wifi/v2', v2);
 
 
 v1.use('/docs', docs(wifi));

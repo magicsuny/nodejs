@@ -50,7 +50,7 @@ exports.uploadFileTmpDir = '/tmp';
 exports.mongoDebugMode = true;
 
 exports.mongoDbConfig = {
-    url    : 'mongodb://localhost:27017/yuan',
+    url    : 'mongodb://localhost:27017/leowifi',
     options: {
         db    : {native_parser: true},
         server: {

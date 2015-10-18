@@ -20,7 +20,7 @@ var define = function (name, level, fullPath) {
 
 process.env.NODE_ENV = 'development';
 exports.mongoDbConfig = {
-    url    : 'mongodb://localhost:27017/yuan',
+    url    : 'mongodb://localhost:27017/leowifi',
     options: {
         db    : {native_parser: true},
         server: {

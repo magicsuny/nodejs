@@ -18,6 +18,8 @@
     "express-session": "~1.11.3",
     "formidable": "^1.0.17",
     "less-middleware": "1.0.x",
+    "mongodb": "^2.0.46",
+    "mongoose": "^4.1.11",
     "morgan": "~1.6.1",
     "serve-favicon": "~2.3.0",
     "underscore": "1.8.3",

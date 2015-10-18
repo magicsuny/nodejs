@@ -13,7 +13,7 @@ var _ = require('underscore');
 var error = require('../utils/error');
 var Promise = require('bluebird');
 var docUtils = require('../utils/docUtils');
-
+var Wifi = require('../model/db').Wifi;
 
 /**
  * wifi信息采集
@@ -23,6 +23,7 @@ var docUtils = require('../utils/docUtils');
  * @returns {*}
  */
 var gatherWifiInfo = function (req, res, next) {
+    var body = req.body;
     res.send({err: 0, msg: '', data: []});
 };
 
@@ -32,28 +33,20 @@ var gatherWifiInfo = function (req, res, next) {
  * @param res
  * @param next
  */
-var matchWifiInfo = function (req, res, next) {
-    res.send({
-        err: 0, msg: '', data: [
-            {
-                "id"          : "", //数据库id
-                "ssid"        : "",
-                "bssid"       : "",
-                "level"       : 1,
-                "sec_level"   : 1,
-                "capabilities": "",
-                "frequency"   : 2447,
-                "password"    : "",
-                "identity"    : "",
-                "keymgmt"     : "",
-                "eap"         : "",
-                "latitude"    : "",
-                "longitude"   : "",
-                "accuracy"    : ""
+var findWifiInfo = function (req, res, next) {
+    var body = req.body;
+    var infos = body.infos;
+    var ssid = infos[0].ssid;
+    Wifi.find({ssid:ssid}).exec(function(err,data){
+        if(err) return next(err);
+        res.send({
+            err: 0,
+            msg: '',
+            data: {
+                infos:data
             }
-
-        ]
-    })
+        });
+    });
 };
 
 /**
@@ -65,7 +58,6 @@ var matchWifiInfo = function (req, res, next) {
 var gatherWifiHotSpotInfo = function (req, res, next) {
     res.send({err: 0, msg: '', data: []});
 };
-
 
 var apiVersion = 1;
 
@@ -126,7 +118,7 @@ var apiProfile = [
     },
     {
         method     : 'post',
-        path       : '/matchwifi',
+        path       : '/findwifi',
         version    : apiVersion,
         description: '挖掘wifi信息',
         params     : [
@@ -169,6 +161,7 @@ var apiProfile = [
                         },
                         msg : {type: 'string', description: 'error message'},
                         data: {
+                            type      : 'object',
                             properties: {
                                 infos: {
                                     type : 'array',
@@ -185,24 +178,21 @@ var apiProfile = [
                         "data": {
                             "infos": [
                                 {
-                                    infos: [
-                                        {
-                                            id          : "", //数据库id
-                                            ssid        : "",
-                                            bssid       : "",
-                                            level       : 1,
-                                            sec_level   : 1,
-                                            capabilities: "",
-                                            frequency   : 2447,
-                                            password    : "",
-                                            identity    : "",
-                                            keymgmt     : "",
-                                            eap         : "",
-                                            latitude    : "",
-                                            longitude   : "",
-                                            "accuracy"  : ""
-                                        }
-                                    ]
+                                    id          : "", //数据库id
+                                    ssid        : "",
+                                    bssid       : "",
+                                    level       : 1,
+                                    sec_level   : 1,
+                                    capabilities: "",
+                                    frequency   : 2447,
+                                    password    : "",
+                                    identity    : "",
+                                    keymgmt     : "",
+                                    eap         : "",
+                                    latitude    : "",
+                                    longitude   : "",
+                                    "accuracy"  : ""
+
                                 }
 
                             ]
@@ -211,7 +201,7 @@ var apiProfile = [
                 }
             }
         },
-        handler    : [matchWifiInfo]
+        handler    : [findWifiInfo]
     },
     {
         method     : 'post',

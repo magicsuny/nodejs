@@ -7,6 +7,11 @@ var validate = require('../utils/validate');
 var util     = require('util');
 var error    = require('../utils/error');
 
+exports.gatherDeviceInfo = function(req,res,next){
+      
+};
+
+
 exports.authCons = function(req, res, next){
 
     var retByPath = function(redirect, req, res){

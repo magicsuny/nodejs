@@ -32,12 +32,11 @@ global.log = global.logger = new (winston.Logger)({transports: transports});
 
 //API version
 exports.apiVersion = 1;
-exports.app_id = 'wifi';
 //manager cookie name
-exports.managerCookieName = 'YCNP';
+exports.managerCookieName = 'leowifi';
 exports.cookieMaxAge = 7 * 24 * 60 * 60 * 1000;
 exports.cookiePath = '/';
-exports.cookiePrivateKey = 'yingYuansiyouCookie123!@#,]-=dwa.,|[sd';
+exports.cookiePrivateKey = 'leowifi!@#$#@';
 
 /*
  * max upload file size

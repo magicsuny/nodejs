@@ -18,20 +18,24 @@ var util      = require('util');
 var validate  = require('./utils/validate');
 var errorCode = require('./profile/config').errorCode;
 
+var base = express();
 var app = express();
 var v1  = express();
 var v2  = express();
 
 // view engine setup
-app.set('views', path.join(__dirname, 'views'));
-app.set('view engine', 'html');
-app.engine('html', require('ejs').renderFile);
+base.set('views', path.join(__dirname, 'views'));
+base.set('view engine', 'html');
+base.engine('html', require('ejs').renderFile);
 
-app.use(morgan('dev'));
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({extended: false}));
-app.use(cookieParser());
-app.use('/wifi',express.static(path.join(__dirname, 'public'), {
+base.use(morgan('dev'));
+base.use(bodyParser.json());
+base.use(bodyParser.urlencoded({extended: false}));
+base.use(cookieParser());
+//set appId
+base.use('/wifi',app);
+
+app.use('/',express.static(path.join(__dirname, 'public'), {
   'setHeaders': function (res, path, stat) {
     if (path.indexOf('.json') > 0) {
       console.log('path:', path);
@@ -42,8 +46,8 @@ app.use('/wifi',express.static(path.join(__dirname, 'public'), {
 //app.use(cm.sessionSetting);
 app.use(compression({threshold: 512}));
 //app.use(favicon('public/img/logo.png'));
-app.use('/wifi/v1', v1);
-app.use('/wifi/v2', v2);
+app.use('/v1', v1);
+app.use('/v2', v2);
 
 
 v1.use('/docs', docs(wifi));
@@ -171,5 +175,5 @@ function loadRouter() {
 }
 var routers    = loadRouter();
 v1.use('/docs', docs.apply(v1, routers));
-module.exports = app;
+module.exports = base;
 //end

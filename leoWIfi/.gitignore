@@ -33,3 +33,4 @@ node_modules
 
 /profile/override.js
 
+/public/swagger/api.json

@@ -26,6 +26,23 @@ exports.wifiInfo = {
     }
 };
 
+exports.simpleWifiInfo = {
+    type: 'object', properties: {
+        ssid: {type: 'string', description: "wifi ssid"},
+        bssid: {type: 'string', description: "wifi bssid"},
+        level: {type: 'integer', description: "wifi bssid"},
+        sec_level: {type: 'integer', description: "wifi bssid"},
+        capabilities: {type: 'string', description: "wifi bssid"},
+        frequency: {type: 'integer', description: "wifi bssid"},
+        identity: {type: 'string', description: "wifi bssid"},
+        keyMgmt: {type: 'string', description: "wifi bssid"},
+        eap: {type: 'string', description: "wifi bssid"},
+    }
+};
+
+
+
+
 exports.Memo = {
     type: 'object', properties: {
         score: {type: 'integer', description: "comment's score"},

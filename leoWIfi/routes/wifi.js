@@ -16,17 +16,35 @@ var docUtils = require('../utils/docUtils');
 
 
 /**
- * 创建影次元
+ * wifi信息采集
  * @param req
  * @param res
  * @param next
  * @returns {*}
  */
 var gatherWifiInfo = function (req, res, next) {
-    'use strict';
     res.send({err: 0, msg: '', data: []});
 };
 
+/**
+ * wifi挖掘
+ * @param req
+ * @param res
+ * @param next
+ */
+var matchWifiInfo = function (req, res, next) {
+
+};
+
+/**
+ * wifi热点上报
+ * @param req
+ * @param res
+ * @param next
+ */
+var gatherWifiHotSpotInfo = function (req, res, next) {
+    res.send({err: 0, msg: '', data: []});
+};
 
 
 var apiVersion = 1;
@@ -70,7 +88,72 @@ var apiProfile = [
                         msg : {type: 'string', description: 'error message'},
                         data: {
                             type: 'object', properties: {
-                                id: {type: 'string', description: '新创建的影次元ID'}
+                                id: {type: 'string', description: ''}
+                            }
+                        }
+                    }
+                },
+                examples   : {
+                    "application/json": {
+                        "err" : 0,
+                        "msg" : "",
+                        "data": []
+                    }
+                }
+            }
+        },
+        handler    : [gatherWifiInfo]
+    },
+    {
+        method     : 'post',
+        path       : '/matchwifi',
+        version    : apiVersion,
+        description: '挖掘wifi信息',
+        params     : [
+            {
+                name  : 'body',
+                in    : 'body',
+                schema: {
+                    type      : 'object',
+                    required  : ['device_id', 'infos'],
+                    properties: {
+                        device_id: {
+                            type       : 'string',
+                            description: '客户端设备ID'
+                        },
+                        latitude : {
+                            type       : 'string',
+                            description: '纬度'
+                        },
+                        longitude: {
+                            type       : 'string',
+                            description: '经度'
+                        },
+                        infos    : {
+                            type : 'array',
+                            items: {$ref: '#/definitions/simpleWifiInfo'}
+                        }
+                    }
+                }
+            }
+        ],
+        responses  : {
+            200: {
+                description: '挖掘wifi信息',
+                schema     : {
+                    type: 'object', properties: {
+                        code: {
+                            type       : 'number',
+                            description: 'error code',
+                            default    : 0
+                        },
+                        msg : {type: 'string', description: 'error message'},
+                        data: {
+                            properties: {
+                                infos: {
+                                    type : 'array',
+                                    items: {$ref: '#/definitions/wifiInfo'}
+                                }
                             }
                         }
                     }
@@ -80,13 +163,89 @@ var apiProfile = [
                         "err" : 0,
                         "msg" : "",
                         "data": {
-                            "id": "559a152c9f10ebdb40c5fcb3"
+                            "infos": [
+                                {
+                                    infos: [
+                                        {
+                                            id          : "", //数据库id
+                                            ssid        : "",
+                                            bssid       : "",
+                                            level       : 1,
+                                            sec_level   : 1,
+                                            capabilities: "",
+                                            frequency   : 2447,
+                                            password    : "",
+                                            identity    : "",
+                                            keymgmt     : "",
+                                            eap         : "",
+                                            latitude    : "",
+                                            longitude   : "",
+                                            "accuracy"  : ""
+                                        }
+                                    ]
+                                }
+
+                            ]
                         }
                     }
                 }
             }
         },
-        handler    : [gatherWifiInfo]
+        handler    : [matchWifiInfo]
+    },
+    {
+        method     : 'post',
+        path       : '/wifihotspot',
+        version    : apiVersion,
+        description: '采集wifi信息',
+        params     : [
+            {
+                name  : 'body',
+                in    : 'body',
+                schema: {
+                    type      : 'object',
+                    required  : ['device_id', 'infos'],
+                    properties: {
+                        device_id: {
+                            type       : 'string',
+                            description: '客户端设备ID'
+                        },
+                        infos    : {
+                            type : 'array',
+                            items: {$ref: '#/definitions/wifiInfo'}
+                        }
+                    }
+                }
+            }
+        ],
+        responses  : {
+            200: {
+                description: '采集wifi信息',
+                schema     : {
+                    type: 'object', properties: {
+                        code: {
+                            type       : 'number',
+                            description: 'error code',
+                            default    : 0
+                        },
+                        msg : {type: 'string', description: 'error message'},
+                        data: {
+                            type: 'object', properties: {
+                                id: {type: 'string', description: ''}
+                            }
+                        }
+                    }
+                },
+                examples   : {
+                    "application/json": {
+                        "err" : 0,
+                        "msg" : "",
+                        "data": []
+                    }
+                }
+            }
+        },
+        handler    : [gatherWifiHotSpotInfo]
     }
 ];
 

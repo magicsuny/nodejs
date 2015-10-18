@@ -50,7 +50,7 @@ app.use('/v1', v1);
 app.use('/v2', v2);
 v1.use(cm.gatherDeviceInfo);
 v1.use('/docs', docs(wifi));
-
+v1.use(wifi.router);
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
   next(new error.NotFound(util.format('%s not found', req.path)));

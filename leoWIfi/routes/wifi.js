@@ -259,27 +259,27 @@ var apiProfile = [
     }
 ];
 
-//
-//
-//apiProfile.forEach(function (p) {
-//    var method = p.method;
-//    var path = p.path;
-//    var handler = p.handler;
-//
-//    var profileMW = function (req, res, next) {
-//        req.profile = p;
-//        next();
-//    };
-//
-//    if (!Array.isArray(handler)) throw new Error('handlers middleware must be Array');
-//
-//    handler.unshift(profileMW);
-//    var fn = router[method];
-//
-//    if (fn && fn instanceof Function) {
-//        fn.call(router, path, handler);
-//    }
-//});
+
+
+apiProfile.forEach(function (p) {
+    var method = p.method;
+    var path = p.path;
+    var handler = p.handler;
+
+    var profileMW = function (req, res, next) {
+        req.profile = p;
+        next();
+    };
+
+    if (!Array.isArray(handler)) throw new Error('handlers middleware must be Array');
+
+    handler.unshift(profileMW);
+    var fn = router[method];
+
+    if (fn && fn instanceof Function) {
+        fn.call(router, path, handler);
+    }
+});
 
 module.exports = {
     router     : router,

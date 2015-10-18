@@ -48,8 +48,7 @@ app.use(compression({threshold: 512}));
 //app.use(favicon('public/img/logo.png'));
 app.use('/v1', v1);
 app.use('/v2', v2);
-
-
+v1.use(cm.gatherDeviceInfo);
 v1.use('/docs', docs(wifi));
 
 // catch 404 and forward to error handler
@@ -85,8 +84,9 @@ app.use(function (err, req, res, next) {
   req.failure = true;
   res.status(err.status || 500);
   res.json({
-    err: err.code || errorCode.unknownError,
-    msg: err.msg || err.err
+    code: err.code || errorCode.unknownError,
+    msg: err.msg || err.err,
+    data:[]
   });
 });
 
@@ -173,7 +173,7 @@ function loadRouter() {
   });
   return routers;
 }
-var routers    = loadRouter();
-v1.use('/docs', docs.apply(v1, routers));
+//var routers    = loadRouter();
+//v1.use('/docs', docs.apply(v1, routers));
 module.exports = base;
 //end

@@ -7,8 +7,17 @@ var validate = require('../utils/validate');
 var util     = require('util');
 var error    = require('../utils/error');
 
+/**
+ * 获取deviceInfo
+ * @param req
+ * @param res
+ * @param next
+ */
 exports.gatherDeviceInfo = function(req,res,next){
-      
+    var regexp = /\"([^\"]+)\"/g;
+    var di = decodeURIComponent(req.get('DI'));
+    var diArray= di.match(regexp);
+    next();
 };
 
 

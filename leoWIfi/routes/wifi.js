@@ -33,7 +33,27 @@ var gatherWifiInfo = function (req, res, next) {
  * @param next
  */
 var matchWifiInfo = function (req, res, next) {
+    res.send({
+        err: 0, msg: '', data: [
+            {
+                "id"          : "", //数据库id
+                "ssid"        : "",
+                "bssid"       : "",
+                "level"       : 1,
+                "sec_level"   : 1,
+                "capabilities": "",
+                "frequency"   : 2447,
+                "password"    : "",
+                "identity"    : "",
+                "keymgmt"     : "",
+                "eap"         : "",
+                "latitude"    : "",
+                "longitude"   : "",
+                "accuracy"    : ""
+            }
 
+        ]
+    })
 };
 
 /**

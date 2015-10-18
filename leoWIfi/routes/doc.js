@@ -20,7 +20,7 @@ function gen(modules, cb) {
         description: apiDesc,
         version    : '1.0'
     };
-    root.basePath    = '/v1';
+    root.basePath    = '/wifi/v1';
     root.tags        = [];
     root.schemes     = ['http'];
     root.consumes    = ['application/json'];

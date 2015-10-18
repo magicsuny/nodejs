@@ -43,3 +43,5 @@ Sun Oct 18 2015 22:04:00 GMT+0800 (CST) - warn: Mongoose default connection disc
 Sun Oct 18 2015 22:04:02 GMT+0800 (CST) - info: Mongodb is connected
 Sun Oct 18 2015 22:04:35 GMT+0800 (CST) - warn: Mongoose default connection disconnected
 Sun Oct 18 2015 22:04:37 GMT+0800 (CST) - info: Mongodb is connected
+Sun Oct 18 2015 22:10:12 GMT+0800 (CST) - warn: Mongoose default connection disconnected
+Sun Oct 18 2015 22:10:14 GMT+0800 (CST) - info: Mongodb is connected

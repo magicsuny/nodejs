@@ -107,7 +107,7 @@ var apiProfile = [
                 },
                 examples   : {
                     "application/json": {
-                        "err" : 0,
+                        "code" : 0,
                         "msg" : "",
                         "data": []
                     }
@@ -248,7 +248,7 @@ var apiProfile = [
                 },
                 examples   : {
                     "application/json": {
-                        "err" : 0,
+                        "code" : 0,
                         "msg" : "",
                         "data": []
                     }

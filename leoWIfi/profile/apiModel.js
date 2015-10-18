@@ -826,9 +826,9 @@ var errCode      = _.values(errorCode);
 
 exports.ErrorRtn = {
     type      : 'object',
-    required  : ['err'],
+    required  : ['code'],
     properties: {
-        err: {
+        code: {
             type       : 'integer',
             description: '错误代码',
             enum       : errCode,

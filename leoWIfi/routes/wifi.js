@@ -22,44 +22,43 @@ var geoip = require('geoip-lite');
 var gatherWifiInfo = function (req, res, next) {
     var body = req.body;
     //TODO 校验上传信息
-    if(!body){
-        var err = new Error('填报WIFI信息为空',errorCode.paramsError);
+    if (!body) {
+        var err = new Error('填报WIFI信息为空', errorCode.paramsError);
         return next(err);
     }
     //去重条件: 拥有bssid的前提下,同国家
     var bulk = Wifi.collection.initializeUnorderedBulkOp();
-    _.each(body.infos,function(_wifiInfo){
+    _.each(body.infos, function (_wifiInfo) {
         //解析地址
-        let location = req.location;
-        if(_wifiInfo.ip){
-            try{
+        var location = req.location;
+        if (_wifiInfo.ip) {
+            try {
                 location = geoip.lookup(_wifiInfo.ip);
-            }catch(e){
+            } catch (e) {
                 log.error(e);
             }
-        }else{
+        } else {
             _wifiInfo.ip = req.ip;
         }
-        if (location && location.country) {
-            _wifiInfo.country = location.country;
-        }
-        if(location&&location.city){
-            _wifiInfo.city = location.city;
-        }
+        _wifiInfo.country = location.country;
+        _wifiInfo.city = location.city;
+        _wifiInfo.is_hotspot = false;
         //保存经纬度
-        if(!_.isNaN(_wifiInfo.longitude)&&! _.isNaN(_wifiInfo.latitude)){
-            _wifiInfo.location = [_wifiInfo.longitude,_wifiInfo.latitude];
+        if (!_.isNaN(_wifiInfo.longitude) && !_.isNaN(_wifiInfo.latitude)) {
+            _wifiInfo.location = [_wifiInfo.longitude, _wifiInfo.latitude];
         }
-        if(_wifiInfo.bssid){
+        if (_wifiInfo.bssid) {
             _wifiInfo.updatedAt = new Date();
-            bulk.find({bssid:_wifiInfo.bssid,country:location.country}).upsert().updateOne(_wifiInfo);
-        }else{
+            bulk.find({bssid: _wifiInfo.bssid, country: location.country}).upsert().updateOne(_wifiInfo);
+        } else {
             _wifiInfo.createdAt = new Date();
             bulk.insert(_wifiInfo);
         }
     });
-    bulk.execute(function(err,result){
-        if(err) return next(err);
+    bulk.execute(function (err, result) {
+        if (err) {
+            return next(err);
+        }
         res.send({err: 0, msg: ''});
     });
 
@@ -75,13 +74,13 @@ var findWifiInfo = function (req, res, next) {
     var body = req.body;
     var infos = body.infos;
     var ssid = infos[0].ssid;
-    Wifi.find({ssid:ssid}).exec(function(err,data){
-        if(err) return next(err);
+    Wifi.find({ssid: ssid}).exec(function (err, data) {
+        if (err) return next(err);
         res.send({
-            err: 0,
-            msg: '',
+            err : 0,
+            msg : '',
             data: {
-                infos:data
+                infos: data
             }
         });
     });
@@ -145,14 +144,14 @@ var apiProfile = [
                 },
                 examples   : {
                     "application/json": {
-                        "code" : 0,
+                        "code": 0,
                         "msg" : "",
                         "data": []
                     }
                 }
             }
         },
-        handler    : [common.gatherIpInfo,gatherWifiInfo]
+        handler    : [common.gatherIpInfo, gatherWifiInfo]
     },
     {
         method     : 'post',
@@ -286,7 +285,7 @@ var apiProfile = [
                 },
                 examples   : {
                     "application/json": {
-                        "code" : 0,
+                        "code": 0,
                         "msg" : "",
                         "data": []
                     }
@@ -296,7 +295,6 @@ var apiProfile = [
         handler    : [gatherWifiHotSpotInfo]
     }
 ];
-
 
 
 apiProfile.forEach(function (p) {

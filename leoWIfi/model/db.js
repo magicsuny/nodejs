@@ -238,7 +238,29 @@ var wifiSchema = new Schema({
     },
     other_settings: String
 });
+wifiSchema.index({"city":1, "country": 1,"bssid": 1});
 wifiSchema.plugin(commonPlugin);
+
+
+var deviceSchema = new Schema({
+    market_id  : {type: String, index: true},
+    guid       : {type: String, index: true},
+    app_id     : String,
+    app_ver    : String,
+    os_name    : String,
+    android_ver: String,
+    vendor     : String,
+    model      : String,
+    screen_des : String,
+    screen_dpi : String,
+    language   : String,
+    timezone   : String,
+    imei       : String,
+    imsi       : String,
+    mac        : String
+
+});
+deviceSchema.plugin(commonPlugin);
 
 function promisify(model) {
     Promise.promisifyAll(model);
@@ -248,5 +270,6 @@ function promisify(model) {
 }
 
 exports.Wifi = promisify(mongoose.model('Wifi', wifiSchema));
+exports.Wifi = promisify(mongoose.model('Device', deviceSchema));
 
 //end

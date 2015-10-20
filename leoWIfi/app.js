@@ -66,7 +66,7 @@ app.use(function (req, res, next) {
 // will print stacktrace
 if (app.get('env') === 'development') {
     app.use(function (err, req, res, next) {
-        res.status(err.status || 500);
+        res.status(err.status || 200);
         console.error(err);
         req.failure = true;
 //        res.json({
@@ -85,7 +85,7 @@ if (app.get('env') === 'development') {
 app.use(function (err, req, res, next) {
     console.error(err);
     req.failure = true;
-    res.status(err.status || 500);
+    res.status(err.status || 200);
     res.json({
         code: err.code || errorCode.unknownError,
         msg : err.msg || err.err,

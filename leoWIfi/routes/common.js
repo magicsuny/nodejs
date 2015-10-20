@@ -17,6 +17,7 @@ exports.gatherDeviceInfo = function(req,res,next){
     var regexp = /\"([^\"]+)\"/g;
     var di = decodeURIComponent(req.get('DI'));
     var diArray= di.match(regexp);
+    //TODO save deviceInfo
     next();
 };
 

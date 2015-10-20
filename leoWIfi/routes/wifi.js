@@ -12,6 +12,38 @@ var Promise = require('bluebird');
 var Wifi = require('../model/db').Wifi;
 var geoip = require('geoip-lite');
 
+var _saveWifiInfos = function(infos,options,cb){
+    //去重条件: 拥有bssid的前提下,同国家
+    var bulk = Wifi.collection.initializeUnorderedBulkOp();
+    _.each(infos, function (_wifiInfo) {
+        //解析地址
+        var location = options.location;
+        if (_wifiInfo.ip) {
+            try {
+                location = geoip.lookup(_wifiInfo.ip);
+            } catch (e) {
+                log.error(e);
+            }
+        } else {
+            _wifiInfo.ip = req.ip;
+        }
+        _wifiInfo.country = location.country;
+        _wifiInfo.city = location.city;
+        _wifiInfo.is_hotspot = options.isHotspot;
+        //保存经纬度
+        if (!_.isNaN(_wifiInfo.longitude) && !_.isNaN(_wifiInfo.latitude)) {
+            _wifiInfo.location = [_wifiInfo.longitude, _wifiInfo.latitude];
+        }
+        if (_wifiInfo.bssid) {
+            _wifiInfo.updatedAt = new Date();
+            bulk.find({bssid: _wifiInfo.bssid, country: location.country}).upsert().updateOne(_wifiInfo);
+        } else {
+            _wifiInfo.createdAt = new Date();
+            bulk.insert(_wifiInfo);
+        }
+    });
+    bulk.execute(cb);
+};
 /**
  * wifi信息采集
  * @param req
@@ -26,36 +58,7 @@ var gatherWifiInfo = function (req, res, next) {
         var err = new Error('填报WIFI信息为空', errorCode.paramsError);
         return next(err);
     }
-    //去重条件: 拥有bssid的前提下,同国家
-    var bulk = Wifi.collection.initializeUnorderedBulkOp();
-    _.each(body.infos, function (_wifiInfo) {
-        //解析地址
-        var location = req.location;
-        if (_wifiInfo.ip) {
-            try {
-                location = geoip.lookup(_wifiInfo.ip);
-            } catch (e) {
-                log.error(e);
-            }
-        } else {
-            _wifiInfo.ip = req.ip;
-        }
-        _wifiInfo.country = location.country;
-        _wifiInfo.city = location.city;
-        _wifiInfo.is_hotspot = false;
-        //保存经纬度
-        if (!_.isNaN(_wifiInfo.longitude) && !_.isNaN(_wifiInfo.latitude)) {
-            _wifiInfo.location = [_wifiInfo.longitude, _wifiInfo.latitude];
-        }
-        if (_wifiInfo.bssid) {
-            _wifiInfo.updatedAt = new Date();
-            bulk.find({bssid: _wifiInfo.bssid, country: location.country}).upsert().updateOne(_wifiInfo);
-        } else {
-            _wifiInfo.createdAt = new Date();
-            bulk.insert(_wifiInfo);
-        }
-    });
-    bulk.execute(function (err, result) {
+    _saveWifiInfos(body.infos,{location:req.location,isHotspot:false},function (err, result) {
         if (err) {
             return next(err);
         }
@@ -63,6 +66,28 @@ var gatherWifiInfo = function (req, res, next) {
     });
 
 };
+
+/**
+ * wifi热点上报
+ * @param req
+ * @param res
+ * @param next
+ */
+var gatherWifiHotSpotInfo = function (req, res, next) {
+    var body = req.body;
+    //TODO 校验上传信息|头像信息处理
+    if (!body) {
+        var err = new Error('填报WIFI信息为空', errorCode.paramsError);
+        return next(err);
+    }
+    _saveWifiInfos(body.infos,{location:req.location,isHotspot:true},function (err, result) {
+        if (err) {
+            return next(err);
+        }
+        res.send({err: 0, msg: ''});
+    });
+};
+
 
 /**
  * wifi挖掘
@@ -84,16 +109,6 @@ var findWifiInfo = function (req, res, next) {
             }
         });
     });
-};
-
-/**
- * wifi热点上报
- * @param req
- * @param res
- * @param next
- */
-var gatherWifiHotSpotInfo = function (req, res, next) {
-    res.send({err: 0, msg: '', data: []});
 };
 
 var apiVersion = 1;

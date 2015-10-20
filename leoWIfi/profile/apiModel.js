@@ -18,6 +18,7 @@ exports.wifiInfoGather = {
         identity      : {type: 'string', description: "wifi identity"},
         keyMgmt       : {type: 'string', description: "wifi keyMgmt"},
         eap           : {type: 'string', description: "wifi eap"},
+        ip            : {type: 'string', description: "wifi ip"},
         latitude      : {type: 'number', description: "wifi latitude"},
         longitude     : {type: 'number', description: "wifi longitude"},
         accuracy      : {type: 'string', description: "wifi accuracy"},
@@ -39,15 +40,8 @@ exports.simpleWifiInfo = {
         keyMgmt     : {type: 'string', description: "wifi keyMgmt"},
         eap         : {type: 'string', description: "wifi eap"},
         is_root     : {type: 'boolean', description: "wifi is_root"},
-        is_hotspot  : {type: 'boolean', description: "是否个人wifi热点"},
-        icon        : {
-            type: 'object', properties: {
-                nomal: {type: 'string', description: "标准图Url"},
-                small: {type: 'string', description: "缩略图Url"}
-            }
-        },
-        country     : {type: 'string', description: '国家代码'},
-        city        : {type: 'string', description: '城市代码'}
+        latitude    : {type: 'number', description: "wifi latitude"},
+        longitude   : {type: 'number', description: "wifi longitude"}
     }
 };
 
@@ -67,16 +61,16 @@ exports.wifiInfoResponse = {
         longitude     : {type: 'number', description: "wifi longitude"},
         accuracy      : {type: 'string', description: "wifi accuracy"},
         is_root       : {type: 'boolean', description: "wifi is_root"},
-        is_hotspot  : {type: 'boolean', description: "是否个人wifi热点"},
+        is_hotspot    : {type: 'boolean', description: "是否个人wifi热点"},
         other_settings: {type: 'string', description: "other setting"},
-        icon        : {
+        icon          : {
             type: 'object', properties: {
                 nomal: {type: 'string', description: "标准图Url"},
                 small: {type: 'string', description: "缩略图Url"}
             }
         },
-        country     : {type: 'string', description: '国家代码'},
-        city        : {type: 'string', description: '城市代码'}
+        country       : {type: 'string', description: '国家代码'},
+        city          : {type: 'string', description: '城市代码'}
     }
 }
 

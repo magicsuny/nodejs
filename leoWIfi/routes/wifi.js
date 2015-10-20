@@ -4,16 +4,13 @@
 var express = require('express');
 var router = express.Router();
 var common = require('./common');
-//var odm      = require('../model/odm');
-//var User     = require('./user');
 var async = require('async');
-var listUtil = require('../utils/listUtils');
 var config = require('../profile/config');
 var _ = require('underscore');
 var error = require('../utils/error');
 var Promise = require('bluebird');
-var docUtils = require('../utils/docUtils');
 var Wifi = require('../model/db').Wifi;
+var geoip = require('geoip-lite');
 
 /**
  * wifi信息采集
@@ -30,21 +27,34 @@ var gatherWifiInfo = function (req, res, next) {
         return next(err);
     }
     //去重条件: 拥有bssid的前提下,同国家
-    var bulk = Wifi.collection.initializeOrderedBulkOp();
+    var bulk = Wifi.collection.initializeUnorderedBulkOp();
     _.each(body.infos,function(_wifiInfo){
-        if(_wifiInfo.bssid){
-            //保存城市信息
-            if(req.location.city){
-                _wifiInfo.city=req.location.city;
+        //解析地址
+        let location = req.location;
+        if(_wifiInfo.ip){
+            try{
+                location = geoip.lookup(_wifiInfo.ip);
+            }catch(e){
+                log.error(e);
             }
-            ////保存经纬度
-            //if(!_.isNaN(_wifiInfo.longitude)&&! _.isNaN(_wifiInfo.latitude)){
-            //    _wifiInfo.location = [_wifiInfo.longitude,_wifiInfo.latitude];
-            //}
-            //保存IP
-            _wifiInfo.ip = req.ip;
-            bulk.find({bssid:_wifiInfo,country:req.location.country}).upsert().updateOne(_wifiInfo);
         }else{
+            _wifiInfo.ip = req.ip;
+        }
+        if (location && location.country) {
+            _wifiInfo.country = location.country;
+        }
+        if(location&&location.city){
+            _wifiInfo.city = location.city;
+        }
+        //保存经纬度
+        if(!_.isNaN(_wifiInfo.longitude)&&! _.isNaN(_wifiInfo.latitude)){
+            _wifiInfo.location = [_wifiInfo.longitude,_wifiInfo.latitude];
+        }
+        if(_wifiInfo.bssid){
+            _wifiInfo.updatedAt = new Date();
+            bulk.find({bssid:_wifiInfo.bssid,country:location.country}).upsert().updateOne(_wifiInfo);
+        }else{
+            _wifiInfo.createdAt = new Date();
             bulk.insert(_wifiInfo);
         }
     });

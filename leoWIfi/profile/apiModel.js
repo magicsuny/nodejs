@@ -18,8 +18,8 @@ exports.wifiInfoGather = {
         identity      : {type: 'string', description: "wifi identity"},
         keyMgmt       : {type: 'string', description: "wifi keyMgmt"},
         eap           : {type: 'string', description: "wifi eap"},
-        latitude      : {type: 'string', description: "wifi latitude"},
-        longitude     : {type: 'string', description: "wifi longitude"},
+        latitude      : {type: 'number', description: "wifi latitude"},
+        longitude     : {type: 'number', description: "wifi longitude"},
         accuracy      : {type: 'string', description: "wifi accuracy"},
         is_root       : {type: 'boolean', description: "wifi is_root"},
         other_settings: {type: 'string', description: "other setting"}

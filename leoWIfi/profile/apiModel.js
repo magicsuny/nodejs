@@ -6,7 +6,7 @@ var errorCode = require('../profile/config').errorCode;
 var _ = require('underscore');
 var util = require('util');
 
-exports.wifiInfo = {
+exports.wifiInfoGather = {
     type: 'object', properties: {
         ssid          : {type: 'string', description: "wifi ssid"},
         bssid         : {type: 'string', description: "wifi bssid"},
@@ -30,14 +30,14 @@ exports.simpleWifiInfo = {
     type: 'object', properties: {
         ssid        : {type: 'string', description: "wifi ssid"},
         bssid       : {type: 'string', description: "wifi bssid"},
-        level       : {type: 'integer', description: "wifi bssid"},
-        sec_level   : {type: 'integer', description: "wifi bssid"},
-        capabilities: {type: 'string', description: "wifi bssid"},
-        frequency   : {type: 'integer', description: "wifi bssid"},
+        level       : {type: 'integer', description: "wifi level"},
+        sec_level   : {type: 'integer', description: "wifi sec_level"},
+        capabilities: {type: 'string', description: "wifi capabilities"},
+        frequency   : {type: 'integer', description: "wifi frequency"},
         password    : {type: 'string', description: "wifi password"},
-        identity    : {type: 'string', description: "wifi bssid"},
-        keyMgmt     : {type: 'string', description: "wifi bssid"},
-        eap         : {type: 'string', description: "wifi bssid"},
+        identity    : {type: 'string', description: "wifi identity"},
+        keyMgmt     : {type: 'string', description: "wifi keyMgmt"},
+        eap         : {type: 'string', description: "wifi eap"},
         is_root     : {type: 'boolean', description: "wifi is_root"},
         is_hotspot  : {type: 'boolean', description: "是否个人wifi热点"},
         icon        : {
@@ -47,9 +47,38 @@ exports.simpleWifiInfo = {
             }
         },
         country     : {type: 'string', description: '国家代码'},
-        city        : {type: 'string', description: '城市代码'},
+        city        : {type: 'string', description: '城市代码'}
     }
 };
+
+exports.wifiInfoResponse = {
+    type: 'object', properties: {
+        ssid          : {type: 'string', description: "wifi ssid"},
+        bssid         : {type: 'string', description: "wifi bssid"},
+        level         : {type: 'integer', description: "wifi level"},
+        sec_level     : {type: 'integer', description: "wifi sec_level"},
+        capabilities  : {type: 'string', description: "wifi capabilities"},
+        frequency     : {type: 'integer', description: "wifi frequency"},
+        password      : {type: 'string', description: "wifi password"},
+        identity      : {type: 'string', description: "wifi identity"},
+        keyMgmt       : {type: 'string', description: "wifi keyMgmt"},
+        eap           : {type: 'string', description: "wifi eap"},
+        latitude      : {type: 'number', description: "wifi latitude"},
+        longitude     : {type: 'number', description: "wifi longitude"},
+        accuracy      : {type: 'string', description: "wifi accuracy"},
+        is_root       : {type: 'boolean', description: "wifi is_root"},
+        is_hotspot  : {type: 'boolean', description: "是否个人wifi热点"},
+        other_settings: {type: 'string', description: "other setting"},
+        icon        : {
+            type: 'object', properties: {
+                nomal: {type: 'string', description: "标准图Url"},
+                small: {type: 'string', description: "缩略图Url"}
+            }
+        },
+        country     : {type: 'string', description: '国家代码'},
+        city        : {type: 'string', description: '城市代码'}
+    }
+}
 
 
 function genErrorMsg() {

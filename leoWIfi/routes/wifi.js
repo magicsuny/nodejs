@@ -109,7 +109,7 @@ var apiProfile = [
                         },
                         infos    : {
                             type : 'array',
-                            items: {$ref: '#/definitions/wifiInfo'}
+                            items: {$ref: '#/definitions/wifiInfoGather'}
                         }
                     }
                 }
@@ -193,7 +193,7 @@ var apiProfile = [
                             properties: {
                                 infos: {
                                     type : 'array',
-                                    items: {$ref: '#/definitions/wifiInfo'}
+                                    items: {$ref: '#/definitions/wifiInfoResponse'}
                                 }
                             }
                         }

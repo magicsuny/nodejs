@@ -17,6 +17,7 @@
     "express": "~4.13.1",
     "express-session": "~1.11.3",
     "formidable": "^1.0.17",
+    "geoip-lite": "^1.1.6",
     "less-middleware": "1.0.x",
     "mongodb": "^2.0.46",
     "mongoose": "^4.1.11",

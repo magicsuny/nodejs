@@ -216,20 +216,26 @@ var wifiSchema = new Schema({
     ssid          : {type: String, index: true},
     bssid         : {type: String, index: true},
     level         : Number,
-    secLevel      : Number,
+    sec_level     : Number,
     capabilities  : String,
     frequency     : Number,
     password      : String,
     keyMgmt       : String,
     eap           : String,
     identity      : String,
-    otherSettings : String,
-    latitude      : String,  // redundant
-    longitude     : String,  // redundant
+    latitude      : Number,  // redundant
+    longitude     : Number,  // redundant
     location      : {type: [Number], index: '2dsphere'},
     accuracy      : Number,
-    isRoot        : Boolean,
+    is_root       : Boolean,
+    is_hotspot    : Boolean,
     country       : String,
+    city          : String,
+    ip            : String,
+    icon          : {
+        nomal: {type: String},
+        small: {type: String}
+    },
     other_settings: String
 });
 wifiSchema.plugin(commonPlugin);
@@ -241,6 +247,6 @@ function promisify(model) {
     return model;
 }
 
-exports.Wifi = promisify(mongoose.model('Wifi',wifiSchema));
+exports.Wifi = promisify(mongoose.model('Wifi', wifiSchema));
 
 //end

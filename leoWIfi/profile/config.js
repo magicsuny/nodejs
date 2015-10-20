@@ -37,7 +37,8 @@ exports.managerCookieName = 'leowifi';
 exports.cookieMaxAge = 7 * 24 * 60 * 60 * 1000;
 exports.cookiePath = '/';
 exports.cookiePrivateKey = 'leowifi!@#$#@';
-
+//manager proxy
+exports.trustProxy = true;
 /*
  * max upload file size
  * */
@@ -68,11 +69,8 @@ exports.mongoDbConfig = {
 exports.errorCode = global.errorCode = {
     //@TODO, refine error code logic
     unknownError          : 101,
-    createdError          : 102,
+    paramsError           : 102,
     uploadedError         : 103,
-    albumOperationError   : 104,
-    payError              : 105,
-    paramsError           : 106,
     activityOperationError: 107,
     authError             : 108,
     dbError               : 109,

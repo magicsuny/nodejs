@@ -6,7 +6,7 @@ var _        = require('underscore');
 var validate = require('../utils/validate');
 var util     = require('util');
 var error    = require('../utils/error');
-
+var geoip = require('geoip-lite');
 /**
  * 获取deviceInfo
  * @param req
@@ -19,6 +19,29 @@ exports.gatherDeviceInfo = function(req,res,next){
     var diArray= di.match(regexp);
     next();
 };
+
+exports.gatherIpInfo = function(req,res,next){
+    try {
+        var location = geoip.lookup(req.ip);
+        if (location && location.country) {
+            req.location = location;
+            log.info('remote ip', req.ip, 'found country', location.country);
+        } else {
+            req.location = {
+                country:null,
+                city:null
+            };
+            //log.info('remote ip', req.ip, 'not found, use default country', req.location.country);
+        }
+    } catch (error) {
+        req.location = {
+            country:null,
+            city:null
+        };
+        //log.info('lookup ip', req.ip, 'exception, use default country', req.location.country);
+    }
+    next();
+}
 
 
 exports.authCons = function(req, res, next){

@@ -24,7 +24,35 @@ var Wifi = require('../model/db').Wifi;
  */
 var gatherWifiInfo = function (req, res, next) {
     var body = req.body;
-    res.send({err: 0, msg: '', data: []});
+    //TODO 校验上传信息
+    if(!body){
+        var err = new Error('填报WIFI信息为空',errorCode.paramsError);
+        return next(err);
+    }
+    //去重条件: 拥有bssid的前提下,同国家
+    var bulk = Wifi.collection.initializeOrderedBulkOp();
+    _.each(body.infos,function(_wifiInfo){
+        if(_wifiInfo.bssid){
+            //保存城市信息
+            if(req.location.city){
+                _wifiInfo.city=req.location.city;
+            }
+            ////保存经纬度
+            //if(!_.isNaN(_wifiInfo.longitude)&&! _.isNaN(_wifiInfo.latitude)){
+            //    _wifiInfo.location = [_wifiInfo.longitude,_wifiInfo.latitude];
+            //}
+            //保存IP
+            _wifiInfo.ip = req.ip;
+            bulk.find({bssid:_wifiInfo,country:req.location.country}).upsert().updateOne(_wifiInfo);
+        }else{
+            bulk.insert(_wifiInfo);
+        }
+    });
+    bulk.execute(function(err,result){
+        if(err) return next(err);
+        res.send({err: 0, msg: ''});
+    });
+
 };
 
 /**
@@ -114,7 +142,7 @@ var apiProfile = [
                 }
             }
         },
-        handler    : [gatherWifiInfo]
+        handler    : [common.gatherIpInfo,gatherWifiInfo]
     },
     {
         method     : 'post',

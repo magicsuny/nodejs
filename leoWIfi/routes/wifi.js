@@ -20,7 +20,7 @@ var _saveWifiInfos = function (infos, options, cb) {
         var location = options.location;
         if (_wifiInfo.ip) {
             try {
-                location = geoip.lookup(_wifiInfo.ip);
+                location = geoip.lookup(_wifiInfo.ip)||location;
             } catch (e) {
                 log.error(e);
             }
@@ -101,9 +101,9 @@ var gatherWifiHotSpotInfo = function (req, res, next) {
 var findWifiInfo = function (req, res, next) {
     var body = req.body;
     var infos = body.infos;
-    var idMathList = [];
     var idConditions = [];
     var bssidCondition = [];
+    //按照地区过滤以上报点为圆心周围500米有密码wifi
     _.each(infos, function (_wifiInfo) {
         if (_wifiInfo._id) {
             idConditions.push(_wifiInfo._id);
@@ -141,25 +141,23 @@ var findWifiInfo = function (req, res, next) {
     });
     async.parallel(bssidCondition,function(err,results){
         if (err) return next(err);
+        var data = _.flatten(results);
         res.send({
             err : 0,
             msg : '',
             data: {
-                infos: results
+                infos: data
             }
         });
+        next();
     })
-    //bulk.execute(function(err,data){
-    //    if (err) return next(err);
-    //    res.send({
-    //        err : 0,
-    //        msg : '',
-    //        data: {
-    //            infos: data
-    //        }
-    //    });
-    //});
 };
+
+var distributeClientConfig = function(req,res,next){
+    res.responseData = config.wifiClientSetting;
+    next();
+};
+
 
 var apiVersion = 1;
 
@@ -217,6 +215,60 @@ var apiProfile = [
             }
         },
         handler    : [common.gatherIpInfo, gatherWifiInfo]
+    },
+    {
+        method     : 'post',
+        path       : '/wifihotspot',
+        version    : apiVersion,
+        description: '采集wifi信息',
+        params     : [
+            {
+                name  : 'body',
+                in    : 'body',
+                schema: {
+                    type      : 'object',
+                    required  : ['device_id', 'infos'],
+                    properties: {
+                        device_id: {
+                            type       : 'string',
+                            description: '客户端设备ID'
+                        },
+                        infos    : {
+                            type : 'array',
+                            items: {$ref: '#/definitions/wifiInfo'}
+                        }
+                    }
+                }
+            }
+        ],
+        responses  : {
+            200: {
+                description: '采集wifi信息',
+                schema     : {
+                    type: 'object', properties: {
+                        code: {
+                            type       : 'number',
+                            description: 'error code',
+                            default    : 0
+                        },
+                        msg : {type: 'string', description: 'error message'},
+                        data: {
+                            type: 'object', properties: {
+                                id: {type: 'string', description: ''}
+                            }
+                        }
+                    }
+                },
+                examples   : {
+                    "application/json": {
+                        "code": 0,
+                        "msg" : "",
+                        "data": []
+                    }
+                }
+            }
+        },
+        handler    : [common.gatherIpInfo,gatherWifiHotSpotInfo]
     },
     {
         method     : 'post',
@@ -303,61 +355,7 @@ var apiProfile = [
                 }
             }
         },
-        handler    : [findWifiInfo]
-    },
-    {
-        method     : 'post',
-        path       : '/wifihotspot',
-        version    : apiVersion,
-        description: '采集wifi信息',
-        params     : [
-            {
-                name  : 'body',
-                in    : 'body',
-                schema: {
-                    type      : 'object',
-                    required  : ['device_id', 'infos'],
-                    properties: {
-                        device_id: {
-                            type       : 'string',
-                            description: '客户端设备ID'
-                        },
-                        infos    : {
-                            type : 'array',
-                            items: {$ref: '#/definitions/wifiInfo'}
-                        }
-                    }
-                }
-            }
-        ],
-        responses  : {
-            200: {
-                description: '采集wifi信息',
-                schema     : {
-                    type: 'object', properties: {
-                        code: {
-                            type       : 'number',
-                            description: 'error code',
-                            default    : 0
-                        },
-                        msg : {type: 'string', description: 'error message'},
-                        data: {
-                            type: 'object', properties: {
-                                id: {type: 'string', description: ''}
-                            }
-                        }
-                    }
-                },
-                examples   : {
-                    "application/json": {
-                        "code": 0,
-                        "msg" : "",
-                        "data": []
-                    }
-                }
-            }
-        },
-        handler    : [gatherWifiHotSpotInfo]
+        handler    : [findWifiInfo,common.gatherDeviceInfo]
     }
 ];
 

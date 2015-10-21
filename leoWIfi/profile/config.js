@@ -97,6 +97,18 @@ exports.statd = {
     globalize: true
 };
 
+
+//wifi全局设置
+exports.wifiClientSetting = {
+    enableWifiCollect:true,//是否允许采集
+    showFreeWifiCount:10,//免费wifi显示条目
+    gatherWifiCountOnce:20,//一次采集wifi信息上传数
+};
+
+exports.wifiServerSetting = {
+    matchPrivateWifi:false//返回隐私wifi控制
+};
+
 /**
  * 对象属性覆盖,用src中的属性覆盖dest.　只覆盖dest中定义的属性，支持任意层次的对象属性覆盖
  * 暴露只是为了方便测试

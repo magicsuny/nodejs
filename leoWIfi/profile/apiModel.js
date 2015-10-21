@@ -22,7 +22,10 @@ exports.wifiInfoGather = {
         ip            : {type: 'string', description: "wifi ip"},
         latitude      : {type: 'number', description: "wifi latitude"},
         longitude     : {type: 'number', description: "wifi longitude"},
+        connectable   : {type: 'boolean', description: 'wifi connectable'},
+        tryTime       : {type: 'number', description: 'try timestamp'},
         accuracy      : {type: 'string', description: "wifi accuracy"},
+        sharedable    : {type: 'boolean', description: 'wifi sharedable'},
         is_root       : {type: 'boolean', description: "wifi is_root"},
         other_settings: {type: 'string', description: "other setting"}
     }

@@ -28,7 +28,7 @@ var v2 = express();
 base.set('views', path.join(__dirname, 'views'));
 base.set('view engine', 'html');
 base.set('trust proxy', config.trustProxy);
-base.engine('html', require('ejs').renderFile);
+//base.engine('html', require('ejs').renderFile);
 
 base.use(morgan('dev'));
 base.use(bodyParser.json());
@@ -51,7 +51,7 @@ app.use(compression({threshold: 512}));
 //app.use(favicon('public/img/logo.png'));
 app.use('/v1', v1);
 app.use('/v2', v2);
-v1.use(cm.gatherDeviceInfo);
+//v1.use(cm.gatherDeviceInfo);
 v1.use('/docs', docs(wifi));
 v1.use(wifi.router);
 // catch 404 and forward to error handler

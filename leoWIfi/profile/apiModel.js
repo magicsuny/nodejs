@@ -8,6 +8,7 @@ var util = require('util');
 
 exports.wifiInfoGather = {
     type: 'object', properties: {
+        _id           : {type: 'string', description: "db objectId"},
         ssid          : {type: 'string', description: "wifi ssid"},
         bssid         : {type: 'string', description: "wifi bssid"},
         level         : {type: 'integer', description: "wifi level"},
@@ -29,6 +30,7 @@ exports.wifiInfoGather = {
 
 exports.simpleWifiInfo = {
     type: 'object', properties: {
+        _id         : {type: 'string', description: "db objectId"},
         ssid        : {type: 'string', description: "wifi ssid"},
         bssid       : {type: 'string', description: "wifi bssid"},
         level       : {type: 'integer', description: "wifi level"},
@@ -47,6 +49,7 @@ exports.simpleWifiInfo = {
 
 exports.wifiInfoResponse = {
     type: 'object', properties: {
+        _id           : {type: 'string', description: "db objectId"},
         ssid          : {type: 'string', description: "wifi ssid"},
         bssid         : {type: 'string', description: "wifi bssid"},
         level         : {type: 'integer', description: "wifi level"},

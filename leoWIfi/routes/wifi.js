@@ -12,7 +12,7 @@ var Promise = require('bluebird');
 var Wifi = require('../model/db').Wifi;
 var geoip = require('geoip-lite');
 
-var _saveWifiInfos = function(infos,options,cb){
+var _saveWifiInfos = function (infos, options, cb) {
     //去重条件: 拥有bssid的前提下,同国家
     var bulk = Wifi.collection.initializeUnorderedBulkOp();
     _.each(infos, function (_wifiInfo) {
@@ -25,7 +25,7 @@ var _saveWifiInfos = function(infos,options,cb){
                 log.error(e);
             }
         } else {
-            _wifiInfo.ip = req.ip;
+            _wifiInfo.ip = options.ip;
         }
         _wifiInfo.country = location.country;
         _wifiInfo.city = location.city;
@@ -34,7 +34,11 @@ var _saveWifiInfos = function(infos,options,cb){
         if (!_.isNaN(_wifiInfo.longitude) && !_.isNaN(_wifiInfo.latitude)) {
             _wifiInfo.location = [_wifiInfo.longitude, _wifiInfo.latitude];
         }
-        if (_wifiInfo.bssid) {
+        if (_wifiInfo._id) {
+            delete _wifiInfo._id;
+            _wifiInfo.updatedAt = new Date();
+            bulk.find({_id:_wifiInfo._id}).upsert().updateOne(_wifiInfo);
+        } else if (_wifiInfo.bssid) {
             _wifiInfo.updatedAt = new Date();
             bulk.find({bssid: _wifiInfo.bssid, country: location.country}).upsert().updateOne(_wifiInfo);
         } else {
@@ -58,13 +62,12 @@ var gatherWifiInfo = function (req, res, next) {
         var err = new Error('填报WIFI信息为空', errorCode.paramsError);
         return next(err);
     }
-    _saveWifiInfos(body.infos,{location:req.location,isHotspot:false},function (err, result) {
+    _saveWifiInfos(body.infos, {location: req.location, isHotspot: false}, function (err, result) {
         if (err) {
             return next(err);
         }
         res.send({err: 0, msg: ''});
     });
-
 };
 
 /**
@@ -80,7 +83,7 @@ var gatherWifiHotSpotInfo = function (req, res, next) {
         var err = new Error('填报WIFI信息为空', errorCode.paramsError);
         return next(err);
     }
-    _saveWifiInfos(body.infos,{location:req.location,isHotspot:true},function (err, result) {
+    _saveWifiInfos(body.infos, {location: req.location, isHotspot: true,ip:req.ip}, function (err, result) {
         if (err) {
             return next(err);
         }
@@ -98,17 +101,64 @@ var gatherWifiHotSpotInfo = function (req, res, next) {
 var findWifiInfo = function (req, res, next) {
     var body = req.body;
     var infos = body.infos;
-    var ssid = infos[0].ssid;
-    Wifi.find({ssid: ssid}).exec(function (err, data) {
+    var idMathList = [];
+    var idConditions = [];
+    var bssidCondition = [];
+    _.each(infos, function (_wifiInfo) {
+        if (_wifiInfo._id) {
+            idConditions.push(_wifiInfo._id);
+            return;
+        }
+        if(_wifiInfo.bssid){
+            var condition = {bssid:_wifiInfo.bssid};
+            if(_wifiInfo.country){
+                condition.country = _wifiInfo.country;
+            }
+            if(_wifiInfo.city){
+                condition.city = _wifiInfo.city;
+            }
+            bssidCondition.push(function(cb){
+                Wifi.find(condition).exec(cb);
+            });
+            return;
+        }
+        //if(_wifiInfo.ssid){
+        //    var condition = {ssid:_wifiInfo.ssid};
+        //    if(_wifiInfo.country){
+        //        condition.country = _wifiInfo.country;
+        //    }
+        //    if(_wifiInfo.city){
+        //        condition.city = _wifiInfo.city;
+        //    }
+        //    bulk.find(condition)
+        //}
+    });
+    bssidCondition.push(function(cb){
+        if(idConditions.length==0){
+            return cb();
+        }
+        Wifi.find({_id:{$in:idConditions}}).exec(cb);
+    });
+    async.parallel(bssidCondition,function(err,results){
         if (err) return next(err);
         res.send({
             err : 0,
             msg : '',
             data: {
-                infos: data
+                infos: results
             }
         });
-    });
+    })
+    //bulk.execute(function(err,data){
+    //    if (err) return next(err);
+    //    res.send({
+    //        err : 0,
+    //        msg : '',
+    //        data: {
+    //            infos: data
+    //        }
+    //    });
+    //});
 };
 
 var apiVersion = 1;

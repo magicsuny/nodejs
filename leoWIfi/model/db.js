@@ -270,6 +270,6 @@ function promisify(model) {
 }
 
 exports.Wifi = promisify(mongoose.model('Wifi', wifiSchema));
-exports.Wifi = promisify(mongoose.model('Device', deviceSchema));
+exports.Device = promisify(mongoose.model('Device', deviceSchema));
 
 //end

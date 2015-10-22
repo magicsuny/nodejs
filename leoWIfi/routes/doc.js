@@ -2,33 +2,33 @@
  * Created by zhaohailong on 6/3/15.
  */
 
-var util        = require('util');
-var Router      = require('express').Router;
-var fs          = require('fs');
-var path        = require('path');
+var util = require('util');
+var Router = require('express').Router;
+var fs = require('fs');
+var path = require('path');
 var apiJsonPath = path.join(__dirname, '..', 'public', 'swagger', 'api.json');
-var models      = require('../profile/apiModel');
+var models = require('../profile/apiModel');
 
 var apiDesc = "# 访问规则\n * DMAIN+APP_ID+API_VERSION+API_NAME ex:http://api.leomaster.com/wifi/v1/init\n * 加密方式待定\n"
     + "<pre>**header** </pre>\n";
 
 function gen(modules, cb) {
-    var root         = {};
-    root.swagger     = '2.0';
-    root.info        = {
+    var root = {};
+    root.swagger = '2.0';
+    root.info = {
         title      : 'LeoWifi API',
         description: apiDesc,
         version    : '1.0'
     };
-    root.basePath    = '/wifi/v1';
-    root.tags        = [];
-    root.schemes     = ['http'];
-    root.consumes    = ['application/json'];
-    root.produces    = ['application/json'];
-    root.paths       = {};
+    root.basePath = '/wifi/v1';
+    root.tags = [];
+    root.schemes = ['http'];
+    root.consumes = ['application/json'];
+    root.produces = ['application/json'];
+    root.paths = {};
     root.definitions = {};
     for (var i = 0; i < modules.length; i++) {
-        var m        = modules[i];
+        var m = modules[i];
         root.tags.push(buildTag(m));
         var profiles = m.profile;
         if (profiles && profiles.length) {
@@ -36,8 +36,8 @@ function gen(modules, cb) {
                 var p = profiles[j];
                 //filter path start at /a
                 if (p.path.indexOf('/a') === 0) continue;
-                var path         = p.path.replace(/:(\w+)/g, '{$1}');
-                var doc          = root.paths[path] || {};
+                var path = p.path.replace(/:(\w+)/g, '{$1}');
+                var doc = root.paths[path] || {};
                 buildApiDoc(doc, m, p);
                 root.paths[path] = doc;
             }
@@ -57,8 +57,9 @@ function buildTag(m) {
 
 function buildApiDoc(doc, m, p) {
     var rtn = {
-        tags   : [m.tag || 'default'],
-        summary: p.description || ''
+        tags       : [m.tag || 'default'],
+        description: p.description || '',
+        summary    : p.summary || ''
     };
 
     var params = buildParams1(p.params);
@@ -87,7 +88,7 @@ function buildParams1(params) {
 
     for (var k in params) {
         var data = {};
-        var v    = params[k] || {};
+        var v = params[k] || {};
         if (!'in' in v || !'type' in v) {
             continue;
         }
@@ -112,7 +113,7 @@ function buildParams1(params) {
 
 module.exports = function () {
     var modules = Array.prototype.slice.call(arguments, 0);
-    var r       = Router();
+    var r = Router();
 
     r.all('/', function (req, res, next) {
         var apiProfiles = [];

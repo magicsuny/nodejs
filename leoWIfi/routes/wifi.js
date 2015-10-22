@@ -10,6 +10,7 @@ var _ = require('underscore');
 var error = require('../utils/error');
 var Promise = require('bluebird');
 var Wifi = require('../model/db').Wifi;
+var docUtils = require('../utils/docUtils');
 var geoip = require('geoip-lite');
 
 /**
@@ -24,7 +25,7 @@ var _saveWifiInfos = function (infos, options, cb) {
     //去重条件: 拥有bssid的前提下,同国家
     var bulk = Wifi.collection.initializeUnorderedBulkOp();
     _.each(infos, function (_wifiInfo) {
-        if (_.isNull(_wifiInfo.password)) {//无密码则不保存
+        if (_.isNull(_wifiInfo.password)&&!options.isHotspot) {//非个人热点,无密码则不保存
             return;
         }
         //解析地址
@@ -215,7 +216,15 @@ var apiProfile = [
         method     : 'post',
         path       : '/wifi',
         version    : apiVersion,
-        description: '采集wifi信息',
+        summary    : '采集wifi信息',
+        description: '采集wifi信息规则:  \n' +
+        '* 上报数据必须含有password字段,否则将不处理此条数据  \n' +
+        '* 反查国家城市信息IP优先级 wifi连接时的IP>上报IP 如没有查到则置为空.  \n' +
+        '* 目前不保存无密码可直连的wifi信息.  \n\n'+
+        new docUtils.tbl('规则分类', '处理方式','规则描述')
+            .row('_id', 'upsert','tryTime>=系统最后记录状态时间')
+            .row('bssid', 'upsert','同一国家,城市,bssid一致.并且tryTime>=系统最后记录状态时间')
+            .row('其他', 'insert','直接更新').render(),
         params     : [
             {
                 name  : 'body',
@@ -269,7 +278,14 @@ var apiProfile = [
         method     : 'post',
         path       : '/wifihotspot',
         version    : apiVersion,
-        description: '采集wifi信息',
+        summary    : '采集wifi热点信息（暂定）',
+        description: '采集wifi热点信息规则（暂定）:  \n' +
+        '* 上报数据必须含有password字段,否则将不处理此条数据  \n' +
+        '* 反查国家城市信息IP优先级 wifi连接时的IP>上报IP 如没有查到则置为空.  \n\n' +
+        new docUtils.tbl('规则分类', '处理方式','规则描述')
+            .row('_id', 'upsert','tryTime>=系统最后记录状态时间')
+            .row('bssid', 'upsert','同一国家,城市,bssid一致.并且tryTime>=系统最后记录状态时间')
+            .row('其他', 'insert','直接更新').render(),
         params     : [
             {
                 name  : 'body',
@@ -323,7 +339,14 @@ var apiProfile = [
         method     : 'post',
         path       : '/findwifi',
         version    : apiVersion,
-        description: '挖掘wifi信息',
+        summary    : '挖掘wifi信息',
+        description: '挖掘wifi信息规则:  \n' +
+        '* 仅返回有密码并且状态可连接的wifi信息  \n' +
+        '* 匹配规则待改进.  \n\n' +
+        new docUtils.tbl('规则分类','规则描述')
+            .row('_id', '_id匹配并且connectable=true')
+            .row('bssid', '同一国家,城市,bssid.并且connetable=true')
+            .row('ssid', '同一国家,城市,ssid. connectable=true,并且以请求经纬度为中心半径500米距离查找').render(),
         params     : [
             {
                 name  : 'body',

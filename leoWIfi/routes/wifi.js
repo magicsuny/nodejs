@@ -12,15 +12,26 @@ var Promise = require('bluebird');
 var Wifi = require('../model/db').Wifi;
 var geoip = require('geoip-lite');
 
+/**
+ * 保存wifi信息逻辑
+ * 判断连接状态
+ * @param infos
+ * @param options
+ * @param cb
+ * @private
+ */
 var _saveWifiInfos = function (infos, options, cb) {
     //去重条件: 拥有bssid的前提下,同国家
     var bulk = Wifi.collection.initializeUnorderedBulkOp();
     _.each(infos, function (_wifiInfo) {
+        if (_.isNull(_wifiInfo.password)) {//无密码则不保存
+            return;
+        }
         //解析地址
         var location = options.location;
         if (_wifiInfo.ip) {
             try {
-                location = geoip.lookup(_wifiInfo.ip)||location;
+                location = geoip.lookup(_wifiInfo.ip) || location;
             } catch (e) {
                 log.error(e);
             }
@@ -30,18 +41,34 @@ var _saveWifiInfos = function (infos, options, cb) {
         _wifiInfo.country = location.country;
         _wifiInfo.city = location.city;
         _wifiInfo.is_hotspot = options.isHotspot;
+        _wifiInfo.updatedAt = new Date();
+        if (_wifiInfo.connectable) {
+            _wifiInfo.connectable = true;
+        } else {
+            _wifiInfo.connectable = false;
+        }
         //保存经纬度
         if (!_.isNaN(_wifiInfo.longitude) && !_.isNaN(_wifiInfo.latitude)) {
             _wifiInfo.location = [_wifiInfo.longitude, _wifiInfo.latitude];
         }
-        if (_wifiInfo._id) {
+
+        //判断wifi的连接状态
+        var baseCondition = {};
+        if (_wifiInfo.tryTime) {
+            baseCondition = {lastConnectedAt: {$lte: new Date(_wifiInfo.tryTime)}};
+            _wifiInfo.lastConnectedAt = new Date(_wifiInfo.tryTime);
+        }
+
+        if (_wifiInfo._id) {//有_id为已处理数据直接更新
+            var _id = _wifiInfo._id;
             delete _wifiInfo._id;
-            _wifiInfo.updatedAt = new Date();
-            bulk.find({_id:_wifiInfo._id}).upsert().updateOne(_wifiInfo);
-        } else if (_wifiInfo.bssid) {
-            _wifiInfo.updatedAt = new Date();
-            bulk.find({bssid: _wifiInfo.bssid, country: location.country}).upsert().updateOne(_wifiInfo);
-        } else {
+            var _idCondition = _.extend({_id: _id}, baseCondition);
+            bulk.find(_idCondition).upsert().updateOne(_wifiInfo);
+        } else if (_wifiInfo.bssid) {//有bssid则匹配更新
+            //TODO 原始数据缺少city属性 需预处理补全
+            var _bssidCondition = _.extend({bssid: _wifiInfo.bssid, country: location.country}, baseCondition);
+            bulk.find(_bssidCondition).upsert().updateOne(_wifiInfo);
+        } else {//其他情况插入数据
             _wifiInfo.createdAt = new Date();
             bulk.insert(_wifiInfo);
         }
@@ -83,11 +110,12 @@ var gatherWifiHotSpotInfo = function (req, res, next) {
         var err = new Error('填报WIFI信息为空', errorCode.paramsError);
         return next(err);
     }
-    _saveWifiInfos(body.infos, {location: req.location, isHotspot: true,ip:req.ip}, function (err, result) {
+    _saveWifiInfos(body.infos, {location: req.location, isHotspot: true, ip: req.ip}, function (err, result) {
         if (err) {
             return next(err);
         }
-        res.send({err: 0, msg: ''});
+        res.resData = [];
+        next();
     });
 };
 
@@ -102,44 +130,65 @@ var findWifiInfo = function (req, res, next) {
     var body = req.body;
     var infos = body.infos;
     var idConditions = [];
-    var bssidCondition = [];
-    //按照地区过滤以上报点为圆心周围500米有密码wifi
+    var querys = [];
+    //基本过滤条件
+    var baseCondition = {connectable: true};
     _.each(infos, function (_wifiInfo) {
+        //id查找
         if (_wifiInfo._id) {
             idConditions.push(_wifiInfo._id);
             return;
         }
-        if(_wifiInfo.bssid){
-            var condition = {bssid:_wifiInfo.bssid};
-            if(_wifiInfo.country){
-                condition.country = _wifiInfo.country;
+        //bssid查找
+        if (_wifiInfo.bssid) {
+            var _bssidCondition = _.extend({bssid: _wifiInfo.bssid}, baseCondition);
+            if (_wifiInfo.country) {
+                _bssidCondition.country = _wifiInfo.country;
             }
-            if(_wifiInfo.city){
-                condition.city = _wifiInfo.city;
+            if (_wifiInfo.city) {
+                _bssidCondition.city = _wifiInfo.city;
             }
-            bssidCondition.push(function(cb){
-                Wifi.find(condition).exec(cb);
+            querys.push(function (cb) {
+                Wifi.find(_bssidCondition).exec(cb);
             });
             return;
         }
-        //if(_wifiInfo.ssid){
-        //    var condition = {ssid:_wifiInfo.ssid};
-        //    if(_wifiInfo.country){
-        //        condition.country = _wifiInfo.country;
-        //    }
-        //    if(_wifiInfo.city){
-        //        condition.city = _wifiInfo.city;
-        //    }
-        //    bulk.find(condition)
-        //}
+        //ssid查找
+        if (_wifiInfo.ssid) {
+            var _ssidCondition = _.extend({ssid: _wifiInfo.ssid}, baseCondition);
+            if (_wifiInfo.country) {
+                _ssidCondition.country = _wifiInfo.country;
+            }
+            if (_wifiInfo.city) {
+                _ssidCondition.city = _wifiInfo.city;
+            }
+            //按照地区过滤以上报点为圆心周围500米有密码wifi
+            if (!_.isNull(body.latitude) && !_.isNull(body.longitude)) {
+                _ssidCondition.location = {
+                    $nearSphere: {
+                        $geometry   : {
+                            type       : "Point",
+                            coordinates: [body.longitude, body.latitude]
+                        },
+                        $minDistance: 0,
+                        $maxDistance: 500
+                    }
+                };
+            }
+            querys.push(function (cb) {
+                Wifi.find(_ssidCondition).limit(5).exec(cb);
+            });
+            return;
+        }
     });
-    bssidCondition.push(function(cb){
-        if(idConditions.length==0){
+    querys.push(function (cb) {
+        if (idConditions.length == 0) {
             return cb();
         }
-        Wifi.find({_id:{$in:idConditions}}).exec(cb);
+        var _idCondition = _.extend({_id: {$in: idConditions}}, baseCondition);
+        Wifi.find(_idCondition).exec(cb);
     });
-    async.parallel(bssidCondition,function(err,results){
+    async.parallel(querys, function (err, results) {
         if (err) return next(err);
         var data = _.flatten(results);
         res.send({
@@ -153,8 +202,8 @@ var findWifiInfo = function (req, res, next) {
     })
 };
 
-var distributeClientConfig = function(req,res,next){
-    res.responseData = config.wifiClientSetting;
+var distributeClientConfig = function (req, res, next) {
+    res.resData = config.wifiClientSetting;
     next();
 };
 
@@ -268,7 +317,7 @@ var apiProfile = [
                 }
             }
         },
-        handler    : [common.gatherIpInfo,gatherWifiHotSpotInfo]
+        handler    : [common.gatherIpInfo, gatherWifiHotSpotInfo]
     },
     {
         method     : 'post',
@@ -355,7 +404,62 @@ var apiProfile = [
                 }
             }
         },
-        handler    : [findWifiInfo,common.gatherDeviceInfo]
+        handler    : [findWifiInfo, common.gatherDeviceInfo]
+    },
+    {
+        method     : 'get',
+        path       : '/config',
+        description: '获取客户端设置',
+        summary    : '获取客户端设置,目前以配置文件的形式保存在客户端',
+        version    : apiVersion,
+        params     : [],
+        responses  : {
+            200: {
+                description: '客户端设置推送',
+                schema     : {
+                    type: 'object', properties: {
+                        code: {
+                            type       : 'number',
+                            description: 'error code',
+                            default    : 0
+                        },
+                        msg : {type: 'string', description: 'error message'},
+                        data: {
+                            type      : 'object',
+                            properties: {
+                                enableWifiCollect  : {
+                                    type       : 'boolean',
+                                    description: '是否允许采集',
+                                },
+                                showFreeWifiCount  : {
+                                    type       : 'number',
+                                    description: '显示免费wifi的数量',
+                                    default    : 5
+                                },
+                                gatherWifiCountOnce: {
+                                    type       : 'number',
+                                    description: '每次采集wifi信息上传记录数',
+                                    default    : 10
+                                }
+                            }
+                        }
+                    }
+                },
+                examples   : {
+                    "application/json": {
+                        "code": "0",
+                        "msg" : "",
+                        "data": {
+                            enableWifiCollect:true,
+                            showFreeWifiCount:5,
+                            gatherWifiCountOnce:10
+                        }
+
+                    }
+                }
+            }
+        },
+        handler    : [distributeClientConfig]
     }
 ];
 

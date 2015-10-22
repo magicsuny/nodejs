@@ -213,32 +213,34 @@ function transformToJSON(doc, ret, options) {
 }
 
 var wifiSchema = new Schema({
-    ssid          : {type: String, index: true},
-    bssid         : {type: String, index: true},
-    level         : Number,
-    sec_level     : Number,
-    capabilities  : String,
-    frequency     : Number,
-    password      : String,
-    keyMgmt       : String,
-    eap           : String,
-    identity      : String,
-    latitude      : Number,  // redundant
-    longitude     : Number,  // redundant
-    location      : {type: [Number], index: '2dsphere'},
-    accuracy      : Number,
-    is_root       : Boolean,
-    is_hotspot    : Boolean,
-    country       : String,
-    city          : String,
-    ip            : String,
-    icon          : {
+    ssid           : {type: String, index: true},
+    bssid          : {type: String, index: true},
+    level          : Number,
+    sec_level      : Number,
+    capabilities   : String,
+    frequency      : Number,
+    password       : String,
+    keyMgmt        : String,
+    eap            : String,
+    identity       : String,
+    latitude       : Number,  // redundant
+    longitude      : Number,  // redundant
+    location       : {type: [Number], index: '2dsphere'},
+    accuracy       : Number,
+    is_root        : Boolean,
+    is_hotspot     : Boolean,
+    connectable    : Boolean,
+    country        : String,
+    city           : String,
+    ip             : String,
+    icon           : {
         nomal: {type: String},
         small: {type: String}
     },
-    other_settings: String
+    lastConnectedAt: Date,
+    other_settings : String
 });
-wifiSchema.index({"city":1, "country": 1,"bssid": 1});
+wifiSchema.index({"city": 1, "country": 1, "bssid": 1});
 wifiSchema.plugin(commonPlugin);
 
 

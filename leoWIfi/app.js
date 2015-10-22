@@ -54,6 +54,16 @@ app.use('/v2', v2);
 //v1.use(cm.gatherDeviceInfo);
 v1.use('/docs', docs(wifi));
 v1.use(wifi.router);
+v1.use(function (req, res, next) {
+    if (res.resData) {
+        return res.send({
+            err : 0,
+            msg : '',
+            data: res.resData
+        });
+    }
+    next();
+})
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
     next(new error.NotFound(util.format('%s not found', req.path)));
@@ -116,9 +126,9 @@ function loadProfile(p) {
     if (!validateProfile(p)) {
         return false;
     }
-    var path = p.path,
+    var path    = p.path,
         handler = p.handler,
-        method = p.method;
+        method  = p.method;
     //v       = p.version;
     //if (v && versions.hasOwnProperty(v)) {
     var vApp = v1;

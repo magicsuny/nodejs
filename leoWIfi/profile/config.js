@@ -102,7 +102,8 @@ exports.statd = {
 exports.wifiClientSetting = {
     enableWifiCollect:true,//是否允许采集
     showFreeWifiCount:5,//免费wifi显示条目
-    gatherWifiCountOnce:10//一次采集wifi信息上传数
+    gatherWifiCountOnce:10,//一次采集wifi信息上传数
+    gatherNSWifi:true//采集不允许分享的wifi密码
 };
 
 exports.wifiServerSetting = {

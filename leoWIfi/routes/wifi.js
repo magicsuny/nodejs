@@ -430,6 +430,7 @@ var apiProfile = [
                                 enableWifiCollect  : {
                                     type       : 'boolean',
                                     description: '是否允许采集',
+                                    default    : true
                                 },
                                 showFreeWifiCount  : {
                                     type       : 'number',
@@ -440,6 +441,11 @@ var apiProfile = [
                                     type       : 'number',
                                     description: '每次采集wifi信息上传记录数',
                                     default    : 10
+                                },
+                                gatherNSWifi       : {
+                                    type       : 'boolean',
+                                    description: '采集不允许分享的wifi密码',
+                                    default    : true
                                 }
                             }
                         }
@@ -447,12 +453,13 @@ var apiProfile = [
                 },
                 examples   : {
                     "application/json": {
-                        "code": "0",
+                        "code": 0,
                         "msg" : "",
                         "data": {
-                            enableWifiCollect:true,
-                            showFreeWifiCount:5,
-                            gatherWifiCountOnce:10
+                            enableWifiCollect  : true,
+                            showFreeWifiCount  : 5,
+                            gatherWifiCountOnce: 10,
+                            gatherNSWifi       : true
                         }
 
                     }

@@ -25,9 +25,6 @@ var _saveWifiInfos = function (infos, options, cb) {
     //去重条件: 拥有bssid的前提下,同国家
     var bulk = Wifi.collection.initializeUnorderedBulkOp();
     _.each(infos, function (_wifiInfo) {
-        if (_.isNull(_wifiInfo.password)&&!options.isHotspot) {//非个人热点,无密码则不保存
-            return;
-        }
         //解析地址
         var location = options.location;
         if (_wifiInfo.ip) {
@@ -218,7 +215,6 @@ var apiProfile = [
         version    : apiVersion,
         summary    : '采集wifi信息',
         description: '采集wifi信息规则:  \n' +
-        '* 上报数据必须含有password字段,否则将不处理此条数据  \n' +
         '* 反查国家城市信息IP优先级 wifi连接时的IP>上报IP 如没有查到则置为空.  \n' +
         '* 目前不保存无密码可直连的wifi信息.  \n\n'+
         new docUtils.tbl('规则分类', '处理方式','规则描述')
@@ -280,7 +276,6 @@ var apiProfile = [
         version    : apiVersion,
         summary    : '采集wifi热点信息（暂定）',
         description: '采集wifi热点信息规则（暂定）:  \n' +
-        '* 上报数据必须含有password字段,否则将不处理此条数据  \n' +
         '* 反查国家城市信息IP优先级 wifi连接时的IP>上报IP 如没有查到则置为空.  \n\n' +
         new docUtils.tbl('规则分类', '处理方式','规则描述')
             .row('_id', 'upsert','tryTime>=系统最后记录状态时间')
@@ -417,7 +412,13 @@ var apiProfile = [
                                     eap         : "",
                                     latitude    : "",
                                     longitude   : "",
-                                    "accuracy"  : ""
+                                    accuracy  : "",
+                                    icon          : {
+                                            nomal: "http://标准图Url",
+                                            small: "http://缩略图Url"
+                                    },
+                                    country       : 'CN',
+                                    city          : 'beijing'
 
                                 }
 

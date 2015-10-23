@@ -189,6 +189,32 @@ var findWifiInfo = function (req, res, next) {
     async.parallel(querys, function (err, results) {
         if (err) return next(err);
         var data = _.flatten(results);
+        data = _.each(data,function(_result){
+            var resultTpl = {
+                _id         : null,
+                ssid        : null,
+                bssid       : null,
+                level       : null,
+                sec_level   : null,
+                capabilities: null,
+                frequency   : null,
+                password    : null,
+                identity    : null,
+                keymgmt     : null,
+                eap         : null,
+                latitude    : null,
+                longitude   : null,
+                accuracy    : null,
+                icon        : {
+                    nomal: null,
+                    small: null
+                },
+                country     : null,
+                city        : null
+
+            };
+            return _.extend(resultTpl,_result);
+        });
         res.send({
             err : 0,
             msg : '',
@@ -216,11 +242,11 @@ var apiProfile = [
         summary    : '采集wifi信息',
         description: '采集wifi信息规则:  \n' +
         '* 反查国家城市信息IP优先级 wifi连接时的IP>上报IP 如没有查到则置为空.  \n' +
-        '* 目前不保存无密码可直连的wifi信息.  \n\n'+
-        new docUtils.tbl('规则分类', '处理方式','规则描述')
-            .row('_id', 'upsert','tryTime>=系统最后记录状态时间')
-            .row('bssid', 'upsert','同一国家,城市,bssid一致.并且tryTime>=系统最后记录状态时间')
-            .row('其他', 'insert','直接更新').render(),
+        '* 目前不保存无密码可直连的wifi信息.  \n\n' +
+        new docUtils.tbl('规则分类', '处理方式', '规则描述')
+            .row('_id', 'upsert', 'tryTime>=系统最后记录状态时间')
+            .row('bssid', 'upsert', '同一国家,城市,bssid一致.并且tryTime>=系统最后记录状态时间')
+            .row('其他', 'insert', '直接更新').render(),
         params     : [
             {
                 name  : 'body',
@@ -277,10 +303,10 @@ var apiProfile = [
         summary    : '采集wifi热点信息（暂定）',
         description: '采集wifi热点信息规则（暂定）:  \n' +
         '* 反查国家城市信息IP优先级 wifi连接时的IP>上报IP 如没有查到则置为空.  \n\n' +
-        new docUtils.tbl('规则分类', '处理方式','规则描述')
-            .row('_id', 'upsert','tryTime>=系统最后记录状态时间')
-            .row('bssid', 'upsert','同一国家,城市,bssid一致.并且tryTime>=系统最后记录状态时间')
-            .row('其他', 'insert','直接更新').render(),
+        new docUtils.tbl('规则分类', '处理方式', '规则描述')
+            .row('_id', 'upsert', 'tryTime>=系统最后记录状态时间')
+            .row('bssid', 'upsert', '同一国家,城市,bssid一致.并且tryTime>=系统最后记录状态时间')
+            .row('其他', 'insert', '直接更新').render(),
         params     : [
             {
                 name  : 'body',
@@ -338,7 +364,7 @@ var apiProfile = [
         description: '挖掘wifi信息规则:  \n' +
         '* 仅返回有密码并且状态可连接的wifi信息  \n' +
         '* 匹配规则待改进.  \n\n' +
-        new docUtils.tbl('规则分类','规则描述')
+        new docUtils.tbl('规则分类', '规则描述')
             .row('_id', '_id匹配并且connectable=true')
             .row('bssid', '同一国家,城市,bssid.并且connetable=true')
             .row('ssid', '同一国家,城市,ssid. connectable=true,并且以请求经纬度为中心半径500米距离查找').render(),
@@ -399,7 +425,7 @@ var apiProfile = [
                         "data": {
                             "infos": [
                                 {
-                                    id          : "", //数据库id
+                                    _id         : "", //数据库id
                                     ssid        : "",
                                     bssid       : "",
                                     level       : 1,
@@ -412,13 +438,13 @@ var apiProfile = [
                                     eap         : "",
                                     latitude    : "",
                                     longitude   : "",
-                                    accuracy  : "",
-                                    icon          : {
-                                            nomal: "http://标准图Url",
-                                            small: "http://缩略图Url"
+                                    accuracy    : "",
+                                    icon        : {
+                                        nomal: "http://标准图Url",
+                                        small: "http://缩略图Url"
                                     },
-                                    country       : 'CN',
-                                    city          : 'beijing'
+                                    country     : 'CN',
+                                    city        : 'beijing'
 
                                 }
 

@@ -79,13 +79,15 @@ if (app.get('env') === 'development') {
         res.status(err.status || 200);
         console.error(err);
         req.failure = true;
-//        res.json({
-//            err  : err.code || errorCode.unknownError,
-//            msg  : err.msg || err.err,
-//            stack: err.stack
-//        });
         err.stack = err.stack;
-        res.json(err);
+        res.json({
+            code  : err.code || errorCode.unknownError,
+            msg  : err.msg || err.message,
+            data:[],
+            stack: err.stack
+        });
+
+       // res.json(err);
     });
 }
 

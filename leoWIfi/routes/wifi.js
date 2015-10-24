@@ -5,11 +5,14 @@ var express = require('express');
 var router = express.Router();
 var common = require('./common');
 var async = require('async');
+var multer = require('multer')
 var config = require('../profile/config');
 var _ = require('underscore');
 var error = require('../utils/error');
 var Promise = require('bluebird');
+var mongoose = require('mongoose');
 var Wifi = require('../model/db').Wifi;
+var upload = multer({dest: '/tmp/upload'});
 var docUtils = require('../utils/docUtils');
 var geoip = require('geoip-lite');
 
@@ -22,6 +25,9 @@ var geoip = require('geoip-lite');
  * @private
  */
 var _saveWifiInfos = function (infos, options, cb) {
+    if(!infos){
+        return cb(new Error('No infos to gather!',errorCode.paramsError));
+    }
     //去重条件: 拥有bssid的前提下,同国家
     var bulk = Wifi.collection.initializeUnorderedBulkOp();
     _.each(infos, function (_wifiInfo) {
@@ -189,7 +195,7 @@ var findWifiInfo = function (req, res, next) {
     async.parallel(querys, function (err, results) {
         if (err) return next(err);
         var data = _.flatten(results);
-        data = _.each(data,function(_result){
+        data = _.each(data, function (_result) {
             var resultTpl = {
                 _id         : null,
                 ssid        : null,
@@ -213,7 +219,7 @@ var findWifiInfo = function (req, res, next) {
                 city        : null
 
             };
-            return _.extend(resultTpl,_result);
+            return _.extend(resultTpl, _result);
         });
         res.send({
             err : 0,
@@ -226,11 +232,20 @@ var findWifiInfo = function (req, res, next) {
     })
 };
 
+/**
+ * 下发云设置
+ * @param req
+ * @param res
+ * @param next
+ */
 var distributeClientConfig = function (req, res, next) {
     res.resData = config.wifiClientSetting;
     next();
 };
 
+var uploadHotspotPoster = function (req, res, next) {
+    debugger;
+};
 
 var apiVersion = 1;
 
@@ -298,7 +313,7 @@ var apiProfile = [
     },
     {
         method     : 'post',
-        path       : '/wifihotspot',
+        path       : '/hotspot',
         version    : apiVersion,
         summary    : '采集wifi热点信息（暂定）',
         description: '采集wifi热点信息规则（暂定）:  \n' +
@@ -518,6 +533,7 @@ var apiProfile = [
         },
         handler    : [distributeClientConfig]
     }
+
 ];
 
 

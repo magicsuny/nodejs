@@ -98,7 +98,8 @@ function buildParams1(params) {
                 if (v[j] && typeof v[j] !== 'string' && 'name' in v[j]) {
                     data[j] = v[j].name.toLowerCase();
                 } else {
-                    data[j] = 'string';
+                    //data[j] = 'string';
+                    data[j] = v[j];
                 }
             } else {
                 data[j] = v[j];

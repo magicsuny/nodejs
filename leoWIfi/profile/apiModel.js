@@ -71,8 +71,8 @@ exports.wifiInfoResponse = {
         other_settings: {type: 'string', description: "other setting"},
         icon          : {
             type: 'object', properties: {
-                nomal: {type: 'string', description: "标准图Url"},
-                small: {type: 'string', description: "缩略图Url"}
+                normal: {type: 'string', description: "标准图Url"},
+                thumb: {type: 'string', description: "缩略图Url"}
             }
         },
         country       : {type: 'string', description: '国家代码'},

@@ -12,9 +12,25 @@ var error = require('../utils/error');
 var Promise = require('bluebird');
 var mongoose = require('mongoose');
 var Wifi = require('../model/db').Wifi;
-var upload = multer({dest: '/tmp/upload'});
+var upload = multer({dest: '/tmp/upload',filename:''});
 var docUtils = require('../utils/docUtils');
 var geoip = require('geoip-lite');
+var gm = require('gm');
+var fs = require('fs');
+var path = require('path');
+
+var avatarStorage = multer.diskStorage({
+    destination: function (req, file, cb) {
+        cb(null, config.uploadAvatarFileDir)
+    },
+    filename: function (req, file, cb) {
+        if(!req.deviceInfo){
+            return cb(new error.Header('no deviceInfo gathered'));
+        }
+        var deviceId = req.deviceInfo[0];
+        cb(null, deviceId + '_' + Date.now())
+    }
+})
 
 /**
  * 保存wifi信息逻辑
@@ -25,8 +41,8 @@ var geoip = require('geoip-lite');
  * @private
  */
 var _saveWifiInfos = function (infos, options, cb) {
-    if(!infos){
-        return cb(new Error('No infos to gather!',errorCode.paramsError));
+    if (!infos) {
+        return cb(new error.Arg('WIFI信息为空'));
     }
     //去重条件: 拥有bssid的前提下,同国家
     var bulk = Wifi.collection.initializeUnorderedBulkOp();
@@ -90,7 +106,7 @@ var gatherWifiInfo = function (req, res, next) {
     var body = req.body;
     //TODO 校验上传信息
     if (!body) {
-        var err = new Error('填报WIFI信息为空', errorCode.paramsError);
+        var err = new error.Arg('填报WIFI信息为空');
         return next(err);
     }
     _saveWifiInfos(body.infos, {location: req.location, isHotspot: false}, function (err, result) {
@@ -111,7 +127,7 @@ var gatherWifiHotSpotInfo = function (req, res, next) {
     var body = req.body;
     //TODO 校验上传信息|头像信息处理
     if (!body) {
-        var err = new Error('填报WIFI信息为空', errorCode.paramsError);
+        var err = new error.Arg('填报WIFI信息为空');
         return next(err);
     }
     _saveWifiInfos(body.infos, {location: req.location, isHotspot: true, ip: req.ip}, function (err, result) {
@@ -221,13 +237,16 @@ var findWifiInfo = function (req, res, next) {
             };
             return _.extend(resultTpl, _result);
         });
-        res.send({
-            err : 0,
-            msg : '',
-            data: {
-                infos: data
-            }
-        });
+        //res.send({
+        //    err : 0,
+        //    msg : '',
+        //    data: {
+        //        infos: data
+        //    }
+        //});
+        res.resData ={
+            infos: data
+        };
         next();
     })
 };
@@ -243,9 +262,54 @@ var distributeClientConfig = function (req, res, next) {
     next();
 };
 
+/**
+ * 上传热点头像 暂定,目前以deviceId作为索引保存头像.
+ * @param req
+ * @param res
+ * @param next
+ * @returns {*}
+ */
 var uploadHotspotPoster = function (req, res, next) {
-    debugger;
+    var file = req.file;
+    if(!file){
+        return next(new error.Upload('no avatar upload'));
+    }
+    async.parallel([
+        function(cb){
+            Wifi.findAndModify({"hotspotInfo.deviceId":req.deviceInfo[0]},[],{$set:{"icon.normal":file.filename,"icon.thumb":file.filename+'-thumb',"hotspotInfo.deviceId":req.deviceInfo[0]}},{new:true,upsert:true},cb);
+        },
+        function(cb){
+            gm(file.path).setFormat('PNG').thumb(100,100,file.path+'-thumb',100,cb);
+        }
+    ],function(err,results){
+        if(err) return next(new error.Upload('upload hotspot error!'));
+        res.json({
+            err:0,
+            msg:''
+        })
+    });
 };
+
+/**
+ * 获取wifi热点海报
+ * @param req
+ * @param res
+ * @param next
+ * @returns {*}
+ */
+var hotspotPoster = function(req,res,next){
+    var name = req.params['name'];
+    if(!name){
+        return next(new error.NotFound('Not Found Poster'));
+    }
+    fs.exists(path.join(config.uploadAvatarFileDir,name), function (exists) {
+        if(!exists){
+            return next(new error.NotFound('Not Found Poster'));
+        }
+        res.sendfile(path.join(config.uploadAvatarFileDir,name));
+    });
+}
+
 
 var apiVersion = 1;
 
@@ -355,7 +419,7 @@ var apiProfile = [
                         msg : {type: 'string', description: 'error message'},
                         data: {
                             type: 'object', properties: {
-                                id: {type: 'string', description: ''}
+                                _id: {type: 'string', description: '数据库Id'}
                             }
                         }
                     }
@@ -438,38 +502,13 @@ var apiProfile = [
                         "err" : 0,
                         "msg" : "",
                         "data": {
-                            "infos": [
-                                {
-                                    _id         : "", //数据库id
-                                    ssid        : "",
-                                    bssid       : "",
-                                    level       : 1,
-                                    sec_level   : 1,
-                                    capabilities: "",
-                                    frequency   : 2447,
-                                    password    : "",
-                                    identity    : "",
-                                    keymgmt     : "",
-                                    eap         : "",
-                                    latitude    : "",
-                                    longitude   : "",
-                                    accuracy    : "",
-                                    icon        : {
-                                        nomal: "http://标准图Url",
-                                        small: "http://缩略图Url"
-                                    },
-                                    country     : 'CN',
-                                    city        : 'beijing'
-
-                                }
-
-                            ]
+                            "_id":""
                         }
                     }
                 }
             }
         },
-        handler    : [findWifiInfo, common.gatherDeviceInfo]
+        handler    : [findWifiInfo]
     },
     {
         method     : 'get',
@@ -532,7 +571,85 @@ var apiProfile = [
             }
         },
         handler    : [distributeClientConfig]
-    }
+    },
+    {
+        method     : 'post',
+        path       : '/hotspot/poster',
+        version    : apiVersion,
+        summary    : '上传热点头像',
+        description: '采集wifi信息规则:  \n' +
+        '* 反查国家城市信息IP优先级 wifi连接时的IP>上报IP 如没有查到则置为空.  \n' +
+        '* 目前不保存无密码可直连的wifi信息.  \n\n' +
+        new docUtils.tbl('规则分类', '处理方式', '规则描述')
+            .row('_id', 'upsert', 'tryTime>=系统最后记录状态时间')
+            .row('bssid', 'upsert', '同一国家,城市,bssid一致.并且tryTime>=系统最后记录状态时间')
+            .row('其他', 'insert', '直接更新').render(),
+        params     : [
+            {
+                name       : 'avatar',
+                type       : 'file',
+                in         : 'formData',
+                required   : true,
+                description: '头像文件'
+            },
+            {
+                name       : '_id',
+                type       : 'string',
+                in         : 'formData',
+                description: '数据库ID'
+            }
+
+        ],
+        responses  : {
+            200: {
+                description: '上传热点头像',
+                schema     : {
+                    type: 'object', properties: {
+                        code: {
+                            type       : 'number',
+                            description: 'error code',
+                            default    : 0
+                        },
+                        msg : {type: 'string', description: 'error message'},
+                        data: {
+                            type: 'object', properties: {
+                                id: {type: 'string', description: ''}
+                            }
+                        }
+                    }
+                },
+                examples   : {
+                    "application/json": {
+                        "code": 0,
+                        "msg" : "",
+                        "data": []
+                    }
+                }
+            }
+        },
+        handler    : [multer({ storage: avatarStorage }).single('avatar'), common.gatherIpInfo, uploadHotspotPoster]
+    },
+    {
+        method     : 'get',
+        path       : '/hotspot/poster/:name',
+        version    : apiVersion,
+        description: '根据名称获取热点海报',
+        params     : [
+            {
+                name       : 'name',
+                type       : String,
+                in         : 'path',
+                required   : true,
+                description: '海报名称'
+            }
+        ],
+        responses  : {
+            200: {
+                description: '根据名称获取热点海报'
+            }
+        },
+        handler    : [hotspotPoster]
+    },
 
 ];
 
@@ -562,4 +679,4 @@ module.exports = {
     profile    : apiProfile,
     tag        : 'wifi',
     description: 'wifi相关API'
-};
+}

@@ -17,9 +17,21 @@ exports.gatherDeviceInfo = function(req,res,next){
     var regexp = /\"([^\"]+)\"/g;
     var di = decodeURIComponent(req.get('DI'));
     var diArray= di.match(regexp);
-    //TODO save deviceInfo
-    console.log('save deciveId');
-    //next();
+    diArray= _.map(diArray,function(diInfo){
+       return diInfo.replace(/"/g,'');
+    });
+    req.deviceInfo = diArray;
+    next();
+};
+
+/**
+ * 保存deviceInfo
+ * @param req
+ * @param res
+ * @param next
+ */
+exports.saveDeviceInfo = function(req,res,next){
+
 };
 
 exports.gatherIpInfo = function(req,res,next){

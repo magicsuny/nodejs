@@ -1,9 +1,9 @@
 /**
  * Created by ianl on 6/4/15.
  */
-var util      = require('util');
+var util = require('util');
 var errorCode = require('../profile/config').errorCode;
-var assert    = require('assert');
+var assert = require('assert');
 
 exports.HTTP_STATUS = httpStatus = {
     OK            : 200,
@@ -17,14 +17,14 @@ exports.HTTP_STATUS = httpStatus = {
 Error.extend = function (typeName, errCode, status) {
     assert(typeName, 'typeName is required');
 
-    var SubType                = function (msg) {
+    var SubType = function (msg) {
         if (msg instanceof SubType) {
             return msg;
         }
         this.typeName = typeName;
-        this.msg      = msg || '';
-        this.err     = errCode || errorCode.unknownError;
-        this.status   = status;
+        this.msg = msg || '';
+        this.code = errCode || errorCode.unknownError;
+        this.status = status;
         Error.captureStackTrace(this, this.constructor);
     };
 
@@ -38,21 +38,21 @@ Error.extend = function (typeName, errCode, status) {
 };
 
 
-
-exports.NotFound = Error.extend('NotFound', errorCode.notfoudError, httpStatus.OK);
-exports.Arg      = Error.extend('BadRequest', errorCode.paramsError, httpStatus.OK);
-exports.Auth     = Error.extend('Unauthorized', errorCode.authError, httpStatus.OK);
-exports.Login    = Error.extend('Forbidden', errorCode.authError, httpStatus.OK);
-exports.Server   = Error.extend('InternalError', errorCode.unknownError, httpStatus.OK);
-
+exports.NotFound = Error.extend('NotFound', errorCode.notfoudError, httpStatus.NOT_FOUND);
+exports.Arg = Error.extend('BadRequest', errorCode.paramsError, httpStatus.OK);
+exports.Header = Error.extend('BadRequest', errorCode.headerError, httpStatus.OK);
+exports.Auth = Error.extend('Unauthorized', errorCode.authError, httpStatus.OK);
+exports.Login = Error.extend('Forbidden', errorCode.authError, httpStatus.OK);
+exports.Server = Error.extend('InternalError', errorCode.unknownError, httpStatus.OK);
+exports.Upload = Error.extend('UploadError', errorCode.uploadedError, httpStatus.OK);
 
 
 //Application Error
-function createAppError( settings ) {
-    return( new AppError( settings, createAppError ) );
+function createAppError(settings) {
+    return ( new AppError(settings, createAppError) );
 }
 
-function AppError( settings, implementationContext ) {
+function AppError(settings, implementationContext) {
     settings = ( settings || {} );
     this.name = ( settings.name || "AppError" );
     this.type = ( settings.type || "Application" );
@@ -62,32 +62,32 @@ function AppError( settings, implementationContext ) {
     this.errorCode = ( settings.errorCode || "" );
 
     this.isAppError = true;
-    Error.captureStackTrace( this, ( implementationContext || AppError ) );
+    Error.captureStackTrace(this, ( implementationContext || AppError ));
 
 }
-util.inherits( AppError, Error );
+util.inherits(AppError, Error);
 
 exports.AppError = AppError;
 exports.createAppError = createAppError;
 
 //example
 /*var throwError = function(){
-    throw createAppError({
-        name: 'Error Test',
-        type: 'JSON.parse',
-        message: 'Using JSON.parse to convert string to json',
-        detail: 'illegal strings ',
-        errorCode: 1000
-    });
-};
-try{
-    throwError();
-}catch(error){
-    console.log( error.stack );
-    console.log( "Type: " + error.type );
-    console.log( "Message: " + error.message );
-    console.log( "Detail: " + error.detail );
-    console.log( "Extended Info: " + error.extendedInfo );
-    console.log( "Error Code: " + error.errorCode );
+ throw createAppError({
+ name: 'Error Test',
+ type: 'JSON.parse',
+ message: 'Using JSON.parse to convert string to json',
+ detail: 'illegal strings ',
+ errorCode: 1000
+ });
+ };
+ try{
+ throwError();
+ }catch(error){
+ console.log( error.stack );
+ console.log( "Type: " + error.type );
+ console.log( "Message: " + error.message );
+ console.log( "Detail: " + error.detail );
+ console.log( "Extended Info: " + error.extendedInfo );
+ console.log( "Error Code: " + error.errorCode );
 
-};*/
+ };*/

@@ -51,7 +51,7 @@ app.use(compression({threshold: 512}));
 //app.use(favicon('public/img/logo.png'));
 app.use('/v1', v1);
 app.use('/v2', v2);
-//v1.use(cm.gatherDeviceInfo);
+v1.use(cm.gatherDeviceInfo);
 v1.use('/docs', docs(wifi));
 v1.use(wifi.router);
 v1.use(function (req, res, next) {

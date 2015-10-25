@@ -3,7 +3,7 @@ var logFile = {
     info : '/var/log/leowifi/info.log',
     error: '/var/log/leowifi/error.log'
 };
-var _       = require('underscore');
+var _ = require('underscore');
 
 var timestamp = function () {
     return new Date()
@@ -47,7 +47,7 @@ exports.cipherKey = 'leomasterwifi!@';
  * */
 exports.uploadFileSize = 5 * 1024 * 1024; //5MB
 /*uploading file temp dir*/
-exports.uploadFileTmpDir = '/tmp';
+exports.uploadAvatarFileDir = '/tmp/upload/avatar/';
 
 
 exports.mongoDebugMode = true;
@@ -74,6 +74,7 @@ exports.errorCode = global.errorCode = {
     unknownError          : 101,
     paramsError           : 102,
     uploadedError         : 103,
+    headerError           : 104,
     activityOperationError: 107,
     authError             : 108,
     dbError               : 109,
@@ -100,14 +101,14 @@ exports.statd = {
 
 //wifi全局设置
 exports.wifiClientSetting = {
-    enableWifiCollect:true,//是否允许采集
-    showFreeWifiCount:5,//免费wifi显示条目
-    gatherWifiCountOnce:10,//一次采集wifi信息上传数
-    gatherNSWifi:true//采集不允许分享的wifi密码
+    enableWifiCollect  : true,//是否允许采集
+    showFreeWifiCount  : 5,//免费wifi显示条目
+    gatherWifiCountOnce: 10,//一次采集wifi信息上传数
+    gatherNSWifi       : true//采集不允许分享的wifi密码
 };
 
 exports.wifiServerSetting = {
-    matchPrivateWifi:false//返回隐私wifi控制
+    matchPrivateWifi: false//返回隐私wifi控制
 };
 
 /**

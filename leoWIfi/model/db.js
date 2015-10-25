@@ -229,20 +229,25 @@ var wifiSchema = new Schema({
     accuracy       : Number,
     is_root        : Boolean,
     is_hotspot     : Boolean,
+    hotspotInfo    : {
+        deviceId: String
+    },
     connectable    : Boolean,
     country        : String,
     city           : String,
     ip             : String,
     icon           : {
-        nomal: {type: String},
-        small: {type: String}
+        normal: {type: String},
+        thumb : {type: String}
     },
     lastConnectedAt: Date,
     other_settings : String
 });
 wifiSchema.index({"city": 1, "country": 1, "bssid": 1});
 wifiSchema.plugin(commonPlugin);
-
+wifiSchema.statics.findAndModify = function (query, sort, doc, options, callback) {
+    return this.collection.findAndModify(query, sort, doc, options, callback);
+};
 
 var deviceSchema = new Schema({
     market_id  : {type: String, index: true},

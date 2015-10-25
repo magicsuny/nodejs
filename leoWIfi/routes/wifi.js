@@ -577,13 +577,11 @@ var apiProfile = [
         path       : '/hotspot/poster',
         version    : apiVersion,
         summary    : '上传热点头像',
-        description: '采集wifi信息规则:  \n' +
-        '* 反查国家城市信息IP优先级 wifi连接时的IP>上报IP 如没有查到则置为空.  \n' +
-        '* 目前不保存无密码可直连的wifi信息.  \n\n' +
-        new docUtils.tbl('规则分类', '处理方式', '规则描述')
-            .row('_id', 'upsert', 'tryTime>=系统最后记录状态时间')
-            .row('bssid', 'upsert', '同一国家,城市,bssid一致.并且tryTime>=系统最后记录状态时间')
-            .row('其他', 'insert', '直接更新').render(),
+        description: '上传热点头像规则说明（暂定):  \n' +
+        '* 按照header中的deviceId作为热点的标识  \n' +
+        '* 文件命名规则:deviceId+时间戳, 缩略图: deviceId+时间戳+“-thumb“' +
+        '* 需确定热点上报方式: 开热点时上报 or 扫描到热点上报  \n' +
+        '* 根据模式确定返回数据内容 \n' ,
         params     : [
             {
                 name       : 'avatar',
@@ -591,18 +589,12 @@ var apiProfile = [
                 in         : 'formData',
                 required   : true,
                 description: '头像文件'
-            },
-            {
-                name       : '_id',
-                type       : 'string',
-                in         : 'formData',
-                description: '数据库ID'
             }
 
         ],
         responses  : {
             200: {
-                description: '上传热点头像',
+                description: '上传热点头像（待定)）',
                 schema     : {
                     type: 'object', properties: {
                         code: {
@@ -633,6 +625,7 @@ var apiProfile = [
         method     : 'get',
         path       : '/hotspot/poster/:name',
         version    : apiVersion,
+        summary    : '获取海报',
         description: '根据名称获取热点海报',
         params     : [
             {

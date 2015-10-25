@@ -236,7 +236,7 @@ var wifiSchema = new Schema({
     country        : String,
     city           : String,
     ip             : String,
-    icon           : {
+    poster           : {
         normal: {type: String},
         thumb : {type: String}
     },

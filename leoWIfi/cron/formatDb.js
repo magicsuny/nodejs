@@ -20,7 +20,7 @@ MongoClient.connect(config.mongoDbConfig.url,function(err,db){
            return db.close();
         }
         if(item.longitude!=0&&item.latitude!=0){
-            wifis.update({_id:item._id},{$set:{location:[item.longitude,item.latitude],connectable:true}});
+            wifis.update({_id:item._id},{$set:{location:[item.longitude,item.latitude],connectable:true,poster:{normal:null,thumb:null}}});
             total++;
         }
     })

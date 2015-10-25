@@ -151,8 +151,8 @@ var findWifiInfo = function (req, res, next) {
     var infos = body.infos;
     var idConditions = [];
     var querys = [];
-    //基本过滤条件
-    var baseCondition = {connectable: true};
+    //基本过滤条件: 只匹配非开放性并且可连接的wifi
+    var baseCondition = {connectable: true,sec_level:{$ne:1}};
     _.each(infos, function (_wifiInfo) {
         //id查找
         if (_wifiInfo._id) {

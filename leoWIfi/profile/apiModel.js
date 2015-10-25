@@ -69,7 +69,7 @@ exports.wifiInfoResponse = {
         is_root       : {type: 'boolean', description: "wifi is_root"},
         is_hotspot    : {type: 'boolean', description: "是否个人wifi热点"},
         other_settings: {type: 'string', description: "other setting"},
-        icon          : {
+        poster          : {
             type: 'object', properties: {
                 normal: {type: 'string', description: "标准图Url"},
                 thumb: {type: 'string', description: "缩略图Url"}

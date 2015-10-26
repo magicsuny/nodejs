@@ -55,11 +55,11 @@ v1.use(cm.gatherDeviceInfo);
 v1.use('/docs', docs(wifi));
 v1.use(wifi.router);
 v1.use(function (req, res, next) {
-    if (res.resData) {
+    if (res.body) {
         return res.send({
             err : 0,
             msg : '',
-            data: res.resData
+            data: res.body
         });
     }
     next();

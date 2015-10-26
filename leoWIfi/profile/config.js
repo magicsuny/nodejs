@@ -51,7 +51,7 @@ exports.uploadAvatarFileDir = '/tmp/upload/avatar/';
 
 
 exports.mongoDebugMode = true;
-
+exports.posterBaseUrl = 'http:\/\/106.187.49.16:3000/wifi/v1/hotspot/poster/';
 exports.mongoDbConfig = {
     url    : 'mongodb://localhost:27017/leowifi',
     options: {

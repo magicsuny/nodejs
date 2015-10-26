@@ -167,7 +167,7 @@ var gatherWifiHotSpotInfo = function (req, res, next) {
     }
     Wifi.findAndModify({_id: _id}, [], {$set:_wifiInfo}, {new: true, upsert: true}, function (err, data) {
         if (err) return next(new error.Server('save hotspot error!'));
-        res.resData = {
+        res.body = {
             id:_id
         };
         next();
@@ -262,24 +262,24 @@ var findWifiInfo = function (req, res, next) {
                 latitude    : null,
                 longitude   : null,
                 accuracy    : null,
-                icon        : {
-                    nomal: null,
-                    small: null
+                poster        : {
+                    normal: null,
+                    thumb: null
                 },
                 country     : null,
                 city        : null
-
             };
-            return _.extend(resultTpl, _result);
+            if(_result.poster.normal){
+                _result.poster.normal = config.posterBaseUrl+_result.poster.normal;
+            }
+            if(_result.poster.thumb){
+                _result.poster.thumb = config.posterBaseUrl+_result.poster.thumb;
+            }
+            return  _.extend(resultTpl, _result);
+
         });
-        //res.send({
-        //    err : 0,
-        //    msg : '',
-        //    data: {
-        //        infos: data
-        //    }
-        //});
-        res.resData = {
+
+        res.body = {
             infos: data
         };
         next();
@@ -293,7 +293,7 @@ var findWifiInfo = function (req, res, next) {
  * @param next
  */
 var distributeClientConfig = function (req, res, next) {
-    res.resData = config.wifiClientSetting;
+    res.body = config.wifiClientSetting;
     next();
 };
 
@@ -330,7 +330,7 @@ var uploadHotspotPoster = function (req, res, next) {
         }
     ], function (err, results) {
         if (err) return next(new error.Upload('upload hotspot error!'));
-        res.resData = {
+        res.body = {
             id: id
         };
         next();

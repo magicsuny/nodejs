@@ -269,11 +269,11 @@ var findWifiInfo = function (req, res, next) {
                 country     : null,
                 city        : null
             };
-            if(_result.poster&&_result.poster.normal){
-                _result.poster.normal = config.posterBaseUrl+_result.poster.normal;
+            if(_result._doc.poster&&_result._doc.poster.normal){
+                _result._doc.poster.normal = config.posterBaseUrl+_result._doc.poster.normal;
             }
-            if(_result.poster&&_result.poster.thumb){
-                _result.poster.thumb = config.posterBaseUrl+_result.poster.thumb;
+            if(_result._doc.poster&&_result._doc.poster.thumb){
+                _result._doc.poster.thumb = config.posterBaseUrl+_result._doc.poster.thumb;
             }
             return  _.extend(resultTpl, _result);
 

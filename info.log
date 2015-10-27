@@ -13,3 +13,14 @@ Mon Oct 26 2015 19:52:05 GMT+0800 (CST) - info: Mongodb is connected
 Mon Oct 26 2015 19:53:50 GMT+0800 (CST) - warn: Mongoose default connection disconnected
 Mon Oct 26 2015 19:53:53 GMT+0800 (CST) - info: Mongodb is connected
 Mon Oct 26 2015 19:55:00 GMT+0800 (CST) - warn: Mongoose default connection disconnected
+Tue Oct 27 2015 19:24:55 GMT+0800 (CST) - warn: Mongoose default connection disconnected
+Tue Oct 27 2015 19:24:55 GMT+0800 (CST) - error: Mongoose default connection error: MongoError: connect ECONNREFUSED 127.0.0.1:27017
+Tue Oct 27 2015 19:25:25 GMT+0800 (CST) - warn: Mongoose default connection disconnected through app termination
+Tue Oct 27 2015 19:25:27 GMT+0800 (CST) - warn: Mongoose default connection disconnected
+Tue Oct 27 2015 19:25:27 GMT+0800 (CST) - error: Mongoose default connection error: MongoError: connect ECONNREFUSED 127.0.0.1:27017
+Tue Oct 27 2015 19:25:54 GMT+0800 (CST) - warn: Mongoose default connection disconnected through app termination
+Tue Oct 27 2015 19:25:57 GMT+0800 (CST) - info: Mongodb is connected
+Tue Oct 27 2015 19:26:15 GMT+0800 (CST) - info: Mongodb is connected
+Tue Oct 27 2015 19:27:44 GMT+0800 (CST) - info: Mongodb is connected
+Tue Oct 27 2015 19:29:46 GMT+0800 (CST) - info: Mongodb is connected
+Tue Oct 27 2015 19:30:36 GMT+0800 (CST) - info: Mongodb is connected

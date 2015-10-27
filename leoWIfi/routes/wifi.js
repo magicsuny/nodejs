@@ -185,9 +185,10 @@ var findWifiInfo = function (req, res, next) {
     var body = req.body;
     var infos = body.infos;
     var idConditions = [];
-    var querys = [];
     //基本过滤条件: 只匹配非开放性并且可连接的wifi
     var baseCondition = {connectable: true, sec_level: {$ne: 1}};
+    var bssidQuerys = [];
+    var ssidQuerys = [];
     _.each(infos, function (_wifiInfo) {
         //id查找
         if (_wifiInfo._id) {
@@ -203,9 +204,7 @@ var findWifiInfo = function (req, res, next) {
             if (_wifiInfo.city) {
                 _bssidCondition.city = _wifiInfo.city;
             }
-            querys.push(function (cb) {
-                Wifi.find(_bssidCondition).exec(cb);
-            });
+            bssidQuerys.push(_bssidCondition);
             return;
         }
         //ssid查找
@@ -230,24 +229,33 @@ var findWifiInfo = function (req, res, next) {
                     }
                 };
             }
-            querys.push(function (cb) {
-                Wifi.find(_ssidCondition).limit(5).exec(cb);
-            });
+            ssidQuerys.push(_ssidCondition);
             return;
         }
     });
-    querys.push(function (cb) {
-        if (idConditions.length == 0) {
-            return cb();
+    async.parallel([
+        function(cb){
+            if (idConditions.length == 0) {
+                return cb();
+            }
+            var _idCondition = _.extend({_id: {$in: idConditions}}, baseCondition);
+            Wifi.find(_idCondition).exec(cb);
+        },
+        function(cb){
+            async.each(ssidQuerys,function(ssidQuery){
+                Wifi.find(ssidQuery).exec(cb);
+            },cb);
+        },
+        function(cb){
+            async.each(bssidQuerys,function(bssidQuery){
+                Wifi.find(bssidQuery).exec(cb);
+            },cb);
         }
-        var _idCondition = _.extend({_id: {$in: idConditions}}, baseCondition);
-        Wifi.find(_idCondition).exec(cb);
-    });
-    async.parallel(querys, function (err, results) {
+    ],function(err,results){
         if (err) return next(err);
         var data = _.flatten(results);
-        var resultData= [];
-        for(var i=0,_result;_result=data[i];i++){
+        var resultData = [];
+        for (var i = 0, _result; _result = data[i]; i++) {
             if (!_result) {
                 continue;
             }
@@ -280,13 +288,13 @@ var findWifiInfo = function (req, res, next) {
                 _result._doc.poster.thumb = config.posterBaseUrl + _result._doc.poster.thumb;
             }
             resultData.push(_.extend(resultTpl, _result));
-
         }
         res.body = {
             infos: resultData
         };
+        console.log(Date.now()-start);
         next();
-    })
+    });
 };
 
 /**

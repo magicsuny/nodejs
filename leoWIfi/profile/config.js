@@ -22,7 +22,8 @@ var transports = [
         colorize   : true,
         timestamp  : timestamp,
         prettyPrint: true,
-        debugStdout: true
+        debugStdout: true,
+        handleExceptions: trues
     }),
     new winston.transports.File(define('info-file', 'info', logFile.info)),
     new winston.transports.File(define('error-file', 'error', logFile.error))

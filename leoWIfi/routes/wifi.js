@@ -269,10 +269,10 @@ var findWifiInfo = function (req, res, next) {
                 country     : null,
                 city        : null
             };
-            if(_result.poster.normal){
+            if(_result.poster&&_result.poster.normal){
                 _result.poster.normal = config.posterBaseUrl+_result.poster.normal;
             }
-            if(_result.poster.thumb){
+            if(_result.poster&&_result.poster.thumb){
                 _result.poster.thumb = config.posterBaseUrl+_result.poster.thumb;
             }
             return  _.extend(resultTpl, _result);

@@ -162,13 +162,13 @@ var gatherWifiHotSpotInfo = function (req, res, next) {
     delete _wifiInfo._id;
     if (!_id) {//有_id为已处理数据直接更新
         _id = new mongoose.mongo.ObjectID();
-    }else{
+    } else {
         _id = mongoose.mongo.ObjectId(_id);
     }
-    Wifi.findAndModify({_id: _id}, [], {$set:_wifiInfo}, {new: true, upsert: true}, function (err, data) {
+    Wifi.findAndModify({_id: _id}, [], {$set: _wifiInfo}, {new: true, upsert: true}, function (err, data) {
         if (err) return next(new error.Server('save hotspot error!'));
         res.body = {
-            id:_id
+            id: _id
         };
         next();
     });
@@ -246,7 +246,11 @@ var findWifiInfo = function (req, res, next) {
     async.parallel(querys, function (err, results) {
         if (err) return next(err);
         var data = _.flatten(results);
-        data = _.each(data, function (_result) {
+        var resultData= [];
+        for(var i=0,_result;_result=data[i];i++){
+            if (!_result) {
+                continue;
+            }
             var resultTpl = {
                 _id         : null,
                 ssid        : null,
@@ -262,25 +266,24 @@ var findWifiInfo = function (req, res, next) {
                 latitude    : null,
                 longitude   : null,
                 accuracy    : null,
-                poster        : {
+                poster      : {
                     normal: null,
-                    thumb: null
+                    thumb : null
                 },
                 country     : null,
                 city        : null
             };
-            if(_result._doc.poster&&_result._doc.poster.normal){
-                _result._doc.poster.normal = config.posterBaseUrl+_result._doc.poster.normal;
+            if (_result._doc.poster && _result._doc.poster.normal) {
+                _result._doc.poster.normal = config.posterBaseUrl + _result._doc.poster.normal;
             }
-            if(_result._doc.poster&&_result._doc.poster.thumb){
-                _result._doc.poster.thumb = config.posterBaseUrl+_result._doc.poster.thumb;
+            if (_result._doc.poster && _result._doc.poster.thumb) {
+                _result._doc.poster.thumb = config.posterBaseUrl + _result._doc.poster.thumb;
             }
-            return  _.extend(resultTpl, _result);
+            resultData.push(_.extend(resultTpl, _result));
 
-        });
-
+        }
         res.body = {
-            infos: data
+            infos: resultData
         };
         next();
     })
@@ -312,15 +315,15 @@ var uploadHotspotPoster = function (req, res, next) {
     }
     if (!id) {//没有id则生成
         id = new mongoose.mongo.ObjectID();
-    }else{
+    } else {
         id = mongoose.mongo.ObjectId(id);
     }
     async.parallel([
         function (cb) {
             Wifi.findAndModify({"_id": id}, [], {
                 $set: {
-                    "poster.normal"         : file.filename,
-                    "poster.thumb"          : file.filename + '-thumb',
+                    "poster.normal"       : file.filename,
+                    "poster.thumb"        : file.filename + '-thumb',
                     "hotspotInfo.deviceId": req.deviceInfo[0]
                 }
             }, {new: true, upsert: true}, cb);
@@ -473,7 +476,7 @@ var apiProfile = [
                         "code": 0,
                         "msg" : "",
                         "data": {
-                            id:'562dc94bd523477eaa433206'
+                            id: '562dc94bd523477eaa433206'
                         }
                     }
                 }

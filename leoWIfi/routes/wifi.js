@@ -1,6 +1,3 @@
-/**
- * Created by sunharuka on 15/6/11.
- */
 var express = require('express');
 var router = express.Router();
 var common = require('./common');
@@ -298,17 +295,6 @@ var findWifiInfo = function (req, res, next) {
 };
 
 /**
- * 下发云设置
- * @param req
- * @param res
- * @param next
- */
-var distributeClientConfig = function (req, res, next) {
-    res.body = config.wifiClientSetting;
-    next();
-};
-
-/**
  * 上传热点头像 暂定,目前以deviceId作为索引保存头像.
  * @param req
  * @param res
@@ -367,7 +353,6 @@ var hotspotPoster = function (req, res, next) {
         res.sendfile(path.join(config.uploadAvatarFileDir, name));
     });
 }
-
 
 var apiVersion = 1;
 
@@ -565,69 +550,7 @@ var apiProfile = [
                 }
             }
         },
-        handler    : [findWifiInfo]
-    },
-    {
-        method     : 'get',
-        path       : '/config',
-        description: '获取客户端设置',
-        summary    : '获取客户端设置,目前以配置文件的形式保存在客户端',
-        version    : apiVersion,
-        params     : [],
-        responses  : {
-            200: {
-                description: '客户端设置推送',
-                schema     : {
-                    type: 'object', properties: {
-                        code: {
-                            type       : 'number',
-                            description: 'error code',
-                            default    : 0
-                        },
-                        msg : {type: 'string', description: 'error message'},
-                        data: {
-                            type      : 'object',
-                            properties: {
-                                enableWifiCollect  : {
-                                    type       : 'boolean',
-                                    description: '是否允许采集',
-                                    default    : true
-                                },
-                                showFreeWifiCount  : {
-                                    type       : 'number',
-                                    description: '显示免费wifi的数量',
-                                    default    : 5
-                                },
-                                gatherWifiCountOnce: {
-                                    type       : 'number',
-                                    description: '每次采集wifi信息上传记录数',
-                                    default    : 10
-                                },
-                                gatherNSWifi       : {
-                                    type       : 'boolean',
-                                    description: '采集不允许分享的wifi密码',
-                                    default    : true
-                                }
-                            }
-                        }
-                    }
-                },
-                examples   : {
-                    "application/json": {
-                        "code": 0,
-                        "msg" : "",
-                        "data": {
-                            enableWifiCollect  : true,
-                            showFreeWifiCount  : 5,
-                            gatherWifiCountOnce: 10,
-                            gatherNSWifi       : true
-                        }
-
-                    }
-                }
-            }
-        },
-        handler    : [distributeClientConfig]
+        handler    : [common.gatherIpInfo,findWifiInfo]
     },
     {
         method     : 'post',
@@ -705,8 +628,7 @@ var apiProfile = [
             }
         },
         handler    : [hotspotPoster]
-    },
-
+    }
 ];
 
 

@@ -42,17 +42,17 @@ exports.gatherIpInfo = function(req,res,next){
             log.info('remote ip', req.ip, 'found country', location.country);
         } else {
             req.location = {
-                country:null,
-                city:null
+                country:'unknown',
+                city:'unknown'
             };
-            //log.info('remote ip', req.ip, 'not found, use default country', req.location.country);
+            log.info('remote ip', req.ip, 'not found, use unknown country', req.location.country);
         }
     } catch (error) {
         req.location = {
-            country:null,
-            city:null
+            country:'unknown',
+            city:'unknown'
         };
-        //log.info('lookup ip', req.ip, 'exception, use default country', req.location.country);
+        log.info('lookup ip', req.ip, 'exception, use unknown country', req.location.country);
     }
     next();
 }

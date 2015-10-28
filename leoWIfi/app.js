@@ -12,6 +12,7 @@ var os = require('os');
 
 var cm = require('./routes/common');
 var wifi = require('./routes/wifi');
+var configuration = require('./routes/configuration');
 
 var docs = require('./routes/doc');
 var error = require('./utils/error');
@@ -52,8 +53,9 @@ app.use(compression({threshold: 512}));
 app.use('/v1', v1);
 app.use('/v2', v2);
 v1.use(cm.gatherDeviceInfo);
-v1.use('/docs', docs(wifi));
+v1.use('/docs', docs(wifi,configuration));
 v1.use(wifi.router);
+v1.use(configuration.router);
 v1.use(function (req, res, next) {
     if (res.body) {
         return res.send({
@@ -81,13 +83,13 @@ if (app.get('env') === 'development') {
         req.failure = true;
         err.stack = err.stack;
         res.json({
-            code  : err.code || errorCode.unknownError,
+            code : err.code || errorCode.unknownError,
             msg  : err.msg || err.message,
-            data:[],
+            data : [],
             stack: err.stack
         });
 
-       // res.json(err);
+        // res.json(err);
     });
 }
 

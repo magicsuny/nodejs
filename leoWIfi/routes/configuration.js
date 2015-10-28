@@ -161,6 +161,6 @@ apiProfile.forEach(function (p) {
 module.exports = {
     router     : router,
     profile    : apiProfile,
-    tag        : '客户端配置',
+    tag        : 'client',
     description: 'client配置相关API'
 }

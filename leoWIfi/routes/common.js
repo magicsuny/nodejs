@@ -7,6 +7,7 @@ var validate = require('../utils/validate');
 var util     = require('util');
 var error    = require('../utils/error');
 var geoip = require('geoip-lite');
+var ipaddr = require('ipaddr.js');
 /**
  * 获取deviceInfo
  * @param req

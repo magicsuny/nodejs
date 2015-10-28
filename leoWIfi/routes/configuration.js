@@ -103,11 +103,12 @@ var apiProfile = [
         path       : '/config/dlslist',
         version    : apiVersion,
         summary    : '测速地址列表',
-        description: '根据IP反查国家返回该国家的测速地址',
+        description: '根据IP反查国家返回该国家的测速地址 \n' +
+        '如无法识别国家默认使用美国下载地址 \n',
         params     : [],
         responses  : {
             200: {
-                description: '采集wifi信息',
+                description: '测速地址',
                 schema     : {
                     type: 'object', properties: {
                         code: {

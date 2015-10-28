@@ -100,6 +100,7 @@ var _saveWifiInfos = function (infos, options, cb) {
  * @returns {*}
  */
 var gatherWifiInfo = function (req, res, next) {
+    console.log('gatherwifi :',req.body);
     var body = req.body;
     //TODO 校验上传信息
     if (!body) {
@@ -179,6 +180,8 @@ var gatherWifiHotSpotInfo = function (req, res, next) {
  * @param next
  */
 var findWifiInfo = function (req, res, next) {
+    console.log('gatherwifi :',req.body);
+
     var body = req.body;
     var infos = body.infos;
     var idConditions = [];
@@ -289,7 +292,6 @@ var findWifiInfo = function (req, res, next) {
         res.body = {
             infos: resultData
         };
-        console.log(Date.now()-start);
         next();
     });
 };

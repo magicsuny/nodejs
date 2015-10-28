@@ -59,11 +59,12 @@ var _saveWifiInfos = function (infos, options, cb) {
         _wifiInfo.city = location.city;
         _wifiInfo.is_hotspot = options.isHotspot;
         _wifiInfo.updatedAt = new Date();
-        if (_wifiInfo.connectable) {
-            _wifiInfo.connectable = true;
-        } else {
-            _wifiInfo.connectable = false;
-        }
+        _wifiInfo.connectable = true;
+        //if (_wifiInfo.connectable) {
+        //    _wifiInfo.connectable = true;
+        //} else {
+        //    _wifiInfo.connectable = false;
+        //}
         //保存经纬度
         if (!_.isNaN(_wifiInfo.longitude) && !_.isNaN(_wifiInfo.latitude)) {
             _wifiInfo.location = [_wifiInfo.longitude, _wifiInfo.latitude];
@@ -148,11 +149,12 @@ var gatherWifiHotSpotInfo = function (req, res, next) {
     _wifiInfo.city = location.city;
     _wifiInfo.is_hotspot = true;
     _wifiInfo.updatedAt = new Date();
-    if (_wifiInfo.connectable) {
-        _wifiInfo.connectable = true;
-    } else {
-        _wifiInfo.connectable = false;
-    }
+    _wifiInfo.connectable = true;
+    //if (_wifiInfo.connectable) {
+    //    _wifiInfo.connectable = true;
+    //} else {
+    //    _wifiInfo.connectable = false;
+    //}
     //保存经纬度
     if (!_.isNaN(_wifiInfo.longitude) && !_.isNaN(_wifiInfo.latitude)) {
         _wifiInfo.location = [_wifiInfo.longitude, _wifiInfo.latitude];

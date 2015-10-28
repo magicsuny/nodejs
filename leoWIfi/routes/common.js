@@ -35,25 +35,25 @@ exports.saveDeviceInfo = function(req,res,next){
 };
 
 exports.gatherIpInfo = function(req,res,next){
+    var clientIp = ipaddr.process(req.ip).octets.join('.');
     try {
-        var clientIp = ipaddr.process(req.ip).octets.join('.');
         var location = geoip.lookup(clientIp);
         if (location && location.country) {
             req.location = location;
-            log.info('remote ip', req.ip, 'found country', location.country);
+            log.info('remote ip', clientIp, 'found country', location.country);
         } else {
             req.location = {
                 country:'unknown',
                 city:'unknown'
             };
-            log.info('remote ip', req.ip, 'not found, use unknown country', req.location.country);
+            log.info('remote ip', clientIp, 'not found, use unknown country', req.location.country);
         }
     } catch (error) {
         req.location = {
             country:'unknown',
             city:'unknown'
         };
-        log.info('lookup ip', req.ip, 'exception, use unknown country', req.location.country);
+        log.info('lookup ip', clientIp, 'exception, use unknown country', req.location.country);
     }
     next();
 }

@@ -15,6 +15,7 @@ var geoip = require('geoip-lite');
 var gm = require('gm');
 var fs = require('fs');
 var path = require('path');
+var ipaddr = require('ipaddr.js');
 
 var avatarStorage = multer.diskStorage({
     destination: function (req, file, cb) {

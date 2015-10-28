@@ -36,7 +36,8 @@ exports.saveDeviceInfo = function(req,res,next){
 
 exports.gatherIpInfo = function(req,res,next){
     try {
-        var location = geoip.lookup(req.ip);
+        var clientIp = ipaddr.process(req.ip).octets.join('.');
+        var location = geoip.lookup(clientIp);
         if (location && location.country) {
             req.location = location;
             log.info('remote ip', req.ip, 'found country', location.country);

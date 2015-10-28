@@ -183,14 +183,14 @@ var gatherWifiHotSpotInfo = function (req, res, next) {
  * @param next
  */
 var findWifiInfo = function (req, res, next) {
-    console.log('find wifi header:',req.get('content-type'));
-    console.log('find wifi :',req.body);
+    //console.log('find wifi header:',req.get('content-type'));
+    //console.log('find wifi :',req.body);
 
     var body = req.body;
     var infos = body.infos;
     var idConditions = [];
     //基本过滤条件: 只匹配非开放性并且可连接的wifi
-    var baseCondition = {connectable: true, sec_level: {$ne: 1}};
+    var baseCondition = {connectable: true, sec_level: {'$ne': 1}};
     var bssidQuerys = [];
     var ssidQuerys = [];
     _.each(infos, function (_wifiInfo) {
@@ -246,20 +246,21 @@ var findWifiInfo = function (req, res, next) {
             Wifi.find(_idCondition).exec(cb);
         },
         function(cb){
-            async.each(ssidQuerys,function(ssidQuery){
-                Wifi.find(ssidQuery).exec(cb);
+            async.map(ssidQuerys,function(ssidQuery,eachCB){
+                Wifi.find(ssidQuery).exec(eachCB);
             },cb);
         },
         function(cb){
-            async.each(bssidQuerys,function(bssidQuery){
-                Wifi.find(bssidQuery).exec(cb);
+            async.map(bssidQuerys,function(bssidQuery,eachCB){
+                Wifi.find(bssidQuery).exec(eachCB);
             },cb);
         }
     ],function(err,results){
         if (err) return next(err);
         var data = _.flatten(results);
         var resultData = [];
-        for (var i = 0, _result; _result = data[i]; i++) {
+        for (var i = 0 ;i<data.length; i++) {
+            var _result = data[i];
             if (!_result) {
                 continue;
             }

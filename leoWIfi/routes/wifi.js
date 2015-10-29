@@ -301,8 +301,12 @@ var findWifiInfo = function (req, res, next) {
                     _result.poster.thumb = config.posterBaseUrl + _result.poster.thumb;
                 }
             }
+            var _resultData = {}
+            for(var key in resultTpl){
+                _resultData[key] = _result[key]||null;
 
-            resultData.push(_.extendOwn(resultTpl,_result));
+            }
+            resultData.push(_resultData);
             //resultData.push(_.extendOwn(resultTpl, _result._doc));
         }
         res.body = {

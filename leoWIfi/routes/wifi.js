@@ -287,13 +287,23 @@ var findWifiInfo = function (req, res, next) {
                 country     : null,
                 city        : null
             };
-            if (_result._doc.poster && _result._doc.poster.normal) {
-                _result._doc.poster.normal = config.posterBaseUrl + _result._doc.poster.normal;
+            _result = _result.toObject();
+            if(!_result.poster){
+                _result.poster = {
+                    normal:null,
+                    thumb:null
+                };
+            }else{
+                if (_result.poster.normal) {
+                    _result.poster.normal = config.posterBaseUrl + _result.poster.normal;
+                }
+                if (_result.poster.thumb) {
+                    _result.poster.thumb = config.posterBaseUrl + _result.poster.thumb;
+                }
             }
-            if (_result._doc.poster && _result._doc.poster.thumb) {
-                _result._doc.poster.thumb = config.posterBaseUrl + _result._doc.poster.thumb;
-            }
-            resultData.push(_.extend(resultTpl, _result));
+
+            resultData.push(_.pick( _result,_.keys(resultTpl)));
+            //resultData.push(_.extendOwn(resultTpl, _result._doc));
         }
         res.body = {
             infos: resultData

@@ -275,7 +275,7 @@ var findWifiInfo = function (req, res, next) {
                 frequency   : null,
                 password    : null,
                 identity    : null,
-                keymgmt     : null,
+                keyMgmt     : null,
                 eap         : null,
                 latitude    : null,
                 longitude   : null,
@@ -302,7 +302,7 @@ var findWifiInfo = function (req, res, next) {
                 }
             }
 
-            resultData.push(_.pick( _result,_.keys(resultTpl)));
+            resultData.push(_.extendOwn(resultTpl,_result));
             //resultData.push(_.extendOwn(resultTpl, _result._doc));
         }
         res.body = {

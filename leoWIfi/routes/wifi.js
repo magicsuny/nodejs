@@ -303,7 +303,7 @@ var findWifiInfo = function (req, res, next) {
             }
             var _resultData = {}
             for(var key in resultTpl){
-                _resultData[key] = _result[key]||null;
+                _resultData[key] = !_.isUndefined(_result[key])?_result[key]:resultTpl[key];
 
             }
             resultData.push(_resultData);

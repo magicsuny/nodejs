@@ -168,3 +168,4 @@ Thu Oct 29 2015 14:12:42 GMT+0800 (CST) - info: remote ip 127.0.0.1 not found, u
 Thu Oct 29 2015 14:15:02 GMT+0800 (CST) - warn: Mongoose default connection disconnected
 Thu Oct 29 2015 14:16:43 GMT+0800 (CST) - info: Mongodb is connected
 Thu Oct 29 2015 14:16:59 GMT+0800 (CST) - info: remote ip 127.0.0.1 not found, use unknown country unknown
+Thu Oct 29 2015 14:56:10 GMT+0800 (CST) - warn: Mongoose default connection disconnected

@@ -92,13 +92,6 @@ exports.errorCode = global.errorCode = {
 //默认的返回行数
 exports.DefaultRows = 10;
 
-exports.statd = {
-    host     : '192.168.20.240',
-    port     : 8125,
-    prefix   : 'leowifi.',
-    globalize: true
-};
-
 
 //wifi全局设置
 exports.wifiClientSetting = {

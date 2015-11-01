@@ -16,6 +16,7 @@ var gm = require('gm');
 var fs = require('fs');
 var path = require('path');
 var ipaddr = require('ipaddr.js');
+var awsS3 = require('../utils/AwsS3Deploy');
 
 var avatarStorage = multer.diskStorage({
     destination: function (req, file, cb) {
@@ -102,8 +103,8 @@ var _saveWifiInfos = function (infos, options, cb) {
  * @returns {*}
  */
 var gatherWifiInfo = function (req, res, next) {
-    console.log('gather wifi header:',req.get('content-type'));
-    console.log('gatherwifi :',req.body);
+    console.log('gather wifi header:', req.get('content-type'));
+    console.log('gatherwifi :', req.body);
     var body = req.body;
     //TODO 校验上传信息
     if (!body) {
@@ -239,28 +240,28 @@ var findWifiInfo = function (req, res, next) {
         }
     });
     async.parallel([
-        function(cb){
+        function (cb) {
             if (idConditions.length == 0) {
                 return cb();
             }
             var _idCondition = _.extend({_id: {$in: idConditions}}, baseCondition);
             Wifi.find(_idCondition).exec(cb);
         },
-        function(cb){
-            async.map(ssidQuerys,function(ssidQuery,eachCB){
+        function (cb) {
+            async.map(ssidQuerys, function (ssidQuery, eachCB) {
                 Wifi.find(ssidQuery).exec(eachCB);
-            },cb);
+            }, cb);
         },
-        function(cb){
-            async.map(bssidQuerys,function(bssidQuery,eachCB){
+        function (cb) {
+            async.map(bssidQuerys, function (bssidQuery, eachCB) {
                 Wifi.find(bssidQuery).exec(eachCB);
-            },cb);
+            }, cb);
         }
-    ],function(err,results){
+    ], function (err, results) {
         if (err) return next(err);
         var data = _.flatten(results);
         var resultData = [];
-        for (var i = 0 ;i<data.length; i++) {
+        for (var i = 0; i < data.length; i++) {
             var _result = data[i];
             if (!_result) {
                 continue;
@@ -288,22 +289,22 @@ var findWifiInfo = function (req, res, next) {
                 city        : null
             };
             _result = _result.toObject();
-            if(!_result.poster){
+            if (!_result.poster) {
                 _result.poster = {
-                    normal:null,
-                    thumb:null
+                    normal: null,
+                    thumb : null
                 };
-            }else{
+            } else {
                 if (_result.poster.normal) {
-                    _result.poster.normal = config.posterBaseUrl + _result.poster.normal;
+                    _result.poster.normal = config.posterBaseUrl+path.join(config.AvatarS3BuketName,_result.poster.normal);
                 }
                 if (_result.poster.thumb) {
-                    _result.poster.thumb = config.posterBaseUrl + _result.poster.thumb;
+                    _result.poster.thumb = config.posterBaseUrl+path.join(config.AvatarS3BuketName,_result.poster.thumb);
                 }
             }
             var _resultData = {}
-            for(var key in resultTpl){
-                _resultData[key] = !_.isUndefined(_result[key])?_result[key]:resultTpl[key];
+            for (var key in resultTpl) {
+                _resultData[key] = !_.isUndefined(_result[key]) ? _result[key] : resultTpl[key];
 
             }
             resultData.push(_resultData);
@@ -346,13 +347,27 @@ var uploadHotspotPoster = function (req, res, next) {
         },
         function (cb) {
             gm(file.path).setFormat('PNG').thumb(100, 100, file.path + '-thumb', 100, cb);
-        }
+        },
     ], function (err, results) {
         if (err) return next(new error.Upload('upload hotspot error!'));
+        async.parallel([
+                function (cb) {
+                    awsS3.uploadFile(file.filename, file.path, cb);
+                },
+                function (cb) {
+                    awsS3.uploadFile(file.filename + '-thumb', file.path + '-thumb', cb);
+                }
+            ],function (err, s3results) {
+                if(err) return log.error(err);
+                fs.unlink(file.path);
+                fs.unlink(file.path+ '-thumb');
+                log.info('avatar:'+file.path+' unlinked!');
+            });
         res.body = {
             id: id
         };
         next();
+
     });
 };
 
@@ -572,7 +587,7 @@ var apiProfile = [
                 }
             }
         },
-        handler    : [common.gatherIpInfo,findWifiInfo]
+        handler    : [common.gatherIpInfo, findWifiInfo]
     },
     {
         method     : 'post',
@@ -628,29 +643,30 @@ var apiProfile = [
             }
         },
         handler    : [multer({storage: avatarStorage}).single('poster'), common.gatherIpInfo, uploadHotspotPoster]
-    },
-    {
-        method     : 'get',
-        path       : '/hotspot/poster/:name',
-        version    : apiVersion,
-        summary    : '获取海报',
-        description: '根据名称获取热点海报',
-        params     : [
-            {
-                name       : 'name',
-                type       : String,
-                in         : 'path',
-                required   : true,
-                description: '海报名称'
-            }
-        ],
-        responses  : {
-            200: {
-                description: '根据名称获取热点海报'
-            }
-        },
-        handler    : [hotspotPoster]
     }
+    //,
+    //{
+    //    method     : 'get',
+    //    path       : '/hotspot/poster/:name',
+    //    version    : apiVersion,
+    //    summary    : '获取海报',
+    //    description: '根据名称获取热点海报',
+    //    params     : [
+    //        {
+    //            name       : 'name',
+    //            type       : String,
+    //            in         : 'path',
+    //            required   : true,
+    //            description: '海报名称'
+    //        }
+    //    ],
+    //    responses  : {
+    //        200: {
+    //            description: '根据名称获取热点海报'
+    //        }
+    //    },
+    //    handler    : [hotspotPoster]
+    //}
 ];
 
 

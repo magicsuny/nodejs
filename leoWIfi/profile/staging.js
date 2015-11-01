@@ -15,3 +15,4 @@ exports.mongoDbConfig  = {
         pass  : ''
     }
 };
+exports.AvatarS3BuketName = 'leowifi.avatars.staging';

@@ -13,3 +13,10 @@ mongoimport -h localhost -d leowifi -c wifis -f deviceId,date,time,msec,ssid,bss
 sudo apt-get install graphicsmagick
 ```
 
+### 3 set NODE_ENV
+开发环境: NODE_ENV = development
+预发布环境: NODE_ENV = staging
+正式环境: NODE_ENV = production
+
+### 3 put aws credentials
+You need to set up your AWS security credentials before the sample code is able to connect to AWS. You can do this by creating a file named "credentials" at ~/.aws/

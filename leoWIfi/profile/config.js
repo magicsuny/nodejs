@@ -49,10 +49,10 @@ exports.cipherKey = 'leomasterwifi!@';
 exports.uploadFileSize = 5 * 1024 * 1024; //5MB
 /*uploading file temp dir*/
 exports.uploadAvatarFileDir = '/tmp/upload/avatar/';
-
+exports.AvatarS3BuketName = 'leowifi.avatar.development';
 
 exports.mongoDebugMode = true;
-exports.posterBaseUrl = 'http:\/\/106.187.49.16:3000/wifi/v1/hotspot/poster/';
+exports.posterBaseUrl = 'https://s3-ap-southeast-1.amazonaws.com/';
 exports.mongoDbConfig = {
     url    : 'mongodb://localhost:27017/leowifi',
     options: {

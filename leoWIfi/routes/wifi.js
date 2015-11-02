@@ -60,12 +60,10 @@ var _saveWifiInfos = function (infos, options, cb) {
         _wifiInfo.city = location.city;
         _wifiInfo.is_hotspot = options.isHotspot;
         _wifiInfo.updatedAt = new Date();
-        _wifiInfo.connectable = true;
-        //if (_wifiInfo.connectable) {
-        //    _wifiInfo.connectable = true;
-        //} else {
-        //    _wifiInfo.connectable = false;
-        //}
+        //_wifiInfo.connectable = true;
+        if (_.isNull(_wifiInfo.connectable)||_.isUndefined(_wifiInfo.connectable)) {
+            _wifiInfo.connectable = true;
+        }
         //保存经纬度
         if (!_.isNaN(_wifiInfo.longitude) && !_.isNaN(_wifiInfo.latitude)) {
             _wifiInfo.location = [_wifiInfo.longitude, _wifiInfo.latitude];
@@ -198,7 +196,11 @@ var findWifiInfo = function (req, res, next) {
     _.each(infos, function (_wifiInfo) {
         //id查找
         if (_wifiInfo._id) {
-            idConditions.push(mongoose.mongo.ObjectId(_wifiInfo._id));
+            try{
+                idConditions.push(mongoose.mongo.ObjectId(_wifiInfo._id));
+            }catch(e){
+                log.error('convert objectId error:',_wifiInfo._id);
+            }
             return;
         }
         //bssid查找
@@ -539,11 +541,11 @@ var apiProfile = [
                             description: '客户端设备ID'
                         },
                         latitude : {
-                            type       : 'string',
+                            type       : 'number',
                             description: '纬度'
                         },
                         longitude: {
-                            type       : 'string',
+                            type       : 'number',
                             description: '经度'
                         },
                         infos    : {

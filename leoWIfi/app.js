@@ -33,7 +33,7 @@ base.set('trust proxy', config.trustProxy);
 //base.engine('html', require('ejs').renderFile);
 
 base.use(morgan('dev'));
-base.use(bodyParser.json());
+base.use(bodyParser.json({type:'application/json'}));
 base.use(bodyParser.urlencoded({extended: false}));
 base.use(cookieParser());
 
@@ -82,18 +82,14 @@ if (app.get('env') === 'development') {
         res.status(err.status || 200);
         req.failure = true;
         err.stack = err.stack;
-        res.json({
+        var result = {
             code : err.code || errorCode.unknownError,
             msg  : err.msg || err.message,
             data : [],
             stack: err.stack
-        });
-        console.error({
-            code : err.code || errorCode.unknownError,
-            msg  : err.msg || err.message,
-            data : [],
-            stack: err.stack
-        });
+        };
+        res.json(result);
+        console.error(result);
         // res.json(err);
     });
 }

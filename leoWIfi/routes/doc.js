@@ -23,7 +23,7 @@ function gen(modules, cb) {
     root.basePath = '/wifi/v1';
     root.tags = [];
     root.schemes = ['http'];
-    root.consumes = ['application/json','multipart/form-data'];
+    root.consumes = ['application/json','multipart/form-data','text/plain'];
     root.produces = ['application/json'];
     root.paths = {};
     root.definitions = {};

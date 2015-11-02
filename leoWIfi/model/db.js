@@ -225,7 +225,7 @@ var wifiSchema = new Schema({
     identity       : String,
     latitude       : Number,  // redundant
     longitude      : Number,  // redundant
-    location       : {type: [Number], index: '2dsphere'},
+    location       : {type: [Number]},
     accuracy       : Number,
     is_root        : Boolean,
     is_hotspot     : Boolean,
@@ -243,7 +243,9 @@ var wifiSchema = new Schema({
     lastConnectedAt: Date,
     other_settings : String
 });
-wifiSchema.index({"city": 1, "country": 1, "bssid": 1});
+wifiSchema.index({ "country": 1, "bssid": 1});
+wifiSchema.index({connectable:1,sec_level:1,bssid:1})
+wifiSchema.index({connectable:1,sec_level:1,ssid:1,location:"2dsphere"});
 wifiSchema.plugin(commonPlugin);
 wifiSchema.statics.findAndModify = function (query, sort, doc, options, callback) {
     return this.collection.findAndModify(query, sort, doc, options, callback);
@@ -265,8 +267,9 @@ var deviceSchema = new Schema({
     imei       : String,
     imsi       : String,
     mac        : String
-
 });
+
+
 deviceSchema.plugin(commonPlugin);
 
 function promisify(model) {

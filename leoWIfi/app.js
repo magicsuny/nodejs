@@ -51,6 +51,9 @@ app.use('/', express.static(path.join(__dirname, 'public'), {
 //app.use(cm.sessionSetting);
 app.use(compression({threshold: 512}));
 //app.use(favicon('public/img/logo.png'));
+app.use('/heartbeat',function(req,res,next){
+   res.send('ok');
+});
 app.use('/v1', v1);
 app.use('/v2', v2);
 v1.use(cm.gatherDeviceInfo);

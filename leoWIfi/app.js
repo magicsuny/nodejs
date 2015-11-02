@@ -6,6 +6,7 @@ var config = require('./profile/config');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 var compression = require('compression');
+var fs = require('fs');
 global._ = require('underscore');
 require('./utils/encoder');
 var os = require('os');
@@ -79,7 +80,6 @@ app.use(function (req, res, next) {
 if (app.get('env') === 'development') {
     app.use(function (err, req, res, next) {
         res.status(err.status || 200);
-        console.error(err);
         req.failure = true;
         err.stack = err.stack;
         res.json({
@@ -88,7 +88,12 @@ if (app.get('env') === 'development') {
             data : [],
             stack: err.stack
         });
-
+        console.error({
+            code : err.code || errorCode.unknownError,
+            msg  : err.msg || err.message,
+            data : [],
+            stack: err.stack
+        });
         // res.json(err);
     });
 }

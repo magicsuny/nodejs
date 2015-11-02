@@ -12,7 +12,7 @@ var fs = require('fs');
  * @param remoteFilename
  * @param fileName
  */
-exports.uploadFile = function(remoteFilename, fileName,cb) {
+exports.uploadFile = function(remoteFilename, fileName,mimeType,cb) {
     //var fileBuffer = fs.readFileSync(fileName);
     var metaData = getContentTypeByFile(fileName);
     fs.stat(fileName, function(err, file_info) {
@@ -22,7 +22,7 @@ exports.uploadFile = function(remoteFilename, fileName,cb) {
             ACL: 'public-read',
             Bucket    : config.AvatarS3BuketName,
             Key    : remoteFilename,
-            //ContentType : file_info.size,
+            ContentType : mimeType,
             Body          : bodyStream
         };
 

@@ -1,6 +1,7 @@
 var config = require('../profile/config');
 var MongoClient = require('mongodb').MongoClient;
 var async = require('async');
+
 MongoClient.connect(config.mongoDbConfig.url,function(err,db){
     if(err) {
         console.error('Analyser connection error log: ' ,err);

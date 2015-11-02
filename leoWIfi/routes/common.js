@@ -35,8 +35,14 @@ exports.saveDeviceInfo = function(req,res,next){
 
 };
 
+/**
+ *
+ * @param req
+ * @param res
+ * @param next
+ */
 exports.gatherIpInfo = function(req,res,next){
-    var clientIp = ipaddr.process(req.ip).octets.join('.');
+    var clientIp = req.ip;//ipaddr.process(req.ip).octets.join('.');
     try {
         var location = geoip.lookup(clientIp);
         if (location && location.country) {

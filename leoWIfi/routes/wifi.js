@@ -9,7 +9,6 @@ var error = require('../utils/error');
 var Promise = require('bluebird');
 var mongoose = require('mongoose');
 var Wifi = require('../model/db').Wifi;
-var upload = multer({dest: '/tmp/upload', filename: ''});
 var docUtils = require('../utils/docUtils');
 var geoip = require('geoip-lite');
 var gm = require('gm');
@@ -77,6 +76,8 @@ var _saveWifiInfos = function (infos, options, cb) {
         if (_wifiInfo.tryTime) {
             baseCondition = {lastConnectedAt: {$lte: new Date(_wifiInfo.tryTime)}};
             _wifiInfo.lastConnectedAt = new Date(_wifiInfo.tryTime);
+        }else{
+            _wifiInfo.lastConnectedAt = new Date();
         }
 
         if (_wifiInfo._id) {//有_id为已处理数据直接更新
@@ -150,7 +151,6 @@ var gatherWifiHotSpotInfo = function (req, res, next) {
     _wifiInfo.country = location.country;
     _wifiInfo.city = location.city;
     _wifiInfo.is_hotspot = true;
-    _wifiInfo.updatedAt = new Date();
     _wifiInfo.connectable = true;
     //if (_wifiInfo.connectable) {
     //    _wifiInfo.connectable = true;
@@ -168,7 +168,7 @@ var gatherWifiHotSpotInfo = function (req, res, next) {
     } else {
         _id = mongoose.mongo.ObjectId(_id);
     }
-    Wifi.findAndModify({_id: _id}, [], {$set: _wifiInfo}, {new: true, upsert: true}, function (err, data) {
+    Wifi.findAndModify({_id: _id}, [], {$set: _wifiInfo,$currentDate:{updatedAt:true,lastConnectedAt:true},$setOnInsert:{createdAt:new Date}}, {new: true, upsert: true}, function (err, data) {
         if (err) return next(new error.Server('save hotspot error!'));
         res.body = {
             id: _id
@@ -346,22 +346,22 @@ var uploadHotspotPoster = function (req, res, next) {
             }, {new: true, upsert: true}, cb);
         },
         function (cb) {
-            gm(file.path).setFormat('PNG').thumb(100, 100, file.path + '-thumb', 100, cb);
+            gm(file.path).thumb(100, 100, file.path + '-thumb', 100, cb);
         },
     ], function (err, results) {
         if (err) return next(new error.Upload('upload hotspot error!'));
         async.parallel([
                 function (cb) {
-                    awsS3.uploadFile(file.filename, file.path, cb);
+                    awsS3.uploadFile(file.filename, file.path,file.mimetype,cb);
                 },
                 function (cb) {
-                    awsS3.uploadFile(file.filename + '-thumb', file.path + '-thumb', cb);
+                    awsS3.uploadFile(file.filename + '-thumb', file.path + '-thumb',file.mimetype,cb);
                 }
             ],function (err, s3results) {
                 if(err) return log.error(err);
                 fs.unlink(file.path);
                 fs.unlink(file.path+ '-thumb');
-                log.info('avatar:'+file.path+' unlinked!');
+                log.info('avatar:'+file.path+' deleted!');
             });
         res.body = {
             id: id

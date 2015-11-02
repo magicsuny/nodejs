@@ -26,8 +26,11 @@ var distributeClientConfig = function (req, res, next) {
  * @param next
  */
 var testDLSList = function (req, res, next) {
-    log.debug('get ', req.location.country, ' res testspeedlist');
-    var country = req.location.country || 'default';
+    log.debug('get ', req.location.country, ' for testspeedlist');
+    var country = req.location.country ;
+    if(!country||country=='unknown'){
+        country =  'default';
+    }
     res.body = config.dlsTestList[country];
     next();
 };

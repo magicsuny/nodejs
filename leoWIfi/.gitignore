@@ -36,3 +36,5 @@ node_modules
 /public/swagger/api.json
 
 /profile/AwsConfig.json
+
+/profile/production.js

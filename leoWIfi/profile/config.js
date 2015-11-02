@@ -111,35 +111,35 @@ exports.dlsTestList = {
         'https://downloads.yahoo.com/download/ff/us/mac',
         'https://www.microsoft.com/en-us/download/confirmation.aspx?id=47046'],
     //中国
-    zh     : ['https://swdlp-static.apple.com/images/zh_CN/iTunes_DwlNow_zhcn_08092008.gif?v=20090311',
+    CN     : ['https://swdlp-static.apple.com/images/zh_CN/iTunes_DwlNow_zhcn_08092008.gif?v=20090311',
         'https://downloads.yahoo.com/download/ff/hk/mac',
         'https://www.microsoft.com/zh-cn/download/confirmation.aspx?id=47046'],
     //美国
-    us     : ['https://secure-appldnld.apple.com/itunes12/031-36008-20151020-9e811a71-3086-483a-9859-39edd85838f8/itunes64setup.exe',
+    US     : ['https://secure-appldnld.apple.com/itunes12/031-36008-20151020-9e811a71-3086-483a-9859-39edd85838f8/itunes64setup.exe',
         'https://downloads.yahoo.com/download/ff/us/mac',
         'https://www.microsoft.com/en-us/download/confirmation.aspx?id=47046'],
     //印度
-    in     : ['https://support.apple.com/downloads/DL1846/en_US/secupd2015-007mavericks.dmg',
+    IN     : ['https://support.apple.com/downloads/DL1846/en_US/secupd2015-007mavericks.dmg',
         'https://downloads.yahoo.com/download/ff/in/mac',
         'https://www.microsoft.com/en-in/download/confirmation.aspx?id=47046'],
     //印度尼西亚
-    id     : ['https://support.apple.com/downloads/DL1834/id_ID/secupd2015-006mavericks.dmg',
+    ID     : ['https://support.apple.com/downloads/DL1834/id_ID/secupd2015-006mavericks.dmg',
         'https://downloads.yahoo.com/download/ff/id/mac',
         'http://www.microsoft.com/id-id/download/confirmation.aspx?id=9'],
     //巴西
-    br     : ['https://support.apple.com/downloads/DL1834/pt_BR/secupd2015-006mavericks.dmg',
+    BR     : ['https://support.apple.com/downloads/DL1834/pt_BR/secupd2015-006mavericks.dmg',
         'https://downloads.yahoo.com/download/ff/br/mac',
         'http://www.microsoft.com/pt-br/download/confirmation.aspx?id=47046'],
     //泰国
-    th     : ['https://support.apple.com/downloads/DL1834/th_TH/secupd2015-006mavericks.dmg',
+    TH     : ['https://support.apple.com/downloads/DL1834/th_TH/secupd2015-006mavericks.dmg',
         'https://downloads.yahoo.com/download/ff/th/mac',
         'http://www.microsoft.com/th-th/download/confirmation.aspx?id=36367'],
     //马来西亚
-    my     : ['https://support.apple.com/downloads/DL1846/en_US/secupd2015-007mavericks.dmg',
+    MY     : ['https://support.apple.com/downloads/DL1846/en_US/secupd2015-007mavericks.dmg',
         'https://downloads.yahoo.com/download/ff/my/mac',
         'http://www.microsoft.com/en-my/download/confirmation.aspx?id=5555'],
     //新加坡
-    sg     : ['https://support.apple.com/downloads/DL1846/en_US/secupd2015-007mavericks.dmg',
+    SG     : ['https://support.apple.com/downloads/DL1846/en_US/secupd2015-007mavericks.dmg',
         'https://downloads.yahoo.com/download/ff/sg/mac',
         'http://www.microsoft.com/en-sg/download/confirmation.aspx?id=42642']
 }

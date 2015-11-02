@@ -106,10 +106,6 @@ exports.wifiServerSetting = {
 };
 
 exports.dlsTestList = {
-    //默认
-    default: ['https://secure-appldnld.apple.com/itunes12/031-36008-20151020-9e811a71-3086-483a-9859-39edd85838f8/itunes64setup.exe',
-        'https://downloads.yahoo.com/download/ff/us/mac',
-        'https://www.microsoft.com/en-us/download/confirmation.aspx?id=47046'],
     //中国
     CN     : ['https://swdlp-static.apple.com/images/zh_CN/iTunes_DwlNow_zhcn_08092008.gif?v=20090311',
         'https://downloads.yahoo.com/download/ff/hk/mac',

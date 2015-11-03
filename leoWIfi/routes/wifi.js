@@ -359,7 +359,7 @@ var uploadHotspotPoster = function (req, res, next) {
             }, {new: true, upsert: true}, cb);
         },
         function (cb) {
-            gm(file.path).thumb(100, 100, file.path + '-thumb', 100, cb);
+            gm(file.path).resize(100, 100).write(file.path + '-thumb', cb);
         },
     ], function (err, results) {
         if (err) return next(new error.Upload('upload hotspot error!'));

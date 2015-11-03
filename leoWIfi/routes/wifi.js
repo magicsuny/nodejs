@@ -19,7 +19,18 @@ var awsS3 = require('../utils/AwsS3Deploy');
 
 var avatarStorage = multer.diskStorage({
     destination: function (req, file, cb) {
-        cb(null, config.uploadAvatarFileDir)
+        fs.exists(config.uploadAvatarFileDir,function(exists){
+            if(exists){
+                cb(null, config.uploadAvatarFileDir)
+            }else{
+                log.info('upload path not exists . ');
+                fs.mkdir(config.uploadAvatarFileDir,function(err){
+                   if(err) log.error(err);
+                    log.info('upload path craeted!');
+                    cb(null, config.uploadAvatarFileDir)
+                });
+            }
+        })
     },
     filename   : function (req, file, cb) {
         if (!req.deviceInfo) {

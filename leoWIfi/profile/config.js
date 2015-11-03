@@ -48,7 +48,7 @@ exports.cipherKey = 'leomasterwifi!@';
  * */
 exports.uploadFileSize = 5 * 1024 * 1024; //5MB
 /*uploading file temp dir*/
-exports.uploadAvatarFileDir = '/tmp/upload/avatar/';
+exports.uploadAvatarFileDir = '/tmp/upload/';
 exports.AvatarS3BuketName = 'leowifi.avatar.development';
 
 exports.mongoDebugMode = true;

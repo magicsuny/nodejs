@@ -125,16 +125,12 @@ var gatherWifiInfo = function (req, res, next) {
  * @param next
  */
 var gatherWifiHotSpotInfo = function (req, res, next) {
-    var body = req.body;
+    var _wifiInfo = req.body;
     //TODO 校验上传信息|头像信息处理
-    if (!body) {
-        var err = new error.Arg('填报WIFI信息为空');
+    if (!_wifiInfo) {
+        var err = new error.Arg('Parameters Error!');
         return next(err);
     }
-    if (!body.infos || body.infos.length == 0) {
-        return cb(new error.Arg('WIFI信息为空'));
-    }
-    var _wifiInfo = body.infos[0];
     //解析地址
     var location = req.location;
     if (_wifiInfo.ip) {
@@ -150,11 +146,11 @@ var gatherWifiHotSpotInfo = function (req, res, next) {
     _wifiInfo.city = location.city;
     _wifiInfo.is_hotspot = true;
     _wifiInfo.connectable = true;
-    //if (_wifiInfo.connectable) {
-    //    _wifiInfo.connectable = true;
-    //} else {
-    //    _wifiInfo.connectable = false;
-    //}
+    _wifiInfo.hotspotInfo = {
+        deviceId:_wifiInfo.device_id
+    };
+    delete _wifiInfo.device_id;
+
     //保存经纬度
     if (!_.isNaN(_wifiInfo.longitude) && !_.isNaN(_wifiInfo.latitude)) {
         _wifiInfo.location = [_wifiInfo.longitude, _wifiInfo.latitude];
@@ -175,6 +171,17 @@ var gatherWifiHotSpotInfo = function (req, res, next) {
     });
 };
 
+var findWifiBasePolicy = function(){
+    //匹配非开放性并且可怜接的wifi
+    var baseCondition = {connectable: true};
+    //分享隐私策略匹配
+    if(!config.wifiServerSetting.matchPrivateWifi){
+        baseCondition.sharedable = true;
+    }
+    //匹配个人热点
+    baseCondition = _.extend(baseCondition,{$or:[{is_hotspot:true},{sec_level: {'$ne': 1}}]});
+    return baseCondition;
+}
 
 /**
  * wifi挖掘
@@ -189,10 +196,9 @@ var findWifiInfo = function (req, res, next) {
     var body = req.body;
     var infos = body.infos;
     var idConditions = [];
-    //基本过滤条件: 只匹配非开放性并且可连接的wifi
-    var baseCondition = {connectable: true, sec_level: {'$ne': 1}};
     var bssidQuerys = [];
     var ssidQuerys = [];
+    var baseCondition = findWifiBasePolicy();
     _.each(infos, function (_wifiInfo) {
         //id查找
         if (_wifiInfo._id) {
@@ -304,7 +310,7 @@ var findWifiInfo = function (req, res, next) {
                     _result.poster.thumb = config.posterBaseUrl+path.join(config.AvatarS3BuketName,_result.poster.thumb);
                 }
             }
-            var _resultData = {}
+            var _resultData = {};
             for (var key in resultTpl) {
                 _resultData[key] = !_.isUndefined(_result[key]) ? _result[key] : resultTpl[key];
 
@@ -469,20 +475,7 @@ var apiProfile = [
             {
                 name  : 'body',
                 in    : 'body',
-                schema: {
-                    type      : 'object',
-                    required  : ['device_id', 'infos'],
-                    properties: {
-                        device_id: {
-                            type       : 'string',
-                            description: '客户端设备ID'
-                        },
-                        infos    : {
-                            type : 'array',
-                            items: {$ref: '#/definitions/wifiInfoGather'}
-                        }
-                    }
-                }
+                schema:  {$ref: '#/definitions/hotspotGather'}
             }
         ],
         responses  : {

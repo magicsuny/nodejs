@@ -31,6 +31,25 @@ exports.wifiInfoGather = {
     }
 };
 
+exports.hotspotGather = {
+    type: 'object', properties: {
+        _id           : {type: 'string', description: "db objectId"},
+        device_id     : {type: 'string', description: "deviceId"},
+        ssid          : {type: 'string', description: "wifi ssid"},
+        bssid         : {type: 'string', description: "wifi bssid"},
+        sec_level     : {type: 'integer', description: "wifi sec_level"},
+        frequency     : {type: 'integer', description: "wifi frequency"},
+        password      : {type: 'string', description: "wifi password"},
+        identity      : {type: 'string', description: "wifi identity"},
+        keyMgmt       : {type: 'string', description: "wifi keyMgmt"},
+        latitude      : {type: 'number', description: "wifi latitude"},
+        longitude     : {type: 'number', description: "wifi longitude"},
+        accuracy      : {type: 'string', description: "wifi accuracy"},
+        is_root       : {type: 'boolean', description: "wifi is_root"}
+    }
+};
+
+
 exports.simpleWifiInfo = {
     type: 'object', properties: {
         _id         : {type: 'string', description: "db objectId"},

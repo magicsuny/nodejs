@@ -228,24 +228,25 @@ var wifiSchema = new Schema({
     location       : {type: [Number]},
     accuracy       : Number,
     is_root        : Boolean,
-    is_hotspot     : Boolean,
+    is_hotspot     : {type:Boolean,index:true},
     hotspotInfo    : {
         deviceId: String
     },
+    sharedable     : Boolean,
     connectable    : Boolean,
     country        : String,
     city           : String,
     ip             : String,
-    poster           : {
+    poster         : {
         normal: {type: String},
         thumb : {type: String}
     },
     lastConnectedAt: Date,
     other_settings : String
 });
-wifiSchema.index({ "country": 1, "bssid": 1});
-wifiSchema.index({connectable:1,sec_level:1,bssid:1})
-wifiSchema.index({connectable:1,sec_level:1,ssid:1,location:"2dsphere"});
+wifiSchema.index({"country": 1, "bssid": 1});
+wifiSchema.index({connectable: 1, sec_level: 1, bssid: 1})
+wifiSchema.index({connectable: 1, sec_level: 1, ssid: 1, location: "2dsphere"});
 wifiSchema.plugin(commonPlugin);
 wifiSchema.statics.findAndModify = function (query, sort, doc, options, callback) {
     return this.collection.findAndModify(query, sort, doc, options, callback);

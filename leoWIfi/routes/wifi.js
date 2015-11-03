@@ -176,7 +176,7 @@ var gatherWifiHotSpotInfo = function (req, res, next) {
     var _id = _wifiInfo._id;
     delete _wifiInfo._id;
     if (!_id) {//有_id为已处理数据直接更新
-        _id = new mongoose.mongo.ObjectID();
+        _id = new mongoose.mongo.ObjectId();
     } else {
         _id = mongoose.mongo.ObjectId(_id);
     }
@@ -360,7 +360,7 @@ var uploadHotspotPoster = function (req, res, next) {
         return next(new error.Upload('no avatar upload'));
     }
     if (!id) {//没有id则生成
-        id = new mongoose.mongo.ObjectID();
+        id = new mongoose.mongo.ObjectId();
     } else {
         try{
             id = mongoose.mongo.ObjectId(id);

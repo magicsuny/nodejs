@@ -100,7 +100,7 @@ var _saveWifiInfos = function (infos, options, cb) {
             var _idCondition = _.extend({_id: _id}, baseCondition);
             bulk.find(_idCondition).upsert().updateOne(_wifiInfo);
         } else if (_wifiInfo.bssid) {//有bssid则匹配更新
-            _wifiInfo.bssid = _wifiInfo.bssid.toLowerCase();
+            _wifiInfo.bssid = _wifiInfo.bssid.toUpperCase();
             //TODO 原始数据缺少city属性 需预处理补全
             var _bssidCondition = _.extend({bssid: _wifiInfo.bssid, country: location.country}, baseCondition);
             bulk.find(_bssidCondition).upsert().updateOne(_wifiInfo);
@@ -181,7 +181,7 @@ var gatherWifiHotSpotInfo = function (req, res, next) {
         _id = mongoose.mongo.ObjectId(_id);
     }
     if(_wifiInfo.bssid){
-        _wifiInfo.bssid = _wifiInfo.bssid.toLowerCase();
+        _wifiInfo.bssid = _wifiInfo.bssid.toUpperCase();
     }
     Wifi.findAndModify({_id: _id}, [], {$set: _wifiInfo,$currentDate:{updatedAt:true,lastConnectedAt:true},$setOnInsert:{createdAt:new Date}}, {new: true, upsert: true}, function (err, data) {
         if (err) return next(new error.Server('save hotspot error!'));
@@ -232,7 +232,7 @@ var findWifiInfo = function (req, res, next) {
         }
         //bssid查找
         if (_wifiInfo.bssid) {
-            var _bssidCondition = _.extend({bssid: _wifiInfo.bssid.toLowerCase()}, baseCondition);
+            var _bssidCondition = _.extend({bssid: _wifiInfo.bssid.toUpperCase()}, baseCondition);
             if (_wifiInfo.country) {
                 _bssidCondition.country = _wifiInfo.country;
             }

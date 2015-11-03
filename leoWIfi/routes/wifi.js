@@ -164,6 +164,9 @@ var gatherWifiHotSpotInfo = function (req, res, next) {
     } else {
         _id = mongoose.mongo.ObjectId(_id);
     }
+    if(_wifiInfo.bssid){
+        _wifiInfo.bssid = _wifiInfo.bssid.toLowerCase();
+    }
     Wifi.findAndModify({_id: _id}, [], {$set: _wifiInfo,$currentDate:{updatedAt:true,lastConnectedAt:true},$setOnInsert:{createdAt:new Date}}, {new: true, upsert: true}, function (err, data) {
         if (err) return next(new error.Server('save hotspot error!'));
         res.body = {

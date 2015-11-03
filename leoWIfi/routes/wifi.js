@@ -146,6 +146,7 @@ var gatherWifiHotSpotInfo = function (req, res, next) {
     _wifiInfo.city = location.city;
     _wifiInfo.is_hotspot = true;
     _wifiInfo.connectable = true;
+    _wifiInfo.sharedable = true;
     _wifiInfo.hotspotInfo = {
         deviceId:_wifiInfo.device_id
     };

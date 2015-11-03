@@ -31,7 +31,6 @@ base.set('views', path.join(__dirname, 'views'));
 base.set('view engine', 'html');
 base.set('trust proxy', config.trustProxy);
 //base.engine('html', require('ejs').renderFile);
-
 base.use(morgan('dev'));
 base.use(bodyParser.json({type:'application/json'}));
 base.use(bodyParser.urlencoded({extended: false}));
@@ -61,6 +60,7 @@ v1.use('/docs', docs(wifi,configuration));
 v1.use(wifi.router);
 v1.use(configuration.router);
 v1.use(function (req, res, next) {
+    res.set('X-Powered-By','Leomaster');
     if (res.body) {
         return res.send({
             err : 0,
@@ -69,12 +69,11 @@ v1.use(function (req, res, next) {
         });
     }
     next();
-})
+});
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
     next(new error.NotFound(util.format('%s not found', req.path)));
 });
-
 
 // error handlers
 

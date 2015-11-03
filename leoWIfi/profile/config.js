@@ -102,7 +102,7 @@ exports.wifiClientSetting = {
 };
 
 exports.wifiServerSetting = {
-    matchPrivateWifi: false//返回隐私wifi控制
+    matchPrivateWifi: true//返回隐私wifi控制
 };
 
 exports.dlsTestList = {

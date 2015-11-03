@@ -56,6 +56,8 @@ var _saveWifiInfos = function (infos, options, cb) {
         } else {
             _wifiInfo.ip = options.ip;
         }
+        var _id = _wifiInfo._id;
+        delete _wifiInfo._id;
         _wifiInfo.country = location.country;
         _wifiInfo.city = location.city;
         _wifiInfo.is_hotspot = options.isHotspot;
@@ -71,16 +73,19 @@ var _saveWifiInfos = function (infos, options, cb) {
 
         //判断wifi的连接状态
         var baseCondition = {};
-        if (_wifiInfo.tryTime) {
+        if (_wifiInfo.tryTime>0) {
             baseCondition = {lastConnectedAt: {$lte: new Date(_wifiInfo.tryTime)}};
             _wifiInfo.lastConnectedAt = new Date(_wifiInfo.tryTime);
         }else{
             _wifiInfo.lastConnectedAt = new Date();
         }
 
-        if (_wifiInfo._id) {//有_id为已处理数据直接更新
-            var _id = mongoose.mongo.ObjectId(_wifiInfo._id);
-            delete _wifiInfo._id;
+        if (_id) {//有_id为已处理数据直接更新
+            try{
+                _id = mongoose.mongo.ObjectId(_wifiInfo._id);
+            }catch(e){
+                return;
+            }
             var _idCondition = _.extend({_id: _id}, baseCondition);
             bulk.find(_idCondition).upsert().updateOne(_wifiInfo);
         } else if (_wifiInfo.bssid) {//有bssid则匹配更新

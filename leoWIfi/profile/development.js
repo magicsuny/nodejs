@@ -18,4 +18,4 @@ exports.mongoDbConfig = {
     }
 };
 exports.AvatarS3BuketName = 'leowifi.avatar.development';
-exports.mongoDebugMode = true;
+exports.mongoDebugMode = false;

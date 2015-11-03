@@ -41,3 +41,13 @@ Tue Nov 03 2015 13:29:33 GMT+0800 (CST) - info: remote ip ::ffff:127.0.0.1 not f
 Tue Nov 03 2015 13:29:55 GMT+0800 (CST) - info: remote ip ::ffff:127.0.0.1 not found, use unknown country unknown
 Tue Nov 03 2015 13:37:21 GMT+0800 (CST) - info: remote ip ::ffff:127.0.0.1 not found, use unknown country unknown
 Tue Nov 03 2015 13:37:30 GMT+0800 (CST) - info: remote ip ::ffff:127.0.0.1 not found, use unknown country unknown
+Tue Nov 03 2015 14:48:04 GMT+0800 (CST) - warn: Mongoose default connection disconnected
+Tue Nov 03 2015 14:48:07 GMT+0800 (CST) - info: Mongodb is connected
+Tue Nov 03 2015 14:49:12 GMT+0800 (CST) - warn: Mongoose default connection disconnected
+Tue Nov 03 2015 14:49:16 GMT+0800 (CST) - info: Mongodb is connected
+Tue Nov 03 2015 14:49:25 GMT+0800 (CST) - info: remote ip ::ffff:127.0.0.1 not found, use unknown country unknown
+Tue Nov 03 2015 14:57:16 GMT+0800 (CST) - info: remote ip ::ffff:127.0.0.1 not found, use unknown country unknown
+Tue Nov 03 2015 15:00:37 GMT+0800 (CST) - warn: Mongoose default connection disconnected
+Tue Nov 03 2015 15:00:40 GMT+0800 (CST) - info: Mongodb is connected
+Tue Nov 03 2015 15:00:42 GMT+0800 (CST) - info: remote ip ::ffff:127.0.0.1 not found, use unknown country unknown
+Tue Nov 03 2015 15:01:03 GMT+0800 (CST) - info: remote ip ::ffff:127.0.0.1 not found, use unknown country unknown

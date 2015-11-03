@@ -362,7 +362,11 @@ var uploadHotspotPoster = function (req, res, next) {
     if (!id) {//没有id则生成
         id = new mongoose.mongo.ObjectID();
     } else {
-        id = mongoose.mongo.ObjectId(id);
+        try{
+            id = mongoose.mongo.ObjectId(id);
+        }catch(e){
+            return next(new error.Arg('Id is Not objectId'));
+        }
     }
     async.parallel([
         function (cb) {

@@ -22,6 +22,8 @@ exports.gatherDeviceInfo = function(req,res,next){
     diArray= _.map(diArray,function(diInfo){
        return diInfo.replace(/"/g,'');
     });
+    log.info('DI is :',di,' length is :',diArray.length);
+
     req.deviceInfo = diArray;
     next();
 };

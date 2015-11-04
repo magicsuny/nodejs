@@ -1,6 +1,0 @@
-Tue Nov 03 2015 15:28:53 GMT+0800 (CST) - error:  Error: ENOENT: no such file or directory, mkdir '/tmp/upload/avatar/'
-    at Error (native)
-Tue Nov 03 2015 15:29:02 GMT+0800 (CST) - error:  Error: ENOENT: no such file or directory, mkdir '/tmp/upload/avatar/'
-    at Error (native)
-Tue Nov 03 2015 15:32:04 GMT+0800 (CST) - error:  Error: ENOENT: no such file or directory, mkdir '/tmp/upload/avatar/'
-    at Error (native)

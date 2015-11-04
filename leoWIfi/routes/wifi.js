@@ -17,30 +17,6 @@ var path = require('path');
 var ipaddr = require('ipaddr.js');
 var awsS3 = require('../utils/AwsS3Deploy');
 
-var avatarStorage = multer.diskStorage({
-    destination: function (req, file, cb) {
-        fs.exists(config.uploadAvatarFileDir,function(exists){
-            if(exists){
-                cb(null, config.uploadAvatarFileDir)
-            }else{
-                log.info('upload path not exists . ');
-                fs.mkdir(config.uploadAvatarFileDir,function(err){
-                   if(err) log.error(err);
-                    log.info('upload path craeted!');
-                    cb(null, config.uploadAvatarFileDir)
-                });
-            }
-        })
-    },
-    filename   : function (req, file, cb) {
-        if (!req.deviceInfo) {
-            return cb(new error.Header('no deviceInfo gathered'));
-        }
-        var deviceId = req.deviceInfo[0];
-        cb(null, deviceId + '_' + Date.now())
-    }
-})
-
 /**
  * 保存wifi信息逻辑
  * 判断连接状态
@@ -131,7 +107,8 @@ var gatherWifiInfo = function (req, res, next) {
         if (err) {
             return next(err);
         }
-        res.send({err: 0, msg: ''});
+        res.body = {};
+        next();
     });
 };
 
@@ -347,6 +324,33 @@ var findWifiInfo = function (req, res, next) {
 };
 
 /**
+ * multer 存储配置
+ */
+var avatarStorage = multer.diskStorage({
+    destination: function (req, file, cb) {
+        fs.exists(config.uploadAvatarFileDir,function(exists){
+            if(exists){
+                cb(null, config.uploadAvatarFileDir)
+            }else{
+                log.info('upload path not exists . ');
+                fs.mkdir(config.uploadAvatarFileDir,function(err){
+                    if(err) log.error(err);
+                    log.info('upload path craeted!');
+                    cb(null, config.uploadAvatarFileDir)
+                });
+            }
+        })
+    },
+    filename   : function (req, file, cb) {
+        if (!req.deviceInfo) {
+            return cb(new error.Header('no deviceInfo gathered'));
+        }
+        var deviceId = req.deviceInfo[1];
+        cb(null, deviceId + '_' + Date.now())
+    }
+});
+
+/**
  * 上传热点头像 暂定,目前以deviceId作为索引保存头像.
  * @param req
  * @param res
@@ -374,7 +378,7 @@ var uploadHotspotPoster = function (req, res, next) {
                 $set: {
                     "poster.normal"       : file.filename,
                     "poster.thumb"        : file.filename + '-thumb',
-                    "hotspotInfo.deviceId": req.deviceInfo[0]
+                    "hotspotInfo.deviceId": req.deviceInfo[1]
                 }
             }, {new: true, upsert: true}, cb);
         },
@@ -486,7 +490,7 @@ var apiProfile = [
                 }
             }
         },
-        handler    : [common.gatherIpInfo, gatherWifiInfo]
+        handler    : [common.gatherIpInfo, gatherWifiInfo,common.saveDeviceInfo]
     },
     {
         method     : 'post',

@@ -15,7 +15,8 @@ var ipaddr = require('ipaddr.js');
  * @param next
  */
 exports.gatherDeviceInfo = function(req,res,next){
-    var regexp = /\"([^\"]+)\"/g;
+    var regexp = /"([^"]+)"/g;
+    var regexp = new RegExp('"([^"]+)"',"g");
     var di = decodeURIComponent(req.get('DI'));
     var diArray= di.match(regexp);
     diArray= _.map(diArray,function(diInfo){
@@ -32,6 +33,7 @@ exports.gatherDeviceInfo = function(req,res,next){
  * @param next
  */
 exports.saveDeviceInfo = function(req,res,next){
+    next();
 
 };
 

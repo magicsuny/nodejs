@@ -84,3 +84,27 @@ Tue Nov 03 2015 15:33:31 GMT+0800 (CST) - info: Mongodb is connected
 Tue Nov 03 2015 15:33:52 GMT+0800 (CST) - info: upload path not exists . 
 Tue Nov 03 2015 15:33:52 GMT+0800 (CST) - info: upload path craeted!
 Tue Nov 03 2015 15:33:52 GMT+0800 (CST) - info: remote ip ::ffff:127.0.0.1 not found, use unknown country unknown
+Wed Nov 04 2015 12:43:34 GMT+0800 (CST) - info: Mongodb is connected
+Wed Nov 04 2015 12:43:49 GMT+0800 (CST) - info: remote ip ::ffff:127.0.0.1 not found, use unknown country unknown
+Wed Nov 04 2015 12:44:17 GMT+0800 (CST) - warn: Mongoose default connection disconnected
+Wed Nov 04 2015 12:44:20 GMT+0800 (CST) - info: Mongodb is connected
+Wed Nov 04 2015 12:44:24 GMT+0800 (CST) - info: remote ip ::ffff:127.0.0.1 not found, use unknown country unknown
+Wed Nov 04 2015 12:44:58 GMT+0800 (CST) - warn: Mongoose default connection disconnected
+Wed Nov 04 2015 12:45:01 GMT+0800 (CST) - info: Mongodb is connected
+Wed Nov 04 2015 12:45:04 GMT+0800 (CST) - warn: Mongoose default connection disconnected
+Wed Nov 04 2015 12:45:07 GMT+0800 (CST) - info: Mongodb is connected
+Wed Nov 04 2015 12:45:09 GMT+0800 (CST) - info: remote ip ::ffff:127.0.0.1 not found, use unknown country unknown
+Wed Nov 04 2015 12:45:10 GMT+0800 (CST) - info: remote ip ::ffff:127.0.0.1 not found, use unknown country unknown
+Wed Nov 04 2015 12:53:11 GMT+0800 (CST) - info: Mongodb is connected
+Wed Nov 04 2015 12:53:29 GMT+0800 (CST) - info: Mongodb is connected
+Wed Nov 04 2015 13:02:25 GMT+0800 (CST) - info: Mongodb is connected
+Wed Nov 04 2015 13:34:06 GMT+0800 (CST) - info: Mongodb is connected
+Wed Nov 04 2015 13:34:29 GMT+0800 (CST) - info: Mongodb is connected
+Wed Nov 04 2015 13:37:44 GMT+0800 (CST) - info: Mongodb is connected
+Wed Nov 04 2015 13:39:20 GMT+0800 (CST) - info: Mongodb is connected
+Wed Nov 04 2015 13:39:33 GMT+0800 (CST) - info: Mongodb is connected
+Wed Nov 04 2015 13:39:55 GMT+0800 (CST) - info: Mongodb is connected
+Wed Nov 04 2015 13:40:36 GMT+0800 (CST) - info: Mongodb is connected
+Wed Nov 04 2015 13:40:50 GMT+0800 (CST) - info: Mongodb is connected
+Wed Nov 04 2015 13:41:29 GMT+0800 (CST) - warn: Mongoose default connection disconnected
+Wed Nov 04 2015 13:41:32 GMT+0800 (CST) - info: Mongodb is connected

@@ -38,3 +38,5 @@ node_modules
 /profile/AwsConfig.json
 
 /profile/production.js
+
+/test

@@ -63,7 +63,7 @@ v1.use(function (req, res, next) {
     res.set('X-Powered-By','Leomaster');
     if (res.body) {
         return res.send({
-            err : 0,
+            code : 0,
             msg : '',
             data: res.body
         });

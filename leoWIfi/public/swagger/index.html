@@ -65,7 +65,7 @@
             function addDeviceInfo(){
                 var key =encodeURIComponent($('#di').val());
                 if (key && key.trim() != "") {
-                    var apiKeyAuth = new SwaggerClient.ApiKeyAuthorization("di", key, "header");
+                    var apiKeyAuth = new SwaggerClient.ApiKeyAuthorization("device", key, "header");
                     window.swaggerUi.api.clientAuthorizations.add("di", apiKeyAuth);
                     log("added key " + key);
                 }

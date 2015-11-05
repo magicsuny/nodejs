@@ -15,7 +15,6 @@ var ipaddr = require('ipaddr.js');
  * @param next
  */
 exports.gatherDeviceInfo = function(req,res,next){
-    var regexp = /"([^"]+)"/g;
     var regexp = new RegExp('"([^"]+)"',"g");
     var di = decodeURIComponent(req.get('device'));
     var diArray= di.match(regexp);

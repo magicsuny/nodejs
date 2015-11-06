@@ -32,6 +32,28 @@ var _saveWifiInfos = function (infos, options, cb) {
     //去重条件: 拥有bssid的前提下,同国家
     var bulk = Wifi.collection.initializeUnorderedBulkOp();
     _.each(infos, function (_wifiInfo) {
+        //过滤无用内容
+        _wifiInfo = _.pick(_wifiInfo,
+            "_id",
+            "ssid",
+            "bssid",
+            "level",
+            "sec_level",
+            "capabilities",
+            "frequency",
+            "password",
+            "identity",
+            "keyMgmt",
+            "eap",
+            "ip",
+            "latitude",
+            "longitude",
+            "connectable",
+            "tryTime",
+            "accuracy",
+            "sharedable",
+            "is_root",
+            "other_settings");
         //解析地址
         var location = options.location;
         if (_wifiInfo.ip) {
@@ -50,7 +72,7 @@ var _saveWifiInfos = function (infos, options, cb) {
         _wifiInfo.is_hotspot = options.isHotspot;
         _wifiInfo.updatedAt = new Date();
         //_wifiInfo.connectable = true;
-        if (_.isNull(_wifiInfo.connectable)||_.isUndefined(_wifiInfo.connectable)) {
+        if (_.isNull(_wifiInfo.connectable) || _.isUndefined(_wifiInfo.connectable)) {
             _wifiInfo.connectable = true;
         }
         //保存经纬度
@@ -60,17 +82,17 @@ var _saveWifiInfos = function (infos, options, cb) {
 
         //判断wifi的连接状态
         var baseCondition = {};
-        if (_wifiInfo.tryTime>0) {
+        if (_wifiInfo.tryTime > 0) {
             baseCondition = {lastConnectedAt: {$lte: new Date(_wifiInfo.tryTime)}};
             _wifiInfo.lastConnectedAt = new Date(_wifiInfo.tryTime);
-        }else{
+        } else {
             _wifiInfo.lastConnectedAt = new Date();
         }
 
         if (_id) {//有_id为已处理数据直接更新
-            try{
+            try {
                 _id = mongoose.mongo.ObjectId(_wifiInfo._id);
-            }catch(e){
+            } catch (e) {
                 return;
             }
             var _idCondition = _.extend({_id: _id}, baseCondition);
@@ -126,6 +148,23 @@ var gatherWifiHotSpotInfo = function (req, res, next) {
         var err = new error.Arg('Parameters Error!');
         return next(err);
     }
+    //过滤无用信息
+    _wifiInfo = _.pick(_wifiInfo,
+        "_id",
+        "device_id",
+        "ssid",
+        "bssid",
+        "sec_level",
+        "frequency",
+        "password",
+        "identity",
+        "keyMgmt",
+        "latitude",
+        "longitude",
+        "accuracy",
+        "is_root"
+    );
+
     //解析地址
     var location = req.location;
     if (_wifiInfo.ip) {
@@ -143,7 +182,7 @@ var gatherWifiHotSpotInfo = function (req, res, next) {
     _wifiInfo.connectable = true;
     _wifiInfo.sharedable = true;
     _wifiInfo.hotspotInfo = {
-        deviceId:_wifiInfo.device_id
+        deviceId: _wifiInfo.device_id
     };
     delete _wifiInfo.device_id;
 
@@ -154,17 +193,21 @@ var gatherWifiHotSpotInfo = function (req, res, next) {
     var _id = _wifiInfo._id;
     delete _wifiInfo._id;
 
-    if(_wifiInfo.bssid){
+    if (_wifiInfo.bssid) {
         _wifiInfo.bssid = _wifiInfo.bssid.toUpperCase();
     }
     if (!_id) {//有_id为已处理数据直接更新
         //_id = new mongoose.mongo.ObjectId();
-        matchCondition.bssid =_wifiInfo.bssid;
+        matchCondition.bssid = _wifiInfo.bssid;
     } else {
         _id = mongoose.mongo.ObjectId(_id);
         matchCondition._id = _id;
     }
-    Wifi.findAndModify(matchCondition, [], {$set: _wifiInfo,$currentDate:{updatedAt:true,lastConnectedAt:true},$setOnInsert:{createdAt:new Date}}, {new: true, upsert: true}, function (err, data) {
+    Wifi.findAndModify(matchCondition, [], {
+        $set        : _wifiInfo,
+        $currentDate: {updatedAt: true, lastConnectedAt: true},
+        $setOnInsert: {createdAt: new Date}
+    }, {new: true, upsert: true}, function (err, data) {
         if (err) return next(new error.Server('save hotspot error!'));
         var id = data.value._id.toString();
         res.body = {
@@ -174,15 +217,15 @@ var gatherWifiHotSpotInfo = function (req, res, next) {
     });
 };
 
-var findWifiBasePolicy = function(){
+var findWifiBasePolicy = function () {
     //匹配非开放性并且可怜接的wifi
     var baseCondition = {connectable: true};
     //分享隐私策略匹配
-    if(!config.wifiServerSetting.matchPrivateWifi){
+    if (!config.wifiServerSetting.matchPrivateWifi) {
         baseCondition.sharedable = true;
     }
     //匹配个人热点
-    baseCondition = _.extend(baseCondition,{$or:[{is_hotspot:true},{sec_level: {'$ne': 1}}]});
+    baseCondition = _.extend(baseCondition, {$or: [{is_hotspot: true}, {sec_level: {'$ne': 1}}]});
     return baseCondition;
 }
 
@@ -205,10 +248,10 @@ var findWifiInfo = function (req, res, next) {
     _.each(infos, function (_wifiInfo) {
         //id查找
         if (_wifiInfo._id) {
-            try{
+            try {
                 idConditions.push(mongoose.mongo.ObjectId(_wifiInfo._id));
-            }catch(e){
-                log.error('convert objectId error:',_wifiInfo._id);
+            } catch (e) {
+                log.error('convert objectId error:', _wifiInfo._id);
             }
             return;
         }
@@ -307,10 +350,10 @@ var findWifiInfo = function (req, res, next) {
                 };
             } else {
                 if (_result.poster.normal) {
-                    _result.poster.normal = config.posterBaseUrl+path.join(config.AvatarS3BuketName,_result.poster.normal);
+                    _result.poster.normal = config.posterBaseUrl + path.join(config.AvatarS3BuketName, _result.poster.normal);
                 }
                 if (_result.poster.thumb) {
-                    _result.poster.thumb = config.posterBaseUrl+path.join(config.AvatarS3BuketName,_result.poster.thumb);
+                    _result.poster.thumb = config.posterBaseUrl + path.join(config.AvatarS3BuketName, _result.poster.thumb);
                 }
             }
             var _resultData = {};
@@ -333,13 +376,13 @@ var findWifiInfo = function (req, res, next) {
  */
 var avatarStorage = multer.diskStorage({
     destination: function (req, file, cb) {
-        fs.exists(config.uploadAvatarFileDir,function(exists){
-            if(exists){
+        fs.exists(config.uploadAvatarFileDir, function (exists) {
+            if (exists) {
                 cb(null, config.uploadAvatarFileDir)
-            }else{
+            } else {
                 log.info('upload path not exists . ');
-                fs.mkdir(config.uploadAvatarFileDir,function(err){
-                    if(err) log.error(err);
+                fs.mkdir(config.uploadAvatarFileDir, function (err) {
+                    if (err) log.error(err);
                     log.info('upload path craeted!');
                     cb(null, config.uploadAvatarFileDir)
                 });
@@ -371,21 +414,21 @@ var uploadHotspotPoster = function (req, res, next) {
     if (!id) {//没有id则生成
         id = new mongoose.mongo.ObjectId();
     } else {
-        try{
+        try {
             id = mongoose.mongo.ObjectId(id);
-        }catch(e){
+        } catch (e) {
             return next(new error.Arg('Id is Not objectId'));
         }
     }
     async.parallel([
         function (cb) {
-            Wifi.findAndModify({_id:id}, [], {
-                $set: {
-                    "poster.normal"       : file.filename,
-                    "poster.thumb"        : file.filename + '-thumb'
+            Wifi.findAndModify({_id: id}, [], {
+                $set        : {
+                    "poster.normal": file.filename,
+                    "poster.thumb" : file.filename + '-thumb'
                 },
-                $currentDate:{updatedAt:true},
-                $setOnInsert:{createdAt:new Date}
+                $currentDate: {updatedAt: true},
+                $setOnInsert: {createdAt: new Date}
             }, {new: true, upsert: true}, cb);
         },
         function (cb) {
@@ -394,18 +437,18 @@ var uploadHotspotPoster = function (req, res, next) {
     ], function (err, results) {
         if (err) return next(new error.Upload('upload hotspot error!'));
         async.parallel([
-                function (cb) {
-                    awsS3.uploadFile(file.filename, file.path,file.mimetype,cb);
-                },
-                function (cb) {
-                    awsS3.uploadFile(file.filename + '-thumb', file.path + '-thumb',file.mimetype,cb);
-                }
-            ],function (err, s3results) {
-                if(err) return log.error(err);
-                fs.unlink(file.path);
-                fs.unlink(file.path+ '-thumb');
-                log.info('avatar:'+file.path+' deleted!');
-            });
+            function (cb) {
+                awsS3.uploadFile(file.filename, file.path, file.mimetype, cb);
+            },
+            function (cb) {
+                awsS3.uploadFile(file.filename + '-thumb', file.path + '-thumb', file.mimetype, cb);
+            }
+        ], function (err, s3results) {
+            if (err) return log.error(err);
+            fs.unlink(file.path);
+            fs.unlink(file.path + '-thumb');
+            log.info('avatar:' + file.path + ' deleted!');
+        });
         res.body = {
             id: id
         };
@@ -496,7 +539,7 @@ var apiProfile = [
                 }
             }
         },
-        handler    : [common.gatherIpInfo, gatherWifiInfo,common.saveDeviceInfo]
+        handler    : [common.gatherIpInfo, gatherWifiInfo, common.saveDeviceInfo]
     },
     {
         method     : 'post',
@@ -510,7 +553,7 @@ var apiProfile = [
             {
                 name  : 'body',
                 in    : 'body',
-                schema:  {$ref: '#/definitions/hotspotGather'}
+                schema: {$ref: '#/definitions/hotspotGather'}
             }
         ],
         responses  : {

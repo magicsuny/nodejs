@@ -120,6 +120,7 @@ var gatherWifiInfo = function (req, res, next) {
  */
 var gatherWifiHotSpotInfo = function (req, res, next) {
     var _wifiInfo = req.body;
+    var matchCondition = {};
     //TODO 校验上传信息|头像信息处理
     if (!_wifiInfo) {
         var err = new error.Arg('Parameters Error!');
@@ -152,18 +153,22 @@ var gatherWifiHotSpotInfo = function (req, res, next) {
     }
     var _id = _wifiInfo._id;
     delete _wifiInfo._id;
-    if (!_id) {//有_id为已处理数据直接更新
-        _id = new mongoose.mongo.ObjectId();
-    } else {
-        _id = mongoose.mongo.ObjectId(_id);
-    }
+
     if(_wifiInfo.bssid){
         _wifiInfo.bssid = _wifiInfo.bssid.toUpperCase();
     }
-    Wifi.findAndModify({_id: _id,bssid:_wifiInfo.bssid}, [], {$set: _wifiInfo,$currentDate:{updatedAt:true,lastConnectedAt:true},$setOnInsert:{createdAt:new Date}}, {new: true, upsert: true}, function (err, data) {
+    if (!_id) {//有_id为已处理数据直接更新
+        //_id = new mongoose.mongo.ObjectId();
+        matchCondition.bssid =_wifiInfo.bssid;
+    } else {
+        _id = mongoose.mongo.ObjectId(_id);
+        matchCondition._id = _id;
+    }
+    Wifi.findAndModify(matchCondition, [], {$set: _wifiInfo,$currentDate:{updatedAt:true,lastConnectedAt:true},$setOnInsert:{createdAt:new Date}}, {new: true, upsert: true}, function (err, data) {
         if (err) return next(new error.Server('save hotspot error!'));
+        var id = data.value._id.toString();
         res.body = {
-            id: _id
+            id: id
         };
         next();
     });

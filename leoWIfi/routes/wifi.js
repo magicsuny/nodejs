@@ -160,7 +160,7 @@ var gatherWifiHotSpotInfo = function (req, res, next) {
     if(_wifiInfo.bssid){
         _wifiInfo.bssid = _wifiInfo.bssid.toUpperCase();
     }
-    Wifi.findAndModify({_id: _id}, [], {$set: _wifiInfo,$currentDate:{updatedAt:true,lastConnectedAt:true},$setOnInsert:{createdAt:new Date}}, {new: true, upsert: true}, function (err, data) {
+    Wifi.findAndModify({_id: _id,bssid:_wifiInfo.bssid}, [], {$set: _wifiInfo,$currentDate:{updatedAt:true,lastConnectedAt:true},$setOnInsert:{createdAt:new Date}}, {new: true, upsert: true}, function (err, data) {
         if (err) return next(new error.Server('save hotspot error!'));
         res.body = {
             id: _id

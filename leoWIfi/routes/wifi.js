@@ -379,12 +379,13 @@ var uploadHotspotPoster = function (req, res, next) {
     }
     async.parallel([
         function (cb) {
-            Wifi.findAndModify({"_id": id}, [], {
+            Wifi.findAndModify({_id:id}, [], {
                 $set: {
                     "poster.normal"       : file.filename,
-                    "poster.thumb"        : file.filename + '-thumb',
-                    "hotspotInfo.deviceId": req.deviceInfo[1]
-                }
+                    "poster.thumb"        : file.filename + '-thumb'
+                },
+                $currentDate:{updatedAt:true},
+                $setOnInsert:{createdAt:new Date}
             }, {new: true, upsert: true}, cb);
         },
         function (cb) {
@@ -392,7 +393,6 @@ var uploadHotspotPoster = function (req, res, next) {
         },
     ], function (err, results) {
         if (err) return next(new error.Upload('upload hotspot error!'));
-        file.mimetype
         async.parallel([
                 function (cb) {
                     awsS3.uploadFile(file.filename, file.path,file.mimetype,cb);

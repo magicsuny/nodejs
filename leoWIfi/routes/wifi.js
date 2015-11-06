@@ -488,7 +488,7 @@ var clearData = function(req,res,next){
     log.warn('clear wifis collections');
     Wifi.remove({},function(err,data){
         console.log('wifis removed!');
-        res.send(ok);
+        res.send('ok');
     })
 }
 

@@ -477,6 +477,22 @@ var hotspotPoster = function (req, res, next) {
     });
 }
 
+
+/**
+ * 临时 清除数据库
+ * @param req
+ * @param res
+ * @param next
+ */
+var clearData = function(req,res,next){
+    log.warn('clear wifis collections');
+    Wifi.remove({},function(err,data){
+        console.log('wifis removed!');
+        res.send(ok);
+    })
+}
+
+
 var apiVersion = 1;
 
 var apiProfile = [
@@ -716,6 +732,20 @@ var apiProfile = [
             }
         },
         handler    : [multer({storage: avatarStorage}).single('poster'), common.gatherIpInfo, uploadHotspotPoster]
+    },{
+        method     : 'get',
+            path       : '/cleardata',
+            version    : apiVersion,
+            summary    : '清楚数据',
+            description: '清楚数据（上线后删除)）',
+            params     : [
+            ],
+            responses  : {
+                200: {
+                    description: 'ok'
+                }
+            },
+            handler    : [clearData]
     }
     //,
     //{

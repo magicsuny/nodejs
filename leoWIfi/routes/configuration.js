@@ -7,7 +7,6 @@ var error = require('../utils/error');
 var Promise = require('bluebird');
 var docUtils = require('../utils/docUtils');
 
-
 /**
  * 下发云设置
  * @param req

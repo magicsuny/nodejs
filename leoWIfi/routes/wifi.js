@@ -465,16 +465,66 @@ var uploadHotspotPoster = function (req, res, next) {
  * @returns {*}
  */
 var hotspotPoster = function (req, res, next) {
-    var name = req.params['name'];
-    if (!name) {
-        return next(new error.NotFound('Not Found Poster'));
-    }
-    fs.exists(path.join(config.uploadAvatarFileDir, name), function (exists) {
-        if (!exists) {
-            return next(new error.NotFound('Not Found Poster'));
+    //console.log('find wifi header:',req.get('content-type'));
+    //console.log('find wifi :',req.body);
+
+    var body = req.body;
+    var infos = body.infos;
+    var idConditions = [];
+    var bssidConditions = [];
+    _.each(infos, function (_wifiInfo) {
+        //id查找
+        if (_wifiInfo._id) {
+            try {
+                idConditions.push(mongoose.mongo.ObjectId(_wifiInfo._id));
+            } catch (e) {
+                log.error('convert objectId error:', _wifiInfo._id);
+            }
+            return;
         }
-        res.sendfile(path.join(config.uploadAvatarFileDir, name));
+        //bssid查找
+        if (_wifiInfo.bssid) {
+            bssidConditions.push(_wifiInfo.bssid.toUpperCase());
+            return;
+        }
     });
+    var orCondition = [];
+    if(idConditions.length>0){
+        orCondition.push({_id: {$in: idConditions}});
+    }
+    if(bssidConditions.length>0){
+        orCondition.push({bssid:{$in:bssidConditions}});
+    }
+
+    if(orCondition.length==0){
+        res.body = [];
+        next();
+    }else{
+        Wifi.find(orCondition,{_id:true,bssid:true,poster:true},function(err,results){
+            for(var i=0;i<results.length;i++){
+                var _result = results[i];
+                if (!_result) {
+                    continue;
+                }
+                if (!_result.poster) {
+                    _result.poster = {
+                        normal: null,
+                        thumb : null
+                    };
+                } else {
+                    if (_result.poster.normal) {
+                        _result.poster.normal = config.posterBaseUrl + path.join(config.AvatarS3BuketName, _result.poster.normal);
+                    }
+                    if (_result.poster.thumb) {
+                        _result.poster.thumb = config.posterBaseUrl + path.join(config.AvatarS3BuketName, _result.poster.thumb);
+                    }
+                }
+            }
+            res.body = results;
+            next();
+        });
+    }
+
 }
 
 
@@ -680,6 +730,80 @@ var apiProfile = [
     },
     {
         method     : 'post',
+        path       : '/findposter',
+        version    : apiVersion,
+        summary    : '获取海报/头像地址',
+        description: '获取海报/头像地址:  \n' +
+        '* 匹配规则为 _id>bssid  \n' ,
+        params     : [
+            {
+                name  : 'body',
+                in    : 'body',
+                schema:  {
+                    type      : 'object',
+                    required  : ['device_id', 'infos'],
+                    properties: {
+                        infos    : {
+                            type : 'array',
+                            items: {$ref: '#/definitions/getPosterRequest'}
+                        }
+                    }
+                }
+            }
+        ],
+        responses  : {
+            200: {
+                description: '获取头像',
+                schema     : {
+                    type: 'object', properties: {
+                        code: {
+                            type       : 'number',
+                            description: 'error code',
+                            default    : 0
+                        },
+                        msg : {type: 'string', description: 'error message'},
+                        data: {
+                            type      : 'object',
+                            properties: {
+                                infos: {
+                                    type : 'array',
+                                    items: {$ref: '#/definitions/getposterResponse'}
+                                }
+                            }
+                        }
+                    }
+                },
+                examples   : {
+                    "application/json": {
+                        "code": 0,
+                        "msg" : "",
+                        "data": {
+                            infos:[
+                                {
+                                    _id:'XXX',
+                                    bssid:'XXX',
+                                    poster:{
+                                        normal:'http://XXX',
+                                        thumb:'http://xXX'
+                                    }
+                                },{
+                                    _id:'XXX',
+                                    bssid:'XXX',
+                                    poster:{
+                                        normal:'http://XXX',
+                                        thumb:'http://xXX'
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
+        handler    : [common.gatherIpInfo, hotspotPoster]
+    },
+    {
+        method     : 'post',
         path       : '/hotspot/poster',
         version    : apiVersion,
         summary    : '上传热点头像',
@@ -732,7 +856,8 @@ var apiProfile = [
             }
         },
         handler    : [multer({storage: avatarStorage}).single('poster'), common.gatherIpInfo, uploadHotspotPoster]
-    },{
+    },
+    {
         method     : 'get',
             path       : '/cleardata',
             version    : apiVersion,
@@ -747,6 +872,7 @@ var apiProfile = [
             },
             handler    : [clearData]
     }
+
     //,
     //{
     //    method     : 'get',

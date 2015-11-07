@@ -69,6 +69,26 @@ exports.simpleWifiInfo = {
     }
 };
 
+exports.getPosterRequest = {
+    type: 'object', properties: {
+        _id         : {type: 'string', description: "db objectId"},
+        bssid        : {type: 'string', description: "wifi bssid"}
+    }
+}
+
+exports.getposterResponse = {
+    type: 'object', properties: {
+        _id         : {type: 'string', description: "db objectId"},
+        bssid        : {type: 'string', description: "wifi bssid"},
+        poster          : {
+            type: 'object', properties: {
+                normal: {type: 'string', description: "标准图Url"},
+                thumb: {type: 'string', description: "缩略图Url"}
+            }
+        }
+    }
+}
+
 exports.wifiInfoResponse = {
     type: 'object', properties: {
         _id           : {type: 'string', description: "db objectId"},

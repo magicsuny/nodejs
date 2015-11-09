@@ -500,7 +500,7 @@ var hotspotPoster = function (req, res, next) {
         res.body = [];
         next();
     } else {
-        Wifi.find(orCondition, {_id: true, bssid: true, poster: true}, function (err, results) {
+        Wifi.find({$or:orCondition}, {_id: true, bssid: true, poster: true}, function (err, results) {
             var data = [];
             for (var i = 0; i < results.length; i++) {
                 var _result = results[i];

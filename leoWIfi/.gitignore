@@ -39,4 +39,10 @@ node_modules
 
 /profile/production.js
 
-/test
+/test/gmtest.js
+
+/test/test.jpg
+
+/test/test-resize.jpg
+
+/test/test-thumb.jpg

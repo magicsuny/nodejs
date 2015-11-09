@@ -535,7 +535,7 @@ var hotspotPoster = function (req, res, next) {
  * @param next
  */
 var clearData = function(req,res,next){
-    log.warn('clear wifis collections');
+    log.warn('clear wifis collections'); //test
     Wifi.remove({},function(err,data){
         console.log('wifis removed!');
         res.send('ok');

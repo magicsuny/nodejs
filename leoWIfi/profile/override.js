@@ -37,8 +37,8 @@ exports.mongoDbConfig = {
 }
 
 var logFile = {
-    info : '../info.log',
-    error: '../error.log'
+    info : '/var/log/leowifi/info.log',
+    error: '/var/log/leowifi/error.log'
 };
 
 var transports = [

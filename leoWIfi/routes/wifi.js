@@ -489,38 +489,31 @@ var hotspotPoster = function (req, res, next) {
         }
     });
     var orCondition = [];
-    if(idConditions.length>0){
+    if (idConditions.length > 0) {
         orCondition.push({_id: {$in: idConditions}});
     }
-    if(bssidConditions.length>0){
-        orCondition.push({bssid:{$in:bssidConditions}});
+    if (bssidConditions.length > 0) {
+        orCondition.push({bssid: {$in: bssidConditions}});
     }
 
-    if(orCondition.length==0){
+    if (orCondition.length == 0) {
         res.body = [];
         next();
-    }else{
-        Wifi.find(orCondition,{_id:true,bssid:true,poster:true},function(err,results){
-            for(var i=0;i<results.length;i++){
+    } else {
+        Wifi.find(orCondition, {_id: true, bssid: true, poster: true}, function (err, results) {
+            var data = [];
+            for (var i = 0; i < results.length; i++) {
                 var _result = results[i];
                 if (!_result) {
                     continue;
                 }
-                if (!_result.poster) {
-                    _result.poster = {
-                        normal: null,
-                        thumb : null
-                    };
-                } else {
-                    if (_result.poster.normal) {
-                        _result.poster.normal = config.posterBaseUrl + path.join(config.AvatarS3BuketName, _result.poster.normal);
-                    }
-                    if (_result.poster.thumb) {
-                        _result.poster.thumb = config.posterBaseUrl + path.join(config.AvatarS3BuketName, _result.poster.thumb);
-                    }
+                if (_result.poster && _result.poster.normal && _result.poster.thumb) {
+                    _result.poster.normal = config.posterBaseUrl + path.join(config.AvatarS3BuketName, _result.poster.normal);
+                    _result.poster.thumb = config.posterBaseUrl + path.join(config.AvatarS3BuketName, _result.poster.thumb);
+                    data.push(_result);
                 }
             }
-            res.body = results;
+            res.body = data;
             next();
         });
     }
@@ -534,9 +527,9 @@ var hotspotPoster = function (req, res, next) {
  * @param res
  * @param next
  */
-var clearData = function(req,res,next){
+var clearData = function (req, res, next) {
     log.warn('clear wifis collections'); //test
-    Wifi.remove({},function(err,data){
+    Wifi.remove({}, function (err, data) {
         console.log('wifis removed!');
         res.send('ok');
     })
@@ -734,16 +727,16 @@ var apiProfile = [
         version    : apiVersion,
         summary    : '获取海报/头像地址',
         description: '获取海报/头像地址:  \n' +
-        '* 匹配规则为 _id>bssid  \n' ,
+        '* 匹配规则为 _id>bssid  \n',
         params     : [
             {
                 name  : 'body',
                 in    : 'body',
-                schema:  {
+                schema: {
                     type      : 'object',
                     required  : ['device_id', 'infos'],
                     properties: {
-                        infos    : {
+                        infos: {
                             type : 'array',
                             items: {$ref: '#/definitions/getPosterRequest'}
                         }
@@ -778,20 +771,20 @@ var apiProfile = [
                         "code": 0,
                         "msg" : "",
                         "data": {
-                            infos:[
+                            infos: [
                                 {
-                                    _id:'XXX',
-                                    bssid:'XXX',
-                                    poster:{
-                                        normal:'http://XXX',
-                                        thumb:'http://xXX'
+                                    _id   : 'XXX',
+                                    bssid : 'XXX',
+                                    poster: {
+                                        normal: 'http://XXX',
+                                        thumb : 'http://xXX'
                                     }
-                                },{
-                                    _id:'XXX',
-                                    bssid:'XXX',
-                                    poster:{
-                                        normal:'http://XXX',
-                                        thumb:'http://xXX'
+                                }, {
+                                    _id   : 'XXX',
+                                    bssid : 'XXX',
+                                    poster: {
+                                        normal: 'http://XXX',
+                                        thumb : 'http://xXX'
                                     }
                                 }
                             ]
@@ -859,18 +852,17 @@ var apiProfile = [
     },
     {
         method     : 'get',
-            path       : '/cleardata',
-            version    : apiVersion,
-            summary    : '清楚数据',
-            description: '清楚数据（上线后删除)）',
-            params     : [
-            ],
-            responses  : {
-                200: {
-                    description: 'ok'
-                }
-            },
-            handler    : [clearData]
+        path       : '/cleardata',
+        version    : apiVersion,
+        summary    : '清楚数据',
+        description: '清楚数据（上线后删除)）',
+        params     : [],
+        responses  : {
+            200: {
+                description: 'ok'
+            }
+        },
+        handler    : [clearData]
     }
 
     //,

@@ -816,10 +816,10 @@ var apiProfile = [
                 description: '头像文件'
             },
             {
-                name       : 'id',
+                name       : 'bssid',
                 type       : 'string',
                 in         : 'formData',
-                description: '热点id'
+                description: '热点bssid'
             }
 
         ],

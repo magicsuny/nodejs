@@ -454,6 +454,7 @@ var uploadHotspotPoster = function (req, res, next) {
             fs.unlink(file.path + '-thumb');
             log.info('avatar:' + file.path + ' deleted!');
         });
+        var id = results[0].value._id.toString();
         res.body = {
             id: id
         };

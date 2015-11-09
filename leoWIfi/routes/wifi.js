@@ -190,19 +190,20 @@ var gatherWifiHotSpotInfo = function (req, res, next) {
     if (!_.isNaN(_wifiInfo.longitude) && !_.isNaN(_wifiInfo.latitude)) {
         _wifiInfo.location = [_wifiInfo.longitude, _wifiInfo.latitude];
     }
-    var _id = _wifiInfo._id;
+    //var _id = _wifiInfo._id;
     delete _wifiInfo._id;
 
     if (_wifiInfo.bssid) {
         _wifiInfo.bssid = _wifiInfo.bssid.toUpperCase();
     }
-    if (!_id) {//有_id为已处理数据直接更新
-        //_id = new mongoose.mongo.ObjectId();
-        matchCondition.bssid = _wifiInfo.bssid;
-    } else {
-        _id = mongoose.mongo.ObjectId(_id);
-        matchCondition._id = _id;
-    }
+    matchCondition.bssid = _wifiInfo.bssid;
+    //if (!_id) {//有_id为已处理数据直接更新
+    //    //_id = new mongoose.mongo.ObjectId();
+    //    matchCondition.bssid = _wifiInfo.bssid;
+    //} else {
+    //    _id = mongoose.mongo.ObjectId(_id);
+    //    matchCondition._id = _id;
+    //}
     Wifi.findAndModify(matchCondition, [], {
         $set        : _wifiInfo,
         $currentDate: {updatedAt: true, lastConnectedAt: true},
@@ -406,23 +407,26 @@ var avatarStorage = multer.diskStorage({
  * @returns {*}
  */
 var uploadHotspotPoster = function (req, res, next) {
-    var id = req.body.id;
+    var bssid = req.body.bssid;
     var file = req.file;
     if (!file) {
         return next(new error.Upload('no avatar upload'));
     }
-    if (!id) {//没有id则生成
-        id = new mongoose.mongo.ObjectId();
-    } else {
-        try {
-            id = mongoose.mongo.ObjectId(id);
-        } catch (e) {
-            return next(new error.Arg('Id is Not objectId'));
-        }
+    if(!bssid){//没有bssid返回错误
+        return next(new error.Arg('bssId is missing'));
     }
+    //if (!id) {//没有id则生成
+    //    id = new mongoose.mongo.ObjectId();
+    //} else {
+    //    try {
+    //        id = mongoose.mongo.ObjectId(id);
+    //    } catch (e) {
+    //        return next(new error.Arg('Id is Not objectId'));
+    //    }
+    //}
     async.parallel([
         function (cb) {
-            Wifi.findAndModify({_id: id}, [], {
+            Wifi.findAndModify({bssid: bssid}, [], {
                 $set        : {
                     "poster.normal": file.filename,
                     "poster.thumb" : file.filename + '-thumb'

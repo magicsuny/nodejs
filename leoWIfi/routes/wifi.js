@@ -513,7 +513,7 @@ var hotspotPoster = function (req, res, next) {
                     data.push(_result);
                 }
             }
-            res.body = data;
+            res.body = {infos:data};
             next();
         });
     }

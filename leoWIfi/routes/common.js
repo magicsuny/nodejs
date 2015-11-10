@@ -1,6 +1,3 @@
-/**
- * Created by zhaohailong on 5/5/15.
- */
 var config   = require('../profile/config.js');
 var _        = require('underscore');
 var validate = require('../utils/validate');

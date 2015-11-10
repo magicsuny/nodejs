@@ -8,7 +8,7 @@ var util     = require('util');
 var error    = require('../utils/error');
 var geoip = require('geoip-lite');
 var ipaddr = require('ipaddr.js');
-var Device = require('../model/.db').Device;
+var Device = require('../model/db').Device;
 /**
  * 获取deviceInfo
  * @param req

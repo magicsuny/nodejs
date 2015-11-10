@@ -26,11 +26,12 @@
     "mongoose": "^4.1.11",
     "morgan": "~1.6.1",
     "multer": "^1.1.0",
+    "request": "2.55.0",
     "serve-favicon": "~2.3.0",
     "underscore": "1.8.3",
+    "ursa": "^0.9.1",
     "validator": "^3.40.0",
-    "winston": "^1.0.0",
-    "request": "2.55.0"
+    "winston": "^1.0.0"
   },
   "devDependencies": {
     "mocha": "2.2.4",

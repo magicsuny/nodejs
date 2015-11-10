@@ -100,7 +100,7 @@ exports.err = function (err, req, res, next) {
 
 
 exports.pre = function(req, res, next){
-    res.setHeader("x-powered-by", "Yuan");
+    res.setHeader("x-powered-by", "Leomaster");
     var start = Date.now();
     var _send = res.send;
     res.send = function(){

@@ -69,7 +69,7 @@ var _saveWifiInfos = function (infos, options, cb) {
         delete _wifiInfo._id;
         _wifiInfo.country = location.country;
         _wifiInfo.city = location.city;
-        _wifiInfo.is_hotspot = options.isHotspot;
+        //_wifiInfo.is_hotspot = options.isHotspot;
         _wifiInfo.updatedAt = new Date();
         //_wifiInfo.connectable = true;
         if (_.isNull(_wifiInfo.connectable) || _.isUndefined(_wifiInfo.connectable)) {

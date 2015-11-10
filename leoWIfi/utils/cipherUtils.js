@@ -4,20 +4,21 @@
 var crypto = require('crypto');
 var ursa = require('ursa');
 var config = require('../profile/config');
-var rsa = {
-    server:ursa.createPrivateKey(fs.readFileSync(config.rsaKeyPath.server)),
-    client:ursa.createPublicKey(fs.readFileSync(config.rsaKeyPath.client))
-}
+var fs = require('fs');
+//var rsa = {
+//    server:ursa.createPrivateKey(fs.readFileSync(config.rsaKeyPath.server)),
+//    client:ursa.createPublicKey(fs.readFileSync(config.rsaKeyPath.client))
+//}
 
 
 exports.aesEncrypt = function(data, secretKey) {
     var cipher = crypto.createCipher('aes-128-ecb',config.cipherKey,'');
-    return cipher.update(data,'utf8','hex') + cipher.final('hex');
+    return cipher.update(data,'utf8','base64') + cipher.final('base64');
 }
 
 exports.aesDecrypt = function(data, secretKey) {
     var cipher = crypto.createDecipher('aes-128-ecb',config.cipherKey);
-    return cipher.update(data,'hex','utf8') + cipher.final('utf8');
+    return cipher.update(data,'base64','utf8') + cipher.final('utf8');
 }
 
 exports.desEncrypt = function(param){

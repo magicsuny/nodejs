@@ -266,7 +266,6 @@ var findWifiInfo = function (req, res, next) {
                 _bssidCondition.city = _wifiInfo.city;
             }
             bssidQuerys.push(_bssidCondition);
-            return;
         }
         //ssid查找
         if (_wifiInfo.ssid) {
@@ -291,7 +290,6 @@ var findWifiInfo = function (req, res, next) {
                 };
             }
             ssidQuerys.push(_ssidCondition);
-            return;
         }
     });
     async.parallel([
@@ -304,7 +302,7 @@ var findWifiInfo = function (req, res, next) {
         },
         function (cb) {
             async.map(ssidQuerys, function (ssidQuery, eachCB) {
-                Wifi.find(ssidQuery).exec(eachCB);
+                Wifi.find(ssidQuery).limit(20).exec(eachCB);
             }, cb);
         },
         function (cb) {

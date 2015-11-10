@@ -341,7 +341,8 @@ var findWifiInfo = function (req, res, next) {
                     thumb : null
                 },
                 country     : null,
-                city        : null
+                city        : null,
+                is_hotspot  : null
             };
             _result = _result.toObject();
             if (!_result.poster) {
@@ -582,8 +583,8 @@ var apiProfile = [
                 schema     : {
                     type: 'object', properties: {
                         code: {
-                            type       : 'number',
                             description: 'error code',
+                            type       : 'number',
                             default    : 0
                         },
                         msg : {type: 'string', description: 'error message'},

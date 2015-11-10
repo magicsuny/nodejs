@@ -69,7 +69,7 @@ var _saveWifiInfos = function (infos, options, cb) {
         delete _wifiInfo._id;
         _wifiInfo.country = location.country;
         _wifiInfo.city = location.city;
-        //_wifiInfo.is_hotspot = options.isHotspot;
+        _wifiInfo.is_hotspot = false;
         _wifiInfo.updatedAt = new Date();
         //_wifiInfo.connectable = true;
         if (_.isNull(_wifiInfo.connectable) || _.isUndefined(_wifiInfo.connectable)) {
@@ -279,7 +279,7 @@ var findWifiInfo = function (req, res, next) {
                 _ssidCondition.city = _wifiInfo.city;
             }
             //按照地区过滤以上报点为圆心周围500米有密码wifi
-            if (!_.isNull(body.latitude) && !_.isNull(body.longitude)) {
+            if (!_.isNaN(body.latitude) && !_.isNaN(body.longitude)) {
                 _ssidCondition.location = {
                     $nearSphere: {
                         $geometry   : {
@@ -316,11 +316,20 @@ var findWifiInfo = function (req, res, next) {
         if (err) return next(err);
         var data = _.flatten(results);
         var resultData = [];
+        var hasData = {};
         for (var i = 0; i < data.length; i++) {
             var _result = data[i];
             if (!_result) {
                 continue;
             }
+            if(_result.bssid && hasData[_result.bssid])
+            {
+                continue;
+            }
+            if(_result.bssid){
+                hasData[_result.bssid] = true;
+            }
+
             var resultTpl = {
                 _id         : null,
                 ssid        : null,

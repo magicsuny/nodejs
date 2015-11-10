@@ -81,6 +81,12 @@ exports.rsaKeyPath = {
     server:'/develop/git/nodejs/leoWifi/certs/server/my-server.key.pem1'
 }
 
+/*
+ * token key
+ */
+exports.tokenPrivateKey = 'l!e@o#w$i%f&i&**(@(#';        //token密钥
+exports.tokenTimesout = 30*1000;                         //token过期时间，30s
+
 exports.errorCode = global.errorCode = {
     //@TODO, refine error code logic
     unknownError          : 101,

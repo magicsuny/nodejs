@@ -272,6 +272,9 @@ var deviceSchema = new Schema({
 
 
 deviceSchema.plugin(commonPlugin);
+deviceSchema.statics.findAndModify = function(query,sort,doc,options,callback){
+    return this.collection.findAndModify(query,sort,doc,options,callback);
+};
 
 function promisify(model) {
     Promise.promisifyAll(model);

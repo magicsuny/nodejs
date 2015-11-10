@@ -8,22 +8,38 @@ var util     = require('util');
 var error    = require('../utils/error');
 var geoip = require('geoip-lite');
 var ipaddr = require('ipaddr.js');
+var Device = require('../model/.db').Device;
 /**
  * 获取deviceInfo
  * @param req
  * @param res
  * @param next
  */
+var deviceCols = ["market_id","guid","app_id","app_ver","os_name","android_ver","vendor","model","screen_des","screen_dpi","language","timezone","imei","imsi","mac"];
+
 exports.gatherDeviceInfo = function(req,res,next){
     var regexp = new RegExp('"([^"]+)"',"g");
     var di = decodeURIComponent(req.get('device'));
     var diArray= di.match(regexp);
+    var deviceData = {};
     diArray= _.map(diArray,function(diInfo){
        return diInfo.replace(/"/g,'');
     });
     log.info('DI is :',di,' length is :',diArray.length);
 
-    req.deviceInfo = diArray;
+    if(diArray.length < deviceCols.length){
+        next();
+    }
+
+    for(var i=0;i<deviceCols.length;i++){
+        if(diArray[i]){
+            deviceData[deviceCols] = diArray[i];
+        }else{
+            deviceData[deviceCols] = "";
+        }
+    }
+
+    req.deviceInfo = deviceData;
     next();
 };
 
@@ -34,6 +50,18 @@ exports.gatherDeviceInfo = function(req,res,next){
  * @param next
  */
 exports.saveDeviceInfo = function(req,res,next){
+    var deviceInfo = req.deviceInfo;
+    if(deviceInfo){
+        Device.update({'guid':deviceInfo.guid}, [], {
+            $set        : deviceInfo,
+            $currentDate: {updatedAt: true},
+            $setOnInsert: {createdAt: new Date}
+        }, {new: true, upsert: true}, function (err, data) {
+            if (err){
+                log.error('save device info error');
+            }
+        });
+    }
     next();
 
 };

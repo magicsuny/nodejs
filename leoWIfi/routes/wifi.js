@@ -277,7 +277,7 @@ var findWifiInfo = function (req, res, next) {
                 _ssidCondition.city = _wifiInfo.city;
             }
             //按照地区过滤以上报点为圆心周围500米有密码wifi
-            if (!_.isNull(body.latitude) && !_.isNull(body.longitude)) {
+            if (!_.isNaN(body.latitude) && !_.isNaN(body.longitude)) {
                 _ssidCondition.location = {
                     $nearSphere: {
                         $geometry   : {

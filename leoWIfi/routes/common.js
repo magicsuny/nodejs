@@ -52,18 +52,17 @@ exports.gatherDeviceInfo = function(req,res,next){
 exports.saveDeviceInfo = function(req,res,next){
     var deviceInfo = req.deviceInfo;
     if(deviceInfo){
-        Device.update({'guid':deviceInfo.guid}, [], {
+        Device.update({'guid':deviceInfo.guid},{
             $set        : deviceInfo,
             $currentDate: {updatedAt: true},
             $setOnInsert: {createdAt: new Date}
-        }, {new: true, upsert: true}, function (err, data) {
+        }, {upsert: true}, function (err, data) {
             if (err){
                 log.error('save device info error');
             }
         });
     }
     next();
-
 };
 
 /**

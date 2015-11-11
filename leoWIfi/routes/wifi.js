@@ -736,7 +736,7 @@ var apiProfile = [
                 }
             }
         },
-        handler    : [common.gatherIpInfo, findWifiInfo]
+        handler    : [common.gatherIpInfo, common.decryptData, findWifiInfo,common.encryptData]
     },
     {
         method     : 'post',

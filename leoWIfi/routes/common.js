@@ -4,6 +4,7 @@
 var config   = require('../profile/config.js');
 var _        = require('underscore');
 var validate = require('../utils/validate');
+var cipherUtils = require('../utils/cipherUtils');
 var util     = require('util');
 var error    = require('../utils/error');
 var geoip = require('geoip-lite');
@@ -178,4 +179,27 @@ exports.validate = function (req, res, next) {
     next();
 };
 
+
+exports.decryptData = function(req,res,next){
+    var body = req.body;
+    try{
+        body = JSON.parse(cipherUtils.rsaPrivateDecrypt(body));
+    }catch(e){
+        return next(new error.Cipher('cipher decrypt request error! check the request!'));
+    }
+    req.body = body;
+    next();
+};
+
+
+exports.encryptData = function(req,res,next){
+    var data = res.body;
+    try{
+        data = JSON.stringify(data);
+        res.body = cipherUtils.rsaPrivateEncrypt(data);
+    }catch(e){
+        return next(new error.Cipher('cipher encrypt resopnse error! check the response!'));
+    }
+    next();
+}
 //end

@@ -34,6 +34,7 @@ base.set('view engine', 'html');
 base.set('trust proxy', config.trustProxy);
 //base.engine('html', require('ejs').renderFile);
 base.use(morgan('dev'));
+base.use(bodyParser.text({type:'text/plain'}));
 base.use(bodyParser.json({type:'application/json'}));
 base.use(bodyParser.urlencoded({extended: false}));
 base.use(cookieParser());

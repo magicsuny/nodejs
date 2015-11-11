@@ -51,7 +51,8 @@ exports.desDecrypt = function(param){
  * @returns {string}
  */
 exports.rsaPrivateEncrypt = function(data){
-    return rsa.server.encryptPrivate(data, 'utf8', 'base64');
+    var encryptedData = rsa.server.encryptPrivate(new Buffer(data), 'base64');
+    return encryptedData.toString('base64');
 };
 
 /**
@@ -60,5 +61,5 @@ exports.rsaPrivateEncrypt = function(data){
  * @returns {Buffer|Object|string|Buffer|*}
  */
 exports.rsaPrivateDecrypt = function(data){
-    return rsa.server.decrypt(data,'base64', 'utf8');
+    return rsa.server.decrypt(data, 'utf8');
 }

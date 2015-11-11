@@ -93,6 +93,7 @@ exports.errorCode = global.errorCode = {
     paramsError           : 102,
     uploadedError         : 103,
     headerError           : 104,
+    cipherError           : 105,
     activityOperationError: 107,
     authError             : 108,
     dbError               : 109,

@@ -45,7 +45,7 @@ exports.Auth = Error.extend('Unauthorized', errorCode.authError, httpStatus.OK);
 exports.Login = Error.extend('Forbidden', errorCode.authError, httpStatus.OK);
 exports.Server = Error.extend('InternalError', errorCode.unknownError, httpStatus.OK);
 exports.Upload = Error.extend('UploadError', errorCode.uploadedError, httpStatus.OK);
-
+exports.Cipher = Error.extend('CipherError',errorCode.cipherError,httpStatus.OK);
 
 //Application Error
 function createAppError(settings) {

@@ -10,6 +10,8 @@ var cipher = require('../utils/cipherUtils');
 
 var data = {
     "device_id": "string",
+    "latitude": 0,
+    "longitude": 0,
     "infos": [
         {
             "bssid": "94:f6:65:73:56:dc",
@@ -205,7 +207,7 @@ var data = {
 };
 
 var s = Date.now();
-var encrypt = skey.encryptPrivate(new Buffer(JSON.stringify(data)), 'base64', 'utf8');
+var encrypt = skey.encryptPrivate(new Buffer(JSON.stringify(data)), 'base64');
 console.log(encrypt.toString('base64'),Date.now()-s);
 
 s= Date.now();
@@ -215,7 +217,7 @@ console.log(decrypt,Date.now()-s);
 
 
 s =Date.now();
-var en = ckey.encrypt(new Buffer(JSON.stringify(data)), 'base64', 'utf8');
+var en = ckey.encrypt(new Buffer(JSON.stringify(data)), 'base64');
 console.log(en,Date.now()-s);
 
 s =Date.now();

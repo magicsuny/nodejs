@@ -98,7 +98,7 @@ var _saveWifiInfos = function (infos, options, cb) {
                 return;
             }
             var _idCondition = _.extend({_id: _id}, baseCondition);
-            bulk.find(_idCondition).updateOne({$set:_wifiInfo});
+            bulk.find(_idCondition).updateOne({$set:_wifiInfo,$inc: {gatherTimes: 1}});
             return;
         }
         if (_wifiInfo.bssid) {//有bssid则匹配更新
@@ -113,6 +113,7 @@ var _saveWifiInfos = function (infos, options, cb) {
         }
         //其他情况插入数据
         _wifiInfo.createdAt = new Date();
+        _wifiInfo.gatherTimes = 0;
         bulk.insert(_wifiInfo);
     });//准备更新数据结构
     Wifi.find({bssid:{$in:bssidAry}},{bssid:true},function(err,bssidsInDb){
@@ -124,7 +125,7 @@ var _saveWifiInfos = function (infos, options, cb) {
             if(!updateContent){
                 return;
             }
-            bulk.find(updateContent.condition).update({ $set: updateContent.data});
+            bulk.find(updateContent.condition).update({ $set: updateContent.data,$inc: {gatherTimes: 1}});
             delete bssidContents[bssidInDb.bssid];//删除更新的内容
             //updateBssidArray.push(bssidInDb.bssid);
         });
@@ -133,6 +134,8 @@ var _saveWifiInfos = function (infos, options, cb) {
             if(!instertContent){
                 return;
             }
+            instertContent.data.createdAt = new Date();
+            instertContent.data.gatherTimes = 0;
             bulk.insert(instertContent.data);
         }
         bulk.execute(cb);
@@ -235,8 +238,9 @@ var gatherWifiHotSpotInfo = function (req, res, next) {
     //}
     Wifi.findAndModify(matchCondition, [], {
         $set        : _wifiInfo,
+        $inc        : {gatherTimes: 1},
         $currentDate: {updatedAt: true, lastConnectedAt: true},
-        $setOnInsert: {createdAt: new Date}
+        $setOnInsert: {createdAt: new Date,gatherTimes:0}
     }, {new: true, upsert: true}, function (err, data) {
         if (err) return next(new error.Server('save hotspot error!'));
         var id = data.value._id.toString();

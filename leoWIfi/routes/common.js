@@ -1,6 +1,3 @@
-/**
- * Created by zhaohailong on 5/5/15.
- */
 var config   = require('../profile/config.js');
 var _        = require('underscore');
 var validate = require('../utils/validate');
@@ -33,9 +30,9 @@ exports.gatherDeviceInfo = function(req,res,next){
 
     for(var i=0;i<deviceCols.length;i++){
         if(diArray[i]){
-            deviceData[deviceCols] = diArray[i];
+            deviceData[deviceCols[i]] = diArray[i];
         }else{
-            deviceData[deviceCols] = "";
+            deviceData[deviceCols[i]] = "";
         }
     }
 
@@ -52,7 +49,7 @@ exports.gatherDeviceInfo = function(req,res,next){
 exports.saveDeviceInfo = function(req,res,next){
     var deviceInfo = req.deviceInfo;
     if(deviceInfo){
-        Device.update({'guid':deviceInfo.guid},{
+        Device.update({'guid':deviceInfo.guid}, {
             $set        : deviceInfo,
             $currentDate: {updatedAt: true},
             $setOnInsert: {createdAt: new Date}
@@ -60,6 +57,7 @@ exports.saveDeviceInfo = function(req,res,next){
             if (err){
                 log.error('save device info error');
             }
+            delete req.deviceInfo;
         });
     }
     next();

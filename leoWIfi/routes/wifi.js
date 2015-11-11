@@ -615,7 +615,7 @@ var apiProfile = [
                 }
             }
         },
-        handler    : [common.gatherIpInfo, gatherWifiInfo, common.saveDeviceInfo]
+        handler    : [common.gatherIpInfo, gatherWifiInfo]
     },
     {
         method     : 'post',

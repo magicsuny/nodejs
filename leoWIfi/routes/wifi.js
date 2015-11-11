@@ -31,6 +31,8 @@ var _saveWifiInfos = function (infos, options, cb) {
     }
     //去重条件: 拥有bssid的前提下,同国家
     var bulk = Wifi.collection.initializeUnorderedBulkOp();
+    var bssidAry = [];
+    var bssidContents = {};
     _.each(infos, function (_wifiInfo) {
         //过滤无用内容
         _wifiInfo = _.pick(_wifiInfo,
@@ -96,23 +98,45 @@ var _saveWifiInfos = function (infos, options, cb) {
                 return;
             }
             var _idCondition = _.extend({_id: _id}, baseCondition);
-            bulk.find(_idCondition).updateOne(_wifiInfo);
+            bulk.find(_idCondition).updateOne({$set:_wifiInfo});
             return;
         }
         if (_wifiInfo.bssid) {//有bssid则匹配更新
             _wifiInfo.bssid = _wifiInfo.bssid.toUpperCase();
+
             //TODO 原始数据缺少city属性 需预处理补全
             var _bssidCondition = _.extend({bssid: _wifiInfo.bssid, country: location.country}, baseCondition);
-            bulk.find(_bssidCondition).updateOne(_wifiInfo);
+            bssidAry.push(_wifiInfo.bssid);
+            bssidContents[_wifiInfo.bssid] = {condition:_bssidCondition,data:_wifiInfo};
+            //bulk.find(_bssidCondition).updateOne(_wifiInfo);
             return;
         }
-
         //其他情况插入数据
         _wifiInfo.createdAt = new Date();
         bulk.insert(_wifiInfo);
+    });//准备更新数据结构
+    Wifi.find({bssid:{$in:bssidAry}},{bssid:true},function(err,bssidsInDb){
+        if(err) return cb(err);
 
+        var updateBssidArray = [];
+        _.each(bssidsInDb,function(bssidInDb){//更新bssid
+            var updateContent = bssidContents[bssidInDb.bssid];
+            if(!updateContent){
+                return;
+            }
+            bulk.find(updateContent.condition).update({ $set: updateContent.data});
+            delete bssidContents[bssidInDb.bssid];//删除更新的内容
+            //updateBssidArray.push(bssidInDb.bssid);
+        });
+        for(var insertBssid in bssidContents){//插入bssid
+           var instertContent =  bssidContents[insertBssid];
+            if(!instertContent){
+                return;
+            }
+            bulk.insert(instertContent.data);
+        }
+        bulk.execute(cb);
     });
-    bulk.execute(cb);
 };
 /**
  * wifi信息采集

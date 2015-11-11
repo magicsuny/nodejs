@@ -97,13 +97,16 @@ var _saveWifiInfos = function (infos, options, cb) {
             }
             var _idCondition = _.extend({_id: _id}, baseCondition);
             bulk.find(_idCondition).updateOne(_wifiInfo);
+            return;
         }
         if (_wifiInfo.bssid) {//有bssid则匹配更新
             _wifiInfo.bssid = _wifiInfo.bssid.toUpperCase();
             //TODO 原始数据缺少city属性 需预处理补全
             var _bssidCondition = _.extend({bssid: _wifiInfo.bssid, country: location.country}, baseCondition);
             bulk.find(_bssidCondition).updateOne(_wifiInfo);
+            return;
         }
+
         //其他情况插入数据
         _wifiInfo.createdAt = new Date();
         bulk.insert(_wifiInfo);
@@ -322,11 +325,10 @@ var findWifiInfo = function (req, res, next) {
             if (!_result) {
                 continue;
             }
-            if(_result.bssid && hasData[_result.bssid])
-            {
+            if (_result.bssid && hasData[_result.bssid]) {
                 continue;
             }
-            if(_result.bssid){
+            if (_result.bssid) {
                 hasData[_result.bssid] = true;
             }
 

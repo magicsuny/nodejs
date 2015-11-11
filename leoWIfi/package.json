@@ -26,10 +26,10 @@
     "mongoose": "^4.1.11",
     "morgan": "~1.6.1",
     "multer": "^1.1.0",
+    "node-rsa": "^0.2.26",
     "request": "2.55.0",
     "serve-favicon": "~2.3.0",
     "underscore": "1.8.3",
-    "ursa": "^0.9.1",
     "validator": "^3.40.0",
     "winston": "^1.0.0"
   },

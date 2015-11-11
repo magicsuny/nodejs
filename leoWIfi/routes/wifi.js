@@ -192,7 +192,7 @@ var gatherWifiHotSpotInfo = function (req, res, next) {
     delete _wifiInfo.device_id;
 
     //保存经纬度
-    if (!_.isNaN(_wifiInfo.longitude) && !_.isNaN(_wifiInfo.latitude)) {
+    if (_.isNumber(_wifiInfo.longitude) && _.isNumber(_wifiInfo.latitude)) {
         _wifiInfo.location = [_wifiInfo.longitude, _wifiInfo.latitude];
     }
     //var _id = _wifiInfo._id;
@@ -282,7 +282,7 @@ var findWifiInfo = function (req, res, next) {
                 _ssidCondition.city = _wifiInfo.city;
             }
             //按照地区过滤以上报点为圆心周围500米有密码wifi
-            if (!_.isNaN(body.latitude) && !_.isNaN(body.longitude)) {
+            if (_.isNumber(body.latitude) && _.isNumber(body.longitude)) {
                 _ssidCondition.location = {
                     $nearSphere: {
                         $geometry   : {

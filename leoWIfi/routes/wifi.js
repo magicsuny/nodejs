@@ -615,7 +615,7 @@ var apiProfile = [
                 }
             }
         },
-        handler    : [common.gatherIpInfo, gatherWifiInfo, common.saveDeviceInfo]
+        handler    : [common.gatherIpInfo, common.decryptData, gatherWifiInfo]
     },
     {
         method     : 'post',
@@ -661,7 +661,7 @@ var apiProfile = [
                 }
             }
         },
-        handler    : [common.gatherIpInfo, gatherWifiHotSpotInfo]
+        handler    : [common.gatherIpInfo, common.decryptData, gatherWifiHotSpotInfo]
     },
     {
         method     : 'post',

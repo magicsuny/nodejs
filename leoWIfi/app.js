@@ -58,7 +58,6 @@ app.use('/heartbeat',function(req,res,next){
 });
 app.use('/v1', v1);
 app.use('/v2', v2);
-v1.use(cm.gatherDeviceInfo);
 //v1.use(auth.router);                              //暂时关闭，客户端完成后开始联调
 v1.use('/docs', docs(wifi,configuration));
 v1.use(wifi.router);

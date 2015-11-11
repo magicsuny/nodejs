@@ -69,7 +69,7 @@ var _saveWifiInfos = function (infos, options, cb) {
         delete _wifiInfo._id;
         _wifiInfo.country = location.country;
         _wifiInfo.city = location.city;
-        //_wifiInfo.is_hotspot = options.isHotspot;
+        _wifiInfo.is_hotspot = false;
         _wifiInfo.updatedAt = new Date();
         //_wifiInfo.connectable = true;
         if (_.isNull(_wifiInfo.connectable) || _.isUndefined(_wifiInfo.connectable)) {
@@ -97,15 +97,20 @@ var _saveWifiInfos = function (infos, options, cb) {
             }
             var _idCondition = _.extend({_id: _id}, baseCondition);
             bulk.find(_idCondition).updateOne(_wifiInfo);
-        } else if (_wifiInfo.bssid) {//有bssid则匹配更新
+            return;
+        }
+        if (_wifiInfo.bssid) {//有bssid则匹配更新
             _wifiInfo.bssid = _wifiInfo.bssid.toUpperCase();
             //TODO 原始数据缺少city属性 需预处理补全
             var _bssidCondition = _.extend({bssid: _wifiInfo.bssid, country: location.country}, baseCondition);
-            bulk.find(_bssidCondition).upsert().updateOne(_wifiInfo);
-        } else {//其他情况插入数据
-            _wifiInfo.createdAt = new Date();
-            bulk.insert(_wifiInfo);
+            bulk.find(_bssidCondition).updateOne(_wifiInfo);
+            return;
         }
+
+        //其他情况插入数据
+        _wifiInfo.createdAt = new Date();
+        bulk.insert(_wifiInfo);
+
     });
     bulk.execute(cb);
 };
@@ -320,11 +325,10 @@ var findWifiInfo = function (req, res, next) {
             if (!_result) {
                 continue;
             }
-            if(_result.bssid && hasData[_result.bssid])
-            {
+            if (_result.bssid && hasData[_result.bssid]) {
                 continue;
             }
-            if(_result.bssid){
+            if (_result.bssid) {
                 hasData[_result.bssid] = true;
             }
 
@@ -420,7 +424,7 @@ var uploadHotspotPoster = function (req, res, next) {
     if (!file) {
         return next(new error.Upload('no avatar upload'));
     }
-    if(!bssid){//没有bssid返回错误
+    if (!bssid) {//没有bssid返回错误
         return next(new error.Arg('bssId is missing'));
     }
     //if (!id) {//没有id则生成
@@ -513,7 +517,7 @@ var hotspotPoster = function (req, res, next) {
         res.body = [];
         next();
     } else {
-        Wifi.find({$or:orCondition}, {_id: true, bssid: true, poster: true}, function (err, results) {
+        Wifi.find({$or: orCondition}, {_id: true, bssid: true, poster: true}, function (err, results) {
             var data = [];
             for (var i = 0; i < results.length; i++) {
                 var _result = results[i];
@@ -526,7 +530,7 @@ var hotspotPoster = function (req, res, next) {
                     data.push(_result);
                 }
             }
-            res.body = {infos:data};
+            res.body = {infos: data};
             next();
         });
     }

@@ -1,42 +1,230 @@
-/**
- * Created by sunharuka on 15/11/9.
- */
-'use strict';
+var NodeRSA = require('node-rsa');
+var fs = require('fs');
+var privatekey = fs.readFileSync(__dirname+'/../certs/server/my-server.key.pem');
+var publickey = fs.readFileSync(__dirname+'/../certs/client/my-server.pub');
 
-var fs = require('fs')
-    , ursa = require('ursa')
-    , crt
-    , key
-    , msg
-    ;
+var skey = new NodeRSA(privatekey);
+var ckey = new NodeRSA(publickey);
 
-key = ursa.createPrivateKey(fs.readFileSync(__dirname+'/../certs/server/my-server.key.pem'));
-crt = ursa.createPublicKey(fs.readFileSync(__dirname+'/../certs/client/my-server.pub'));
+var cipher = require('../utils/cipherUtils');
 
-console.log('Encrypt with Public');
-var now = Date.now();
-msg = crt.encrypt("Everything is going to be 200 OKEverything is going to be 200 OKEverything is going to be 200 OKEverything is going to be 200 OKEverything is going to be 200 OKEverything is going to be 200 OKEverything is going to be 200 OKEverything is going to be 200 OKEverything is going to be 200 OKEverything is going to be 200 OKEverything is going to be 200 OKEverything is going to be 200 OKEverything is going to be 200 OKEverything is going to be 200 OKEverything is going to be 200 OKEverything is going to be 200 OKEverything is going to be 200 OKEverything is going to be 200 OKEverything is going to be 200 OKEverything is going to be 200 OKEverything is going to be 200 OKEverything is going to be 200 OKEverything is going to be 200 OKEverything is going to be 200 OKEverything is going to be 200 OKEverything is going to be 200 OKEverything is going to be 200 OKEverything is going to be 200 OKEverything is going to be 200 OKEverything is going to be 200 OKEverything is going to be 200 OKEverything is going to be 200 OKEverything is going to be 200 OKEverything is going to be 200 OKEverything is going to be 200 OKEverything is going to be 200 OKEverything is going to be 200 OKEverything is going to be 200 OKEverything is going to be 200 OKEverything is going to be 200 OKEverything is going to be 200 OKEverything is going to be 200 OKEverything is going to be 200 OKEverything is going to be 200 OKEverything is going to be 200 OKEverything is going to be 200 OKEverything is going to be 200 OKEverything is going to be 200 OKEverything is going to be 200 OKEverything is going to be 200 OKEverything is going to be 200 OKEverything is going to be 200 OKEverything is going to be 200 OK", 'utf8', 'base64');
-var end = Date.now();
-console.log('encrypted', msg, '\n',end-now);
+var data = {
+    "device_id": "string",
+    "infos": [
+        {
+            "bssid": "94:f6:65:73:56:dc",
+            "capabilities": "[WPA-PSK-CCMP][ESS]",
+            "identity": "",
+            "password": "guest4leo",
+            "ssid": "leo-guest",
+            "accuracy": 0.0,
+            "latitude": 0.0,
+            "longitude": 0.0,
+            "tryTime": 1447127182279,
+            "connetable": true,
+            "frequency": 5745,
+            "is_hotspot": false,
+            "is_root": false,
+            "level": -39,
+            "mIsChanged": true,
+            "sec_level": 3,
+            "sharedable": true
+        },
+        {
+            "bssid": "94:f6:65:73:56:dc",
+            "capabilities": "[WPA-PSK-CCMP][ESS]",
+            "identity": "",
+            "password": "guest4leo",
+            "ssid": "leo-guest",
+            "accuracy": 0.0,
+            "latitude": 0.0,
+            "longitude": 0.0,
+            "tryTime": 1447127182279,
+            "connetable": true,
+            "frequency": 5745,
+            "is_hotspot": false,
+            "is_root": false,
+            "level": -39,
+            "mIsChanged": true,
+            "sec_level": 3,
+            "sharedable": true
+        },
+        {
+            "bssid": "94:f6:65:73:56:dc",
+            "capabilities": "[WPA-PSK-CCMP][ESS]",
+            "identity": "",
+            "password": "guest4leo",
+            "ssid": "leo-guest",
+            "accuracy": 0.0,
+            "latitude": 0.0,
+            "longitude": 0.0,
+            "tryTime": 1447127182279,
+            "connetable": true,
+            "frequency": 5745,
+            "is_hotspot": false,
+            "is_root": false,
+            "level": -39,
+            "mIsChanged": true,
+            "sec_level": 3,
+            "sharedable": true
+        },
+        {
+            "bssid": "94:f6:65:73:56:dc",
+            "capabilities": "[WPA-PSK-CCMP][ESS]",
+            "identity": "",
+            "password": "guest4leo",
+            "ssid": "leo-guest",
+            "accuracy": 0.0,
+            "latitude": 0.0,
+            "longitude": 0.0,
+            "tryTime": 1447127182279,
+            "connetable": true,
+            "frequency": 5745,
+            "is_hotspot": false,
+            "is_root": false,
+            "level": -39,
+            "mIsChanged": true,
+            "sec_level": 3,
+            "sharedable": true
+        },
+        {
+            "bssid": "94:f6:65:73:56:dc",
+            "capabilities": "[WPA-PSK-CCMP][ESS]",
+            "identity": "",
+            "password": "guest4leo",
+            "ssid": "leo-guest",
+            "accuracy": 0.0,
+            "latitude": 0.0,
+            "longitude": 0.0,
+            "tryTime": 1447127182279,
+            "connetable": true,
+            "frequency": 5745,
+            "is_hotspot": false,
+            "is_root": false,
+            "level": -39,
+            "mIsChanged": true,
+            "sec_level": 3,
+            "sharedable": true
+        },
+        {
+            "bssid": "94:f6:65:73:56:dc",
+            "capabilities": "[WPA-PSK-CCMP][ESS]",
+            "identity": "",
+            "password": "guest4leo",
+            "ssid": "leo-guest",
+            "accuracy": 0.0,
+            "latitude": 0.0,
+            "longitude": 0.0,
+            "tryTime": 1447127182279,
+            "connetable": true,
+            "frequency": 5745,
+            "is_hotspot": false,
+            "is_root": false,
+            "level": -39,
+            "mIsChanged": true,
+            "sec_level": 3,
+            "sharedable": true
+        },
+        {
+            "bssid": "94:f6:65:73:56:dc",
+            "capabilities": "[WPA-PSK-CCMP][ESS]",
+            "identity": "",
+            "password": "guest4leo",
+            "ssid": "leo-guest",
+            "accuracy": 0.0,
+            "latitude": 0.0,
+            "longitude": 0.0,
+            "tryTime": 1447127182279,
+            "connetable": true,
+            "frequency": 5745,
+            "is_hotspot": false,
+            "is_root": false,
+            "level": -39,
+            "mIsChanged": true,
+            "sec_level": 3,
+            "sharedable": true
+        },
+        {
+            "bssid": "94:f6:65:73:56:dc",
+            "capabilities": "[WPA-PSK-CCMP][ESS]",
+            "identity": "",
+            "password": "guest4leo",
+            "ssid": "leo-guest",
+            "accuracy": 0.0,
+            "latitude": 0.0,
+            "longitude": 0.0,
+            "tryTime": 1447127182279,
+            "connetable": true,
+            "frequency": 5745,
+            "is_hotspot": false,
+            "is_root": false,
+            "level": -39,
+            "mIsChanged": true,
+            "sec_level": 3,
+            "sharedable": true
+        },
+        {
+            "bssid": "94:f6:65:73:56:dc",
+            "capabilities": "[WPA-PSK-CCMP][ESS]",
+            "identity": "",
+            "password": "guest4leo",
+            "ssid": "leo-guest",
+            "accuracy": 0.0,
+            "latitude": 0.0,
+            "longitude": 0.0,
+            "tryTime": 1447127182279,
+            "connetable": true,
+            "frequency": 5745,
+            "is_hotspot": false,
+            "is_root": false,
+            "level": -39,
+            "mIsChanged": true,
+            "sec_level": 3,
+            "sharedable": true
+        },
+        {
+            "bssid": "94:f6:65:73:56:dc",
+            "capabilities": "[WPA-PSK-CCMP][ESS]",
+            "identity": "",
+            "password": "guest4leo",
+            "ssid": "leo-guest",
+            "accuracy": 0.0,
+            "latitude": 0.0,
+            "longitude": 0.0,
+            "tryTime": 1447127182279,
+            "connetable": true,
+            "frequency": 5745,
+            "is_hotspot": false,
+            "is_root": false,
+            "level": -39,
+            "mIsChanged": true,
+            "sec_level": 3,
+            "sharedable": true
+        }
+    ]
+};
 
-console.log('Decrypt with Private');
-now = Date.now();
-msg = key.decrypt(msg, 'base64', 'utf8');
-end = Date.now();
-console.log('decrypted', msg, '\n',end-now);
+var s = Date.now();
+var encrypt = skey.encryptPrivate(new Buffer(JSON.stringify(data)), 'base64', 'utf8');
+console.log(encrypt.toString('base64'),Date.now()-s);
 
-console.log('############################################');
-console.log('Reverse Public -> Private, Private -> Public');
-console.log('############################################\n');
+s= Date.now();
+var decrypt = ckey.decryptPublic(encrypt,'utf8');
+console.log(decrypt,Date.now()-s);
 
-console.log('Encrypt with Private (called public)');
-now = Date.now();
-msg = key.privateEncrypt("Everything is going to be 200 OK", 'utf8', 'base64');
-end = Date.now();
-console.log('encrypted', msg, '\n',end-now);
 
-console.log('Decrypt with Public (called private)');
-now = Date.now();
-msg = crt.publicDecrypt(msg, 'base64', 'utf8');
-end = Date.now();
-console.log('decrypted', msg, '\n',end-now);
+
+s =Date.now();
+var en = ckey.encrypt(new Buffer(JSON.stringify(data)), 'base64', 'utf8');
+console.log(en,Date.now()-s);
+
+s =Date.now();
+console.log(skey.decrypt(en,'utf8'),Date.now()-s);
+//
+//s = Date.now();
+//var arsen = cipher.aesEncrypt(JSON.stringify(data));
+//console.log(arsen,Date.now()-s);
+//
+//s= Date.now();
+//var arsde = cipher.aesDecrypt(arsen);
+//console.log(arsde,Date.now()-s);

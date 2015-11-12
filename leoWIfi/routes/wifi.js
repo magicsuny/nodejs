@@ -97,7 +97,7 @@ var _saveWifiInfos = function (infos, options, cb) {
             } catch (e) {
                 return;
             }
-            var _idCondition = _.extend({_id: _id}, baseCondition);
+            var _idCondition = _.extend({_id: _id,is_hotspot:false}, baseCondition);
             bulk.find(_idCondition).updateOne({$set:_wifiInfo,$inc: {gatherTimes: 1}});
             return;
         }
@@ -105,7 +105,7 @@ var _saveWifiInfos = function (infos, options, cb) {
             _wifiInfo.bssid = _wifiInfo.bssid.toUpperCase();
 
             //TODO 原始数据缺少city属性 需预处理补全
-            var _bssidCondition = _.extend({bssid: _wifiInfo.bssid, country: location.country}, baseCondition);
+            var _bssidCondition = _.extend({bssid: _wifiInfo.bssid, country: location.country,is_hotspot:false}, baseCondition);
             bssidAry.push(_wifiInfo.bssid);
             bssidContents[_wifiInfo.bssid] = {condition:_bssidCondition,data:_wifiInfo};
             //bulk.find(_bssidCondition).updateOne(_wifiInfo);

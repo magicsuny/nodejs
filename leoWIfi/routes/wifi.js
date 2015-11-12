@@ -118,7 +118,6 @@ var _saveWifiInfos = function (infos, options, cb) {
     Wifi.find({bssid:{$in:bssidAry}},{bssid:true},function(err,bssidsInDb){
         if(err) return cb(err);
 
-        var updateBssidArray = [];
         _.each(bssidsInDb,function(bssidInDb){//更新bssid
             var updateContent = bssidContents[bssidInDb.bssid];
             if(!updateContent){
@@ -126,7 +125,6 @@ var _saveWifiInfos = function (infos, options, cb) {
             }
             bulk.find(updateContent.condition).update({ $set: updateContent.data});
             delete bssidContents[bssidInDb.bssid];//删除更新的内容
-            //updateBssidArray.push(bssidInDb.bssid);
         });
         for(var insertBssid in bssidContents){//插入bssid
            var instertContent =  bssidContents[insertBssid];

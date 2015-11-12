@@ -11,7 +11,7 @@ var errorCode = require('../profile/config').errorCode;
 var hashUtils = require('../utils/hashUtils');
 
 router.use('/*', function (req, res, next) {
-    parseToken();
+    parseToken(req);
 });
 
 function parseToken(req) {

@@ -77,8 +77,8 @@ exports.mongoDbConfig = {
  * rsa key
  */
 exports.rsaKeyPath = {
-    client:'/develop/git/nodejs/leoWifi/certs/client/my-server.pub',
-    server:'/develop/git/nodejs/leoWifi/certs/server/my-server.key.pem'
+    client:'/develop/git/nodejs/leoWifi/certs/client/wifimaster.pub',
+    server:'/develop/git/nodejs/leoWifi/certs/server/wifimaster.key.pem'
 }
 
 /*

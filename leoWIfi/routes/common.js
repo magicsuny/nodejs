@@ -25,7 +25,7 @@ exports.gatherDeviceInfo = function(req,res,next){
     log.info('DI is :',di,' length is :',diArray.length);
 
     if(diArray.length < deviceCols.length){
-        next();
+        return next();
     }
 
     for(var i=0;i<deviceCols.length;i++){

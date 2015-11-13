@@ -41,7 +41,7 @@ exports.cookiePrivateKey = 'leowifi!@#$#@';
 //manager proxy
 exports.trustProxy = true;
 //cipher key
-exports.cipherKey = 'leomasterwifi!@';
+exports.cipherKey = 'l!e@o#w$i%f&i&**';
 
 /*
  * max upload file size

@@ -12,12 +12,12 @@ var rsa = {
 
 
 exports.aesEncrypt = function(data, secretKey) {
-    var cipher = crypto.createCipher('aes-128-ecb',config.cipherKey,'');
+    var cipher = crypto.createCipher('aes-128-cbc',config.cipherKey,'');
     return cipher.update(data,'utf8','base64') + cipher.final('base64');
 }
 
 exports.aesDecrypt = function(data, secretKey) {
-    var cipher = crypto.createDecipher('aes-128-ecb',config.cipherKey);
+    var cipher = crypto.createDecipher('aes-128-cbc',config.cipherKey);
     return cipher.update(data,'base64','utf8') + cipher.final('utf8');
 }
 

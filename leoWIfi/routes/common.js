@@ -183,7 +183,7 @@ exports.validate = function (req, res, next) {
 exports.decryptData = function(req,res,next){
     var body = req.body;
     try{
-        body = JSON.parse(cipherUtils.rsaPrivateDecrypt(body));
+        body = JSON.parse(cipherUtils.aesDecrypt(body));
     }catch(e){
         return next(new error.Cipher('cipher decrypt request error! check the request!'));
     }
@@ -196,7 +196,7 @@ exports.encryptData = function(req,res,next){
     var data = res.body;
     try{
         data = JSON.stringify(data);
-        res.body = cipherUtils.rsaPrivateEncrypt(data);
+        res.body = cipherUtils.aesEncrypt(data);
     }catch(e){
         return next(new error.Cipher('cipher encrypt resopnse error! check the response!'));
     }

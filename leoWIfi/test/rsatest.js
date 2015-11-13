@@ -206,27 +206,27 @@ var data = {
     ]
 };
 
-var s = Date.now();
-var encrypt = skey.encryptPrivate(new Buffer(JSON.stringify(data)), 'base64');
-console.log(encrypt.toString('base64'),Date.now()-s);
-
-s= Date.now();
-var decrypt = ckey.decryptPublic(encrypt,'utf8');
-console.log(decrypt,Date.now()-s);
-
-
-
-s =Date.now();
-var en = ckey.encrypt(new Buffer(JSON.stringify(data)), 'base64');
-console.log(en,Date.now()-s);
-
-s =Date.now();
-console.log(skey.decrypt(en,'utf8'),Date.now()-s);
-//
-//s = Date.now();
-//var arsen = cipher.aesEncrypt(JSON.stringify(data));
-//console.log(arsen,Date.now()-s);
+//var s = Date.now();
+//var encrypt = skey.encryptPrivate(new Buffer(JSON.stringify(data)), 'base64');
+//console.log(encrypt.toString('base64'),Date.now()-s);
 //
 //s= Date.now();
-//var arsde = cipher.aesDecrypt(arsen);
-//console.log(arsde,Date.now()-s);
+//var decrypt = ckey.decryptPublic(encrypt,'utf8');
+//console.log(decrypt,Date.now()-s);
+//
+//
+//
+//s =Date.now();
+//var en = ckey.encrypt(new Buffer(JSON.stringify(data)), 'base64');
+//console.log(en,Date.now()-s);
+//
+//s =Date.now();
+//console.log(skey.decrypt(en,'utf8'),Date.now()-s);
+//
+s = Date.now();
+var arsen = cipher.aesEncrypt(JSON.stringify(data));
+console.log(arsen,Date.now()-s);
+
+s= Date.now();
+var arsde = cipher.aesDecrypt(arsen);
+console.log(arsde,Date.now()-s);

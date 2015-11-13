@@ -11,10 +11,10 @@ var errorCode = require('../profile/config').errorCode;
 var hashUtils = require('../utils/hashUtils');
 
 router.use('/*', function (req, res, next) {
-    parseToken();
+    parseToken(req,res,next);
 });
 
-function parseToken(req) {
+function parseToken(req,res,next) {
     var token = req.headers['token'] || req.query['token'],
         tokens,
         user;

@@ -49,9 +49,11 @@ exports.gatherDeviceInfo = function(req,res,next){
 exports.saveDeviceInfo = function(req,res,next){
     var deviceInfo = req.deviceInfo;
     if(deviceInfo){
-        Device.findAndModify({guid:deviceInfo.guid},[],                                                //mongoose update方法好像不支持 $currentDate 和 $setOnInsert
-            {$set: deviceInfo,$currentDate: {updatedAt: true},$setOnInsert: {createdAt: new Date}},
-            {upsert: true},function (err, data){
+        Device.update({'guid':deviceInfo.guid}, {
+            $set        : deviceInfo,
+            $currentDate: {updatedAt: true},
+            $setOnInsert: {createdAt: new Date}
+        }, {upsert: true}, function (err, data) {
             if (err){
                 log.error('save device info error');
             }

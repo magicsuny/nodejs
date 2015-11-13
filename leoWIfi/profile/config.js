@@ -11,8 +11,15 @@ var timestamp = function () {
 
 var define = function (name, level, fullPath) {
     var defaults = {
-        silent   : false, timestamp: timestamp, filename: logFile.error,
-        showLevel: true, json: false, maxsize: 1024 * 1024 * 20
+        silent   : false,
+        timestamp: true,
+        filename: logFile.error,
+        showLevel: true,
+        json: false,
+        maxsize: 1024 * 1024 * 20,
+        logstash        : false,
+        handleExceptions: true,
+        zippedArchive   : true
     };
     return _.extend(defaults, {name: name, level: level, filename: fullPath});
 };

@@ -147,8 +147,8 @@ var _saveWifiInfos = function (infos, options, cb) {
  * @returns {*}
  */
 var gatherWifiInfo = function (req, res, next) {
-    console.log('gather wifi header:', req.get('content-type'));
-    console.log('gatherwifi :', req.body);
+    //console.log('gather wifi header:', req.get('content-type'));
+    //console.log('gatherwifi :', req.body);
     var body = req.body;
     //TODO 校验上传信息
     if (!body) {

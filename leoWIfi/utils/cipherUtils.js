@@ -13,19 +13,20 @@ var rsa = {
 
 exports.aesEncrypt = function(data, secretKey) {
    // var iv = new Buffer(16);
+    var cipherData = new Buffer(data, 'utf8');
     var cipher = crypto.createCipheriv('aes-128-ecb',config.cipherKey,'');
-    return cipher.update(data,'utf8','base64') + cipher.final('base64');
+    var encrypted = [cipher.update(cipherData,'hex')];
+    encrypted.push(cipher.final());
+    return Buffer.concat(encrypted).toString('hex');
 }
 
 exports.aesDecrypt = function(data, secretKey) {
-
-    var cipher = new Buffer(data, 'base64').toString('utf8');
-
+    var cipherData =new Buffer(data, 'hex');
     var decipher = crypto.createDecipheriv('aes-128-ecb', config.cipherKey,'');
     decipher.setAutoPadding(false);
-    var decrypted = [decipher.update(cipher,'hex','utf8')];
-    decrypted.push(decipher.final('utf8'));
-    return decrypted.join('');
+    var decrypted = [decipher.update(cipherData,'hex')];
+    decrypted.push(decipher.final());
+    return Buffer.concat(decrypted).toString('utf8');
 }
 
 

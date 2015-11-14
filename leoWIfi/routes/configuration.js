@@ -30,7 +30,7 @@ var testDLSList = function (req, res, next) {
     if(!result){
         result =  config.dlsTestList['US'];
     }
-    res.body = result;
+    res.body = {infos:result};
     next();
 };
 
@@ -130,7 +130,9 @@ var apiProfile = [
                     "application/json": {
                         "code": 0,
                         "msg" : "",
-                        "data": ['http://url1', 'http://url2', 'http://url3']
+                        "data": {
+                            "infos":['http://url1', 'http://url2', 'http://url3']
+                        }
                     }
                 }
             }

@@ -636,7 +636,9 @@ var apiProfile = [
                     "application/json": {
                         "code": 0,
                         "msg" : "",
-                        "data": []
+                        "data": {
+                            infos:[]
+                        }
                     }
                 }
             }

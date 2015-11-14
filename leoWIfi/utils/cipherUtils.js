@@ -15,7 +15,7 @@ exports.aesEncrypt = function(data, secretKey) {
    // var iv = new Buffer(16);
     var cipherData = new Buffer(data, 'utf8');
     var cipher = crypto.createCipheriv('aes-128-ecb',config.cipherKey,'');
-    var encrypted = [cipher.update(cipherData,'hex')];
+    var encrypted = [cipher.update(cipherData)];
     encrypted.push(cipher.final());
     return Buffer.concat(encrypted).toString('hex');
 }

@@ -179,6 +179,7 @@ exports.validate = function (req, res, next) {
 
 exports.decryptData = function(req,res,next){
     var body = req.body;
+    console.log('tobe decryptdata is\n',body);
     try{
         body = JSON.parse(cipherUtils.aesDecrypt(body));
     }catch(e){

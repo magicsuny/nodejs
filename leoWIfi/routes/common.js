@@ -13,7 +13,7 @@ var Device = require('../model/db').Device;
  * @param res
  * @param next
  */
-var deviceCols = ["market_id","guid","app_id","app_ver","os_name","android_ver","vendor","model","screen_des","screen_dpi","language","timezone","imei","imsi","mac"];
+var deviceCols = ["market_id","guid","app_id","app_ver","os_name","android_ver","vendor","model","screen_des","screen_dpi","language","timezone","imei","imsi","mac","android_id"];
 
 exports.gatherDeviceInfo = function(req,res,next){
     var regexp = new RegExp('"([^"]+)"',"g");

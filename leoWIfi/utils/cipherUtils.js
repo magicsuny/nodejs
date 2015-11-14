@@ -23,7 +23,6 @@ exports.aesEncrypt = function(data, secretKey) {
 exports.aesDecrypt = function(data, secretKey) {
     var cipherData =new Buffer(data.trim(), 'hex');
     var decipher = crypto.createDecipheriv('aes-128-ecb', config.cipherKey,'');
-    decipher.setAutoPadding(false);
     var decrypted = [decipher.update(cipherData,'hex')];
     decrypted.push(decipher.final());
     return Buffer.concat(decrypted).toString('utf8');

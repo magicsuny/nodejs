@@ -181,7 +181,8 @@ exports.decryptData = function(req,res,next){
     var body = req.body;
     console.log('tobe decryptdata is\n',body);
     try{
-        body = JSON.parse(cipherUtils.aesDecrypt(body));
+        var jsonStr = cipherUtils.aesDecrypt(body)
+        body = JSON.parse(jsonStr.trim());
     }catch(e){
         return next(new error.Cipher('cipher decrypt request error! check the request!'));
     }

@@ -159,7 +159,7 @@ var gatherWifiInfo = function (req, res, next) {
         if (err) {
             return next(err);
         }
-        res.body = {};
+        res.body = {infos:[]};
         next();
     });
 };

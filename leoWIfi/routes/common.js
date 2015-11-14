@@ -17,7 +17,7 @@ var deviceCols = ["market_id","guid","app_id","app_ver","os_name","android_ver",
 
 exports.gatherDeviceInfo = function(req,res,next){
     var regexp = new RegExp('"([^"]+)"',"g");
-    /*var device = req.get('device');
+    var device = req.get('device');
     console.log('to be device info decryptdata is\n',device);
     try{
         var deviceStr = cipherUtils.aesDecrypt(device)
@@ -25,8 +25,8 @@ exports.gatherDeviceInfo = function(req,res,next){
     }catch(e){
         return next(new error.Cipher('cipher decrypt request error! check the request!'));
     }
-    var di = decodeURIComponent(device);*/
-    var di = decodeURIComponent(req.get('device'));
+    var di = decodeURIComponent(device);
+    /*var di = decodeURIComponent(req.get('device'));*/
     var diArray= di.match(regexp);
     var deviceData = {};
     diArray= _.map(diArray,function(diInfo){

@@ -238,7 +238,7 @@ var gatherWifiHotSpotInfo = function (req, res, next) {
         $set        : _wifiInfo,
         $inc        : {gatherTimes: 1},
         $currentDate: {updatedAt: true, lastConnectedAt: true},
-        $setOnInsert: {createdAt: new Date,gatherTimes:0}
+        $setOnInsert: {createdAt: new Date}
     }, {new: true, upsert: true}, function (err, data) {
         if (err) return next(new error.Server('save hotspot error!'));
         var id = data.value._id.toString();

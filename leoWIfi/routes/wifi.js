@@ -31,6 +31,8 @@ var _saveWifiInfos = function (infos, options, cb) {
     }
     //去重条件: 拥有bssid的前提下,同国家
     var bulk = Wifi.collection.initializeUnorderedBulkOp();
+    var bssidAry = [];
+    var bssidContents = {};
     _.each(infos, function (_wifiInfo) {
         //过滤无用内容
         _wifiInfo = _.pick(_wifiInfo,
@@ -95,24 +97,47 @@ var _saveWifiInfos = function (infos, options, cb) {
             } catch (e) {
                 return;
             }
-            var _idCondition = _.extend({_id: _id}, baseCondition);
-            bulk.find(_idCondition).updateOne(_wifiInfo);
+            var _idCondition = _.extend({_id: _id,is_hotspot:false}, baseCondition);
+            bulk.find(_idCondition).updateOne({$set:_wifiInfo,$inc: {gatherTimes: 1}});
             return;
         }
         if (_wifiInfo.bssid) {//有bssid则匹配更新
             _wifiInfo.bssid = _wifiInfo.bssid.toUpperCase();
+
             //TODO 原始数据缺少city属性 需预处理补全
-            var _bssidCondition = _.extend({bssid: _wifiInfo.bssid, country: location.country}, baseCondition);
-            bulk.find(_bssidCondition).updateOne(_wifiInfo);
+            var _bssidCondition = _.extend({bssid: _wifiInfo.bssid, country: location.country,is_hotspot:false}, baseCondition);
+            bssidAry.push(_wifiInfo.bssid);
+            bssidContents[_wifiInfo.bssid] = {condition:_bssidCondition,data:_wifiInfo};
+            //bulk.find(_bssidCondition).updateOne(_wifiInfo);
             return;
         }
-
         //其他情况插入数据
         _wifiInfo.createdAt = new Date();
+        _wifiInfo.gatherTimes = 0;
         bulk.insert(_wifiInfo);
+    });//准备更新数据结构
+    Wifi.find({bssid:{$in:bssidAry}},{bssid:true},function(err,bssidsInDb){
+        if(err) return cb(err);
 
+        _.each(bssidsInDb,function(bssidInDb){//更新bssid
+            var updateContent = bssidContents[bssidInDb.bssid];
+            if(!updateContent){
+                return;
+            }
+            bulk.find(updateContent.condition).update({ $set: updateContent.data,$inc: {gatherTimes: 1}});
+            delete bssidContents[bssidInDb.bssid];//删除更新的内容
+        });
+        for(var insertBssid in bssidContents){//插入bssid
+           var instertContent =  bssidContents[insertBssid];
+            if(!instertContent){
+                return;
+            }
+            instertContent.data.createdAt = new Date();
+            instertContent.data.gatherTimes = 0;
+            bulk.insert(instertContent.data);
+        }
+        bulk.execute(cb);
     });
-    bulk.execute(cb);
 };
 /**
  * wifi信息采集
@@ -122,8 +147,8 @@ var _saveWifiInfos = function (infos, options, cb) {
  * @returns {*}
  */
 var gatherWifiInfo = function (req, res, next) {
-    console.log('gather wifi header:', req.get('content-type'));
-    console.log('gatherwifi :', req.body);
+    //console.log('gather wifi header:', req.get('content-type'));
+    //console.log('gatherwifi :', req.body);
     var body = req.body;
     //TODO 校验上传信息
     if (!body) {
@@ -211,8 +236,9 @@ var gatherWifiHotSpotInfo = function (req, res, next) {
     //}
     Wifi.findAndModify(matchCondition, [], {
         $set        : _wifiInfo,
+        $inc        : {gatherTimes: 1},
         $currentDate: {updatedAt: true, lastConnectedAt: true},
-        $setOnInsert: {createdAt: new Date}
+        $setOnInsert: {createdAt: new Date,gatherTimes:0}
     }, {new: true, upsert: true}, function (err, data) {
         if (err) return next(new error.Server('save hotspot error!'));
         var id = data.value._id.toString();
@@ -727,7 +753,7 @@ var apiProfile = [
                 },
                 examples   : {
                     "application/json": {
-                        "err" : 0,
+                        "code" : 0,
                         "msg" : "",
                         "data": {
                             "_id": ""

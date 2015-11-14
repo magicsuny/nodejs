@@ -14,6 +14,7 @@ var os = require('os');
 var cm = require('./routes/common');
 var wifi = require('./routes/wifi');
 var configuration = require('./routes/configuration');
+var testApi = require('./routes/testApi');
 
 var docs = require('./routes/doc');
 var error = require('./utils/error');
@@ -58,10 +59,11 @@ app.use('/heartbeat',function(req,res,next){
 });
 app.use('/v1', v1);
 app.use('/v2', v2);
-//v1.use(auth.router);                              //暂时关闭，客户端完成后开始联调
-v1.use('/docs', docs(wifi,configuration));
+v1.use(auth.router);                              //暂时关闭，客户端完成后开始联调
+v1.use('/docs', docs(wifi,configuration,testApi));
 v1.use(wifi.router);
 v1.use(configuration.router);
+v1.use(testApi.router);
 v1.use(function (req, res, next) {
     res.set('X-Powered-By','Leomaster');
     if (res.body) {

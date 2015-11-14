@@ -11,8 +11,15 @@ var timestamp = function () {
 
 var define = function (name, level, fullPath) {
     var defaults = {
-        silent   : false, timestamp: timestamp, filename: logFile.error,
-        showLevel: true, json: false, maxsize: 1024 * 1024 * 20
+        silent   : false,
+        timestamp: true,
+        filename: logFile.error,
+        showLevel: true,
+        json: false,
+        maxsize: 1024 * 1024 * 20,
+        logstash        : false,
+        handleExceptions: true,
+        zippedArchive   : true
     };
     return _.extend(defaults, {name: name, level: level, filename: fullPath});
 };
@@ -77,8 +84,8 @@ exports.mongoDbConfig = {
  * rsa key
  */
 exports.rsaKeyPath = {
-    client:'/develop/git/nodejs/leoWifi/certs/client/my-server.pub',
-    server:'/develop/git/nodejs/leoWifi/certs/server/my-server.key.pem'
+    client:'/develop/git/nodejs/leoWifi/certs/client/wifimaster.pub',
+    server:'/develop/git/nodejs/leoWifi/certs/server/wifimaster.key.pem'
 }
 
 /*
@@ -125,11 +132,11 @@ exports.wifiServerSetting = {
 
 exports.dlsTestList = {
     //中国
-    CN: ['https://swdlp-static.apple.com/images/zh_CN/iTunes_DwlNow_zhcn_08092008.gif?v=20090311',
+    CN: ['http://dlsw.baidu.com/sw-search-sp/soft/51/22754/10101816.1442907878.rar',
         'https://downloads.yahoo.com/download/ff/hk/mac',
         'https://www.microsoft.com/zh-cn/download/confirmation.aspx?id=47046'],
     //美国
-    US: ['https://secure-appldnld.apple.com/itunes12/031-36008-20151020-9e811a71-3086-483a-9859-39edd85838f8/itunes64setup.exe',
+    US: ['https://support.apple.com/downloads/DL1846/en_US/secupd2015-007mavericks.dmg',
         'https://downloads.yahoo.com/download/ff/us/mac',
         'https://www.microsoft.com/en-us/download/confirmation.aspx?id=47046'],
     //印度

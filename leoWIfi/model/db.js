@@ -242,12 +242,14 @@ var wifiSchema = new Schema({
         thumb : {type: String}
     },
     lastConnectedAt: Date,
+    gatherTimes    : {type: Number, default: 0},          //上报次数
     other_settings : String
-});
+},{collection:'wifis'});
 wifiSchema.index({"country": 1, "bssid": 1});
 wifiSchema.index({connectable: 1, sec_level: 1, bssid: 1})
 wifiSchema.index({connectable: 1, sec_level: 1, ssid: 1, location: "2dsphere"});
 wifiSchema.plugin(commonPlugin);
+wifiSchema.plugin(findAndCountAllPlugin);
 wifiSchema.statics.findAndModify = function (query, sort, doc, options, callback) {
     return this.collection.findAndModify(query, sort, doc, options, callback);
 };
@@ -268,10 +270,11 @@ var deviceSchema = new Schema({
     imei       : String,
     imsi       : String,
     mac        : String
-});
+},{collection:'devices'});
 
 
 deviceSchema.plugin(commonPlugin);
+deviceSchema.plugin(findAndCountAllPlugin);
 deviceSchema.statics.findAndModify = function(query,sort,doc,options,callback){
     return this.collection.findAndModify(query,sort,doc,options,callback);
 };

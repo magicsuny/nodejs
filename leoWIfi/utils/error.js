@@ -1,6 +1,3 @@
-/**
- * Created by ianl on 6/4/15.
- */
 var util = require('util');
 var errorCode = require('../profile/config').errorCode;
 var assert = require('assert');

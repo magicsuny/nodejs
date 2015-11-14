@@ -12,13 +12,42 @@ var rsa = {
 
 
 exports.aesEncrypt = function(data, secretKey) {
-    var cipher = crypto.createCipheriv('aes-128-cbc',config.cipherKey,'');
+   // var iv = new Buffer(16);
+    var cipher = crypto.createCipheriv('aes-128-ecb',config.cipherKey,'');
     return cipher.update(data,'utf8','base64') + cipher.final('base64');
 }
 
 exports.aesDecrypt = function(data, secretKey) {
-    var cipher = crypto.createDecipheriv('aes-128-cbc',config.cipherKey,'');
-    return cipher.update(data,'base64','utf8') + cipher.final('utf8');
+
+    var cipher = new Buffer(data, 'base64').toString('utf8');
+
+    var decipher = crypto.createDecipheriv('aes-128-ecb', config.cipherKey,'');
+    decipher.setAutoPadding(false);
+    var decrypted = [decipher.update(cipher,'hex','utf8')];
+    decrypted.push(decipher.final('utf8'));
+    return decrypted.join('');
+}
+
+
+exports.decrypt = function(cipher, key) {
+   // var decodeKey = crypto.createHash('sha256').update(key, 'utf-8').digest();
+    if (cipher === null)
+        return null
+    else if (typeof cipher == 'undefined')
+        return undefined;
+    else if (cipher === '')
+        return '';
+
+    //cipher = new Buffer(cipher, 'hex');
+    var iv = cipher.slice(0, 16);
+    iv = new Buffer('');
+    var ciphertext = cipher.slice(16);
+
+    var decipher = crypto.createDecipheriv('aes-128-ecb', config.cipherKey,'');
+    var decrypted = [decipher.update(cipher,'hex','utf8')];
+    decrypted.push(decipher.final('utf8'));
+
+    return Buffer.concat(decrypted).toString('utf8');
 }
 
 exports.desEncrypt = function(param){

@@ -6,8 +6,8 @@ var NodeRSA = require('node-rsa');
 var config = require('../profile/config');
 var fs = require('fs');
 var rsa = {
-    server:new NodeRSA(fs.readFileSync(config.rsaKeyPath.server)),
-    client:new NodeRSA(fs.readFileSync(config.rsaKeyPath.client))
+    /*server:new NodeRSA(fs.readFileSync(config.rsaKeyPath.server)),
+    client:new NodeRSA(fs.readFileSync(config.rsaKeyPath.client))*/
 }
 
 

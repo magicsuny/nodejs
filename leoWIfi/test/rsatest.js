@@ -1,10 +1,10 @@
 var NodeRSA = require('node-rsa');
 var fs = require('fs');
-var privatekey = fs.readFileSync(__dirname + '/../certs/server/wifimaster.key.pem');
+/*var privatekey = fs.readFileSync(__dirname + '/../certs/server/wifimaster.key.pem');
 var publickey = fs.readFileSync(__dirname + '/../certs/client/wifimaster.pub');
 
 var skey = new NodeRSA(privatekey);
-var ckey = new NodeRSA(publickey);
+var ckey = new NodeRSA(publickey);*/
 
 var cipher = require('../utils/cipherUtils');
 

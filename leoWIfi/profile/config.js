@@ -140,9 +140,9 @@ exports.dlsTestList = {
         'https://downloads.yahoo.com/download/ff/us/mac',
         'https://www.microsoft.com/en-us/download/confirmation.aspx?id=47046'],
     //印度
-    IN: ['https://support.apple.com/downloads/DL1846/en_US/secupd2015-007mavericks.dmg',
-        'https://downloads.yahoo.com/download/ff/in/mac',
-        'https://www.microsoft.com/en-in/download/confirmation.aspx?id=47046'],
+    IN: ['https://downloads.yahoo.com/download/ff/in/mac',
+        'https://www.microsoft.com/en-in/download/confirmation.aspx?id=47046',
+        'https://support.apple.com/downloads/DL1846/en_US/secupd2015-007mavericks.dmg'],
     //印度尼西亚
     ID: ['https://support.apple.com/downloads/DL1834/id_ID/secupd2015-006mavericks.dmg',
         'https://downloads.yahoo.com/download/ff/id/mac',
@@ -156,14 +156,15 @@ exports.dlsTestList = {
         'https://downloads.yahoo.com/download/ff/th/mac',
         'http://www.microsoft.com/th-th/download/confirmation.aspx?id=36367'],
     //马来西亚
-    MY: ['https://support.apple.com/downloads/DL1846/en_US/secupd2015-007mavericks.dmg',
-        'https://downloads.yahoo.com/download/ff/my/mac',
-        'http://www.microsoft.com/en-my/download/confirmation.aspx?id=5555'],
+    MY: ['https://downloads.yahoo.com/download/ff/my/mac',
+        'http://www.microsoft.com/en-my/download/confirmation.aspx?id=5555',
+        'https://support.apple.com/downloads/DL1846/en_US/secupd2015-007mavericks.dmg'],
     //新加坡
-    SG: ['https://support.apple.com/downloads/DL1846/en_US/secupd2015-007mavericks.dmg',
-        'https://downloads.yahoo.com/download/ff/sg/mac',
-        'http://www.microsoft.com/en-sg/download/confirmation.aspx?id=42642']
+    SG: ['https://downloads.yahoo.com/download/ff/sg/mac',
+        'http://www.microsoft.com/en-sg/download/confirmation.aspx?id=42642',
+        'https://support.apple.com/downloads/DL1846/en_US/secupd2015-007mavericks.dmg']
 }
+
 
 /**
  * 对象属性覆盖,用src中的属性覆盖dest.　只覆盖dest中定义的属性，支持任意层次的对象属性覆盖

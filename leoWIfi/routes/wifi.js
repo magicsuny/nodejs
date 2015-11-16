@@ -893,7 +893,7 @@ var apiProfile = [
                 }
             }
         },
-        handler    : [multer({storage: avatarStorage}).single('poster'), common.gatherIpInfo, uploadHotspotPoster]
+        handler    : [common.gatherDeviceInfo,multer({storage: avatarStorage}).single('poster'), common.gatherIpInfo, uploadHotspotPoster]
     },
     {
         method     : 'get',

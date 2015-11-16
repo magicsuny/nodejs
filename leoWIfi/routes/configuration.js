@@ -98,7 +98,7 @@ var apiProfile = [
                 }
             }
         },
-        handler    : [common.saveDeviceInfo,distributeClientConfig]
+        handler    : [common.gatherDeviceInfo,common.saveDeviceInfo,distributeClientConfig]
     },
     {
         method     : 'get',

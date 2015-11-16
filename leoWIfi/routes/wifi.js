@@ -159,7 +159,7 @@ var gatherWifiInfo = function (req, res, next) {
         if (err) {
             return next(err);
         }
-        res.body = {};
+        res.body = {infos:[]};
         next();
     });
 };
@@ -636,7 +636,9 @@ var apiProfile = [
                     "application/json": {
                         "code": 0,
                         "msg" : "",
-                        "data": []
+                        "data": {
+                            infos:[]
+                        }
                     }
                 }
             }

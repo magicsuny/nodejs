@@ -13,11 +13,21 @@ var Device = require('../model/db').Device;
  * @param res
  * @param next
  */
-var deviceCols = ["market_id","guid","app_id","app_ver","os_name","android_ver","vendor","model","screen_des","screen_dpi","language","timezone","imei","imsi","mac"];
+var deviceCols = ["market_id","guid","app_id","app_ver","os_name","android_ver","vendor","model","screen_des","screen_dpi","language","timezone","imei","imsi","mac","android_id"];
 
 exports.gatherDeviceInfo = function(req,res,next){
     var regexp = new RegExp('"([^"]+)"',"g");
-    var di = decodeURIComponent(req.get('device'));
+    var device = req.get('device');
+    //var device = 'F93E1DBFE489E35AE79F42D4D7BCB7EA1B7F24C7041955D5991F1C2D7AAAAFF1BE54C9E9C6D4F84D9491047AF0A86EBE0B34790485599DDFCC078817FAA943B5014E633BBA7820A6EDC4ADA121424FEE5AD913545AADC0332FEB6BCAB3CCA0B0B34AB2D3583D83CC90EDB582446D6E0437A5EF733E5133B7067C04AFC754022BB3A6346C68D6EC1C6267AF588C17475A6C7DAE6E1F2E929F8F06B6AE22DC3881EFBC402172C4C33CA49A4B055B501BE8DCF1CC1FD377765DB5AE590481BF578532E15A4BF2CFEBA038DC5444AFB12CB04CA0FA9057ED3506576B6FCD19FDD15FFE3194EBBE1FEFC04FF999C49974020C';
+    var di = "";
+    console.log('to be device info decryptdata is\n',device);
+    log.info('device is',device);
+    try{
+        di = cipherUtils.aesDecrypt(device)
+    }catch(e){
+        return next(new error.Cipher('cipher decrypt request error! check the request!'));
+    }
+    /*var di = decodeURIComponent(req.get('device'));*/
     var diArray= di.match(regexp);
     var deviceData = {};
     diArray= _.map(diArray,function(diInfo){

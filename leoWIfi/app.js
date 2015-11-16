@@ -35,6 +35,7 @@ base.set('view engine', 'html');
 base.set('trust proxy', config.trustProxy);
 //base.engine('html', require('ejs').renderFile);
 base.use(morgan('dev'));
+base.use(bodyParser.text({type:'text/plain'}));
 base.use(bodyParser.json({type:'application/json'}));
 base.use(bodyParser.urlencoded({extended: false}));
 base.use(cookieParser());
@@ -59,7 +60,7 @@ app.use('/heartbeat',function(req,res,next){
 app.use('/v1', v1);
 app.use('/v2', v2);
 v1.use(cm.gatherDeviceInfo);
-//v1.use(auth.router);                              //暂时关闭，客户端完成后开始联调
+v1.use(auth.router);                              //暂时关闭，客户端完成后开始联调
 v1.use('/docs', docs(wifi,configuration,testApi));
 v1.use(wifi.router);
 v1.use(configuration.router);

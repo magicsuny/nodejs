@@ -11,10 +11,11 @@ var errorCode = require('../profile/config').errorCode;
 var hashUtils = require('../utils/hashUtils');
 
 router.use('/*', function (req, res, next) {
-    parseToken(req,res,next);
+
+    parseToken(req, res, next);
 });
 
-function parseToken(req,res,next) {
+function parseToken(req, res, next) {
     var token = req.headers['token'] || req.query['token'],
         tokens,
         user;
@@ -33,11 +34,11 @@ function parseToken(req,res,next) {
         privateKey = config.tokenPrivateKey,
         expiredTime= config.tokenTimesout;
 
-    if(hashUtils.checksum(guid+time+privateKey) != hash){
+    if(hashUtils.checksum(guid+time+privateKey).toLowerCase() != hash.toLowerCase()){
         return next(new error.Auth('invaild token'));
     }
 
-    if(expiredTime + expiredTime < (new Date()).getTime()){
+    if(time + expiredTime < (new Date()).getTime()){
         return next(new error.Auth('token expired'));
     }
 

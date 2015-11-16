@@ -159,7 +159,7 @@ var gatherWifiInfo = function (req, res, next) {
         if (err) {
             return next(err);
         }
-        res.body = {};
+        res.body = {infos:[]};
         next();
     });
 };
@@ -636,12 +636,14 @@ var apiProfile = [
                     "application/json": {
                         "code": 0,
                         "msg" : "",
-                        "data": []
+                        "data": {
+                            infos:[]
+                        }
                     }
                 }
             }
         },
-        handler    : [common.gatherIpInfo, gatherWifiInfo]
+        handler    : [common.gatherIpInfo, common.decryptData, gatherWifiInfo]
     },
     {
         method     : 'post',
@@ -687,7 +689,7 @@ var apiProfile = [
                 }
             }
         },
-        handler    : [common.gatherIpInfo, gatherWifiHotSpotInfo]
+        handler    : [common.gatherIpInfo, common.decryptData, gatherWifiHotSpotInfo]
     },
     {
         method     : 'post',
@@ -762,7 +764,7 @@ var apiProfile = [
                 }
             }
         },
-        handler    : [common.gatherIpInfo, findWifiInfo]
+        handler    : [common.gatherIpInfo, common.decryptData, findWifiInfo,common.encryptData]
     },
     {
         method     : 'post',

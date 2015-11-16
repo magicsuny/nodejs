@@ -48,7 +48,7 @@ exports.cookiePrivateKey = 'leowifi!@#$#@';
 //manager proxy
 exports.trustProxy = true;
 //cipher key
-exports.cipherKey = 'leomasterwifi!@';
+exports.cipherKey = 'l!e@o#w$i%f&i&**';
 
 /*
  * max upload file size
@@ -100,6 +100,7 @@ exports.errorCode = global.errorCode = {
     paramsError           : 102,
     uploadedError         : 103,
     headerError           : 104,
+    cipherError           : 105,
     activityOperationError: 107,
     authError             : 108,
     dbError               : 109,

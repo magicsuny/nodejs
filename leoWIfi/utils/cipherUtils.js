@@ -6,19 +6,48 @@ var NodeRSA = require('node-rsa');
 var config = require('../profile/config');
 var fs = require('fs');
 var rsa = {
-    server:new NodeRSA(fs.readFileSync(config.rsaKeyPath.server)),
-    client:new NodeRSA(fs.readFileSync(config.rsaKeyPath.client))
+    /*server:new NodeRSA(fs.readFileSync(config.rsaKeyPath.server)),
+    client:new NodeRSA(fs.readFileSync(config.rsaKeyPath.client))*/
 }
 
 
 exports.aesEncrypt = function(data, secretKey) {
-    var cipher = crypto.createCipher('aes-128-ecb',config.cipherKey,'');
-    return cipher.update(data,'utf8','base64') + cipher.final('base64');
+   // var iv = new Buffer(16);
+    var cipherData = new Buffer(data, 'utf8');
+    var cipher = crypto.createCipheriv('aes-128-ecb',config.cipherKey,'');
+    var encrypted = [cipher.update(cipherData)];
+    encrypted.push(cipher.final());
+    return Buffer.concat(encrypted).toString('hex');
 }
 
 exports.aesDecrypt = function(data, secretKey) {
-    var cipher = crypto.createDecipher('aes-128-ecb',config.cipherKey);
-    return cipher.update(data,'base64','utf8') + cipher.final('utf8');
+    var cipherData =new Buffer(data.trim(), 'hex');
+    var decipher = crypto.createDecipheriv('aes-128-ecb', config.cipherKey,'');
+    var decrypted = [decipher.update(cipherData,'hex')];
+    decrypted.push(decipher.final());
+    return Buffer.concat(decrypted).toString('utf8');
+}
+
+
+exports.decrypt = function(cipher, key) {
+   // var decodeKey = crypto.createHash('sha256').update(key, 'utf-8').digest();
+    if (cipher === null)
+        return null
+    else if (typeof cipher == 'undefined')
+        return undefined;
+    else if (cipher === '')
+        return '';
+
+    //cipher = new Buffer(cipher, 'hex');
+    var iv = cipher.slice(0, 16);
+    iv = new Buffer('');
+    var ciphertext = cipher.slice(16);
+
+    var decipher = crypto.createDecipheriv('aes-128-ecb', config.cipherKey,'');
+    var decrypted = [decipher.update(cipher,'hex','utf8')];
+    decrypted.push(decipher.final('utf8'));
+
+    return Buffer.concat(decrypted).toString('utf8');
 }
 
 exports.desEncrypt = function(param){
@@ -51,7 +80,8 @@ exports.desDecrypt = function(param){
  * @returns {string}
  */
 exports.rsaPrivateEncrypt = function(data){
-    return rsa.server.encryptPrivate(data, 'utf8', 'base64');
+    var encryptedData = rsa.server.encryptPrivate(new Buffer(data), 'base64');
+    return encryptedData.toString('base64');
 };
 
 /**
@@ -60,5 +90,5 @@ exports.rsaPrivateEncrypt = function(data){
  * @returns {Buffer|Object|string|Buffer|*}
  */
 exports.rsaPrivateDecrypt = function(data){
-    return rsa.server.decrypt(data,'base64', 'utf8');
+    return rsa.server.decrypt(data, 'utf8');
 }

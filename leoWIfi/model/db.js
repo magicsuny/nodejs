@@ -242,7 +242,7 @@ var wifiSchema = new Schema({
         thumb : {type: String}
     },
     lastConnectedAt: Date,
-    gatherTimes    : {type: Number, default: 0},          //上报次数
+    gatherTimes    : {type: Number, default: 1},          //上报次数
     other_settings : String
 },{collection:'wifis'});
 wifiSchema.index({"country": 1, "bssid": 1});

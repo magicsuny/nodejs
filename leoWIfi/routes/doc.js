@@ -24,7 +24,7 @@ function gen(modules, cb) {
     root.tags = [];
     root.schemes = ['http'];
     root.consumes = ['application/json','multipart/form-data','text/plain'];
-    root.produces = ['application/json'];
+    root.produces = ['application/json','text/plain'];
     root.paths = {};
     root.definitions = {};
     for (var i = 0; i < modules.length; i++) {

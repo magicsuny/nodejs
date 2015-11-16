@@ -118,7 +118,7 @@ var _saveWifiInfos = function (body, options, cb) {
         }
         if(_wifiInfo.ssid&&deviceId) {
             var _ssidCondition = _.extend({ssid: _wifiInfo.ssid,deviceId: deviceId,is_hotspot:false},baseCondition);
-            bulk.find(_ssidCondition).upsert().updateOne({$set:_wifiInfo,$setOnInsert:{createdAt: new Date}});
+            bulk.find(_ssidCondition).upsert().updateOne({$set:_wifiInfo,$setOnInsert:{createdAt: new Date},$inc: {gatherTimes: 1}});
             isExecute = true;
             return;
         }

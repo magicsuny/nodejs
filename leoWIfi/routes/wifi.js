@@ -231,9 +231,7 @@ var gatherWifiHotSpotInfo = function (req, res, next) {
     _wifiInfo.is_hotspot = true;
     _wifiInfo.connectable = true;
     _wifiInfo.sharedable = true;
-    _wifiInfo.hotspotInfo = {
-        deviceId: _wifiInfo.device_id
-    };
+    _wifiInfo.deviceId=_wifiInfo.device_id;
     delete _wifiInfo.device_id;
 
     //保存经纬度

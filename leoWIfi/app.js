@@ -116,90 +116,90 @@ app.use(function (err, req, res, next) {
     });
 });
 
-
-var versions = {
-    '1': v1,
-    '2': v2
-};
-
-
-function validateProfile(p) {
-    return p.hasOwnProperty('path') && p.hasOwnProperty('version') &&
-        p.hasOwnProperty('handler') && p.hasOwnProperty('method');
-}
-
-
-function validateReq(req, res, next) {
-    console.log('validate request');
-    next();
-}
-
-
-function loadProfile(p) {
-    if (!validateProfile(p)) {
-        return false;
-    }
-    var path    = p.path,
-        handler = p.handler,
-        method  = p.method;
-    //v       = p.version;
-    //if (v && versions.hasOwnProperty(v)) {
-    var vApp = v1;
-
-    if (!Array.isArray(handler)) {
-        return false;
-    } else {
-        var vFct = validate;
-        if (p.hasOwnProperty('validate') && typeof p['validate'] === 'function') {
-            //validate must be a middleware
-            vFct = p['validate'];
-        }
-    }
-    handler.unshift(
-        function (req, res, next) {
-            req.profile = p;
-            next();
-        },
-        vFct
-    );
+//
+//var versions = {
+//    '1': v1,
+//    '2': v2
+//};
+//
+//
+//function validateProfile(p) {
+//    return p.hasOwnProperty('path') && p.hasOwnProperty('version') &&
+//        p.hasOwnProperty('handler') && p.hasOwnProperty('method');
+//}
+//
+//
+//function validateReq(req, res, next) {
+//    console.log('validate request');
+//    next();
 //}
 
-    var m = vApp[method];
-    m.call(vApp, path, handler);
-    return true;
-}
+//
+//function loadProfile(p) {
+//    if (!validateProfile(p)) {
+//        return false;
+//    }
+//    var path    = p.path,
+//        handler = p.handler,
+//        method  = p.method;
+//    //v       = p.version;
+//    //if (v && versions.hasOwnProperty(v)) {
+//    var vApp = v1;
+//
+//    if (!Array.isArray(handler)) {
+//        return false;
+//    } else {
+//        var vFct = validate;
+//        if (p.hasOwnProperty('validate') && typeof p['validate'] === 'function') {
+//            //validate must be a middleware
+//            vFct = p['validate'];
+//        }
+//    }
+//    handler.unshift(
+//        function (req, res, next) {
+//            req.profile = p;
+//            next();
+//        },
+//        vFct
+//    );
+////}
+//
+//    var m = vApp[method];
+//    m.call(vApp, path, handler);
+//    return true;
+//}
 
-
-function loadRouter() {
-    var normalizedPath = require('path').join(__dirname, 'routes');
-    var routers = [];
-    require('fs').readdirSync(normalizedPath).forEach(function (f) {
-        var item = require('./routes/' + f);
-
-        if (item.hasOwnProperty('profile')) {
-            var profiles = item.profile;
-
-            if (Array.isArray(profiles)) {
-                profiles.forEach(function (profile) {
-                    var loaded = loadProfile(profile);
-                    if (!loaded) {
-//                        console.warn('load profile %j in %s fail', profile, f);
-                    } else {
-//                        console.info('load profile %j in %s', profile, f);
-                    }
-                });
-            } else {
-//                console.warn('skip load %s, since not profile', f);
-            }
-
-            routers.push(item);
-        } else {
-//            console.warn('skip load %s, since no profile found', f);
-        }
-    });
-    return routers;
-}
-//var routers    = loadRouter();
-//v1.use('/docs', docs.apply(v1, routers));
+//
+//function loadRouter() {
+//    var normalizedPath = require('path').join(__dirname, 'routes');
+//    var routers = [];
+//    require('fs').readdirSync(normalizedPath).forEach(function (f) {
+//        var item = require('./routes/' + f);
+//
+//        if (item.hasOwnProperty('profile')) {
+//            var profiles = item.profile;
+//
+//            if (Array.isArray(profiles)) {
+//                profiles.forEach(function (profile) {
+//                    var loaded = loadProfile(profile);
+//                    if (!loaded) {
+////                        console.warn('load profile %j in %s fail', profile, f);
+//                    } else {
+////                        console.info('load profile %j in %s', profile, f);
+//                    }
+//                });
+//            } else {
+////                console.warn('skip load %s, since not profile', f);
+//            }
+//
+//            routers.push(item);
+//        } else {
+////            console.warn('skip load %s, since no profile found', f);
+//        }
+//    });
+//    return routers;
+//}
+////var routers    = loadRouter();
+////v1.use('/docs', docs.apply(v1, routers));
 module.exports = base;
 //end

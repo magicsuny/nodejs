@@ -88,7 +88,7 @@ var _saveWifiInfos = function (infos, options, cb) {
             baseCondition = {lastConnectedAt: {$lte: new Date(_wifiInfo.tryTime)}};
             _wifiInfo.lastConnectedAt = new Date(_wifiInfo.tryTime);
         } else {
-            _wifiInfo.lastConnectedAt = new Date();
+            return;
         }
 
         if (_id) {//有_id为已处理数据直接更新

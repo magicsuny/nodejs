@@ -261,13 +261,13 @@ var gatherWifiHotSpotInfo = function (req, res, next) {
 
 var findWifiBasePolicy = function () {
     //匹配非开放性并且可怜接的wifi
-    var baseCondition = {connectable: true};
+    var baseCondition = {connectable: true,is_hotspot: false,sec_level: {'$ne': 1}};
     //分享隐私策略匹配
     if (!config.wifiServerSetting.matchPrivateWifi) {
         baseCondition.sharedable = true;
     }
     //匹配个人热点
-    baseCondition = _.extend(baseCondition, {$or: [{is_hotspot: true}, {sec_level: {'$ne': 1}}]});
+    //baseCondition = _.extend(baseCondition, {$or: [{is_hotspot: true}, {sec_level: {'$ne': 1}}]});
     return baseCondition;
 }
 

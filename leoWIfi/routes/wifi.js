@@ -25,6 +25,7 @@ var awsS3 = require('../utils/AwsS3Deploy');
  * @param cb
  * @private
  */
+
 var _saveWifiInfos = function (infos, options, cb) {
     if (!infos) {
         return cb(new error.Arg('WIFI信息为空'));
@@ -33,6 +34,7 @@ var _saveWifiInfos = function (infos, options, cb) {
     var bulk = Wifi.collection.initializeUnorderedBulkOp();
     var bssidAry = [];
     var bssidContents = {};
+    var isExecute = false;
     _.each(infos, function (_wifiInfo) {
         //过滤无用内容
         _wifiInfo = _.pick(_wifiInfo,
@@ -99,6 +101,7 @@ var _saveWifiInfos = function (infos, options, cb) {
             }
             var _idCondition = _.extend({_id: _id,is_hotspot:false}, baseCondition);
             bulk.find(_idCondition).updateOne({$set:_wifiInfo,$inc: {gatherTimes: 1}});
+            isExecute = true;
             return;
         }
         if (_wifiInfo.bssid) {//有bssid则匹配更新
@@ -115,6 +118,7 @@ var _saveWifiInfos = function (infos, options, cb) {
         _wifiInfo.createdAt = new Date();
         _wifiInfo.gatherTimes = 0;
         bulk.insert(_wifiInfo);
+        isExecute = true;
     });//准备更新数据结构
     Wifi.find({bssid:{$in:bssidAry}},{bssid:true},function(err,bssidsInDb){
         if(err) return cb(err);
@@ -125,20 +129,26 @@ var _saveWifiInfos = function (infos, options, cb) {
                 return;
             }
             bulk.find(updateContent.condition).update({ $set: updateContent.data,$inc: {gatherTimes: 1}});
+            isExecute = true;
             delete bssidContents[bssidInDb.bssid];//删除更新的内容
         });
         for(var insertBssid in bssidContents){//插入bssid
-           var instertContent =  bssidContents[insertBssid];
+            var instertContent =  bssidContents[insertBssid];
             if(!instertContent){
                 return;
             }
             instertContent.data.createdAt = new Date();
             instertContent.data.gatherTimes = 0;
             bulk.insert(instertContent.data);
+            isExecute = true;
         }
-        bulk.execute(cb);
+        if(isExecute){
+            bulk.execute(cb);
+        }
+
     });
 };
+
 /**
  * wifi信息采集
  * @param req

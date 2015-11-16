@@ -59,7 +59,7 @@ app.use('/heartbeat',function(req,res,next){
 });
 app.use('/v1', v1);
 app.use('/v2', v2);
-v1.use(cm.gatherDeviceInfo);
+//v1.use(cm.gatherDeviceInfo);                    //暂时只在需要收集的API上设置中间件
 v1.use(auth.router);                              //暂时关闭，客户端完成后开始联调
 v1.use('/docs', docs(wifi,configuration,testApi));
 v1.use(wifi.router);

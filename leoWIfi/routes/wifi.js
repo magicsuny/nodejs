@@ -26,7 +26,9 @@ var awsS3 = require('../utils/AwsS3Deploy');
  * @private
  */
 
-var _saveWifiInfos = function (infos, options, cb) {
+var _saveWifiInfos = function (body, options, cb) {
+    var infos = body.infos,
+        deviceId = body.device_id;
     if (!infos) {
         return cb(new error.Arg('WIFI信息为空'));
     }
@@ -114,6 +116,12 @@ var _saveWifiInfos = function (infos, options, cb) {
             //bulk.find(_bssidCondition).updateOne(_wifiInfo);
             return;
         }
+        if(_wifiInfo.ssid&&deviceId) {
+            var _ssidCondition = _.extend({ssid: _wifiInfo.ssid,deviceId: deviceId,is_hotspot:false},baseCondition);
+            bulk.find(_ssidCondition).upsert().updateOne({$set:_wifiInfo,$setOnInsert:{createdAt: new Date}});
+            isExecute = true;
+            return;
+        }
         //其他情况插入数据
         _wifiInfo.createdAt = new Date();
         _wifiInfo.gatherTimes = 0;
@@ -144,6 +152,8 @@ var _saveWifiInfos = function (infos, options, cb) {
         }
         if(isExecute){
             bulk.execute(cb);
+        }else{
+            cb();
         }
 
     });
@@ -165,7 +175,7 @@ var gatherWifiInfo = function (req, res, next) {
         var err = new error.Arg('填报WIFI信息为空');
         return next(err);
     }
-    _saveWifiInfos(body.infos, {location: req.location, isHotspot: false}, function (err, result) {
+    _saveWifiInfos(body, {location: req.location, isHotspot: false}, function (err, result) {
         if (err) {
             return next(err);
         }
@@ -317,19 +327,23 @@ var findWifiInfo = function (req, res, next) {
             if (_wifiInfo.city) {
                 _ssidCondition.city = _wifiInfo.city;
             }
-            //按照地区过滤以上报点为圆心周围500米有密码wifi
-            if (_.isNumber(body.latitude) && _.isNumber(body.longitude)) {
-                _ssidCondition.location = {
-                    $nearSphere: {
-                        $geometry   : {
-                            type       : "Point",
-                            coordinates: [body.longitude, body.latitude]
-                        },
-                        $minDistance: 0,
-                        $maxDistance: 500
-                    }
-                };
+            if(_wifiInfo.sec_level){
+                _ssidCondition.sec_level = _wifiInfo.sec_level;
             }
+            //todo 暂时取消 看以后数据采集结果再定
+            //按照地区过滤以上报点为圆心周围500米有密码wifi
+            //if (_.isNumber(body.latitude) && _.isNumber(body.longitude)) {
+            //    _ssidCondition.location = {
+            //        $nearSphere: {
+            //            $geometry   : {
+            //                type       : "Point",
+            //                coordinates: [body.longitude, body.latitude]
+            //            },
+            //            $minDistance: 0,
+            //            $maxDistance: 500
+            //        }
+            //    };
+            //}
             ssidQuerys.push(_ssidCondition);
         }
     });

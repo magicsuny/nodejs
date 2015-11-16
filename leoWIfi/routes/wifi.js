@@ -432,7 +432,7 @@ var avatarStorage = multer.diskStorage({
         if (!req.deviceInfo) {
             return cb(new error.Header('no deviceInfo gathered'));
         }
-        var deviceId = req.deviceInfo[1];
+        var deviceId = req.deviceInfo.guid;
         cb(null, deviceId + '_' + Date.now())
     }
 });

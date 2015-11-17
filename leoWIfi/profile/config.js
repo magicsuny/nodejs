@@ -182,15 +182,15 @@ function mergeConfig(dest, src, name) {
 var defaultFile = './override';
 var override;
 try {
-    //var env = process.env.NODE_ENV;
-    //if (env) {
-    //    override = require('./' + env);
-    //} else {
+    var env = process.env.NODE_ENV;
+    if (env) {
+        override = require('./' + env);
+    } else {
     override = require(defaultFile);
-    //}
+    }
 } catch (err) {
     log.error('can not load property file ', './' + env + '.js using ', defaultFile, '.js');
-    //override = require(defaultFile);
+    override = require(defaultFile);
 }
 
 

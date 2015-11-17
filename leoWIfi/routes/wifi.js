@@ -8,7 +8,9 @@ var _ = require('underscore');
 var error = require('../utils/error');
 var Promise = require('bluebird');
 var mongoose = require('mongoose');
-var Wifi = require('../model/db').Wifi;
+var db = require('../model/db');
+var Wifi = db.Wifi;
+var ApiStatictis = db.ApiStatictis;
 var docUtils = require('../utils/docUtils');
 var geoip = require('geoip-lite');
 var gm = require('gm');
@@ -25,7 +27,9 @@ var awsS3 = require('../utils/AwsS3Deploy');
  * @param cb
  * @private
  */
-var _saveWifiInfos = function (infos, options, cb) {
+var _saveWifiInfos = function (body, options, cb) {
+    var infos = body.infos,
+        deviceId = body.device_id;
     if (!infos) {
         return cb(new error.Arg('WIFI信息为空'));
     }
@@ -33,6 +37,7 @@ var _saveWifiInfos = function (infos, options, cb) {
     var bulk = Wifi.collection.initializeUnorderedBulkOp();
     var bssidAry = [];
     var bssidContents = {};
+    var isExecute = false;
     _.each(infos, function (_wifiInfo) {
         //过滤无用内容
         _wifiInfo = _.pick(_wifiInfo,
@@ -88,7 +93,7 @@ var _saveWifiInfos = function (infos, options, cb) {
             baseCondition = {lastConnectedAt: {$lte: new Date(_wifiInfo.tryTime)}};
             _wifiInfo.lastConnectedAt = new Date(_wifiInfo.tryTime);
         } else {
-            _wifiInfo.lastConnectedAt = new Date();
+            return;
         }
 
         if (_id) {//有_id为已处理数据直接更新
@@ -99,6 +104,7 @@ var _saveWifiInfos = function (infos, options, cb) {
             }
             var _idCondition = _.extend({_id: _id,is_hotspot:false}, baseCondition);
             bulk.find(_idCondition).updateOne({$set:_wifiInfo,$inc: {gatherTimes: 1}});
+            isExecute = true;
             return;
         }
         if (_wifiInfo.bssid) {//有bssid则匹配更新
@@ -111,10 +117,17 @@ var _saveWifiInfos = function (infos, options, cb) {
             //bulk.find(_bssidCondition).updateOne(_wifiInfo);
             return;
         }
+        if(_wifiInfo.ssid&&deviceId) {
+            var _ssidCondition = _.extend({ssid: _wifiInfo.ssid,deviceId: deviceId,is_hotspot:false},baseCondition);
+            bulk.find(_ssidCondition).upsert().updateOne({$set:_wifiInfo,$setOnInsert:{createdAt: new Date}});
+            isExecute = true;
+            return;
+        }
         //其他情况插入数据
         _wifiInfo.createdAt = new Date();
         _wifiInfo.gatherTimes = 0;
         bulk.insert(_wifiInfo);
+        isExecute = true;
     });//准备更新数据结构
     Wifi.find({bssid:{$in:bssidAry}},{bssid:true},function(err,bssidsInDb){
         if(err) return cb(err);
@@ -125,6 +138,7 @@ var _saveWifiInfos = function (infos, options, cb) {
                 return;
             }
             bulk.find(updateContent.condition).update({ $set: updateContent.data,$inc: {gatherTimes: 1}});
+            isExecute = true;
             delete bssidContents[bssidInDb.bssid];//删除更新的内容
         });
         for(var insertBssid in bssidContents){//插入bssid
@@ -135,10 +149,17 @@ var _saveWifiInfos = function (infos, options, cb) {
             instertContent.data.createdAt = new Date();
             instertContent.data.gatherTimes = 0;
             bulk.insert(instertContent.data);
+            isExecute = true;
         }
-        bulk.execute(cb);
+        if(isExecute){
+            bulk.execute(cb);
+        }else{
+            cb();
+        }
+
     });
 };
+
 /**
  * wifi信息采集
  * @param req
@@ -155,7 +176,7 @@ var gatherWifiInfo = function (req, res, next) {
         var err = new error.Arg('填报WIFI信息为空');
         return next(err);
     }
-    _saveWifiInfos(body.infos, {location: req.location, isHotspot: false}, function (err, result) {
+    _saveWifiInfos(body, {location: req.location, isHotspot: false}, function (err, result) {
         if (err) {
             return next(err);
         }
@@ -211,9 +232,7 @@ var gatherWifiHotSpotInfo = function (req, res, next) {
     _wifiInfo.is_hotspot = true;
     _wifiInfo.connectable = true;
     _wifiInfo.sharedable = true;
-    _wifiInfo.hotspotInfo = {
-        deviceId: _wifiInfo.device_id
-    };
+    _wifiInfo.deviceId = _wifiInfo.device_id;
     delete _wifiInfo.device_id;
 
     //保存经纬度
@@ -251,13 +270,11 @@ var gatherWifiHotSpotInfo = function (req, res, next) {
 
 var findWifiBasePolicy = function () {
     //匹配非开放性并且可怜接的wifi
-    var baseCondition = {connectable: true};
+    var baseCondition = {connectable: true,is_hotspot: false,sec_level: {'$ne': 1},password:{$exists:true}};
     //分享隐私策略匹配
     if (!config.wifiServerSetting.matchPrivateWifi) {
         baseCondition.sharedable = true;
     }
-    //匹配个人热点
-    baseCondition = _.extend(baseCondition, {$or: [{is_hotspot: true}, {sec_level: {'$ne': 1}}]});
     return baseCondition;
 }
 
@@ -268,15 +285,21 @@ var findWifiBasePolicy = function () {
  * @param next
  */
 var findWifiInfo = function (req, res, next) {
-    //console.log('find wifi header:',req.get('content-type'));
-    //console.log('find wifi :',req.body);
-
     var body = req.body;
     var infos = body.infos;
     var idConditions = [];
     var bssidQuerys = [];
     var ssidQuerys = [];
     var baseCondition = findWifiBasePolicy();
+    if(!infos||!infos.length){
+       return next(new error.Arg('arugment [infos] is missing!'));
+    }
+    var matchingLog = {
+        input:infos.length,
+        idMatched:0,
+        ssidMatched:0,
+        bssidMatched:0
+    };
     _.each(infos, function (_wifiInfo) {
         //id查找
         if (_wifiInfo._id) {
@@ -307,21 +330,26 @@ var findWifiInfo = function (req, res, next) {
             if (_wifiInfo.city) {
                 _ssidCondition.city = _wifiInfo.city;
             }
-            //按照地区过滤以上报点为圆心周围500米有密码wifi
-            if (_.isNumber(body.latitude) && _.isNumber(body.longitude)) {
-                _ssidCondition.location = {
-                    $nearSphere: {
-                        $geometry   : {
-                            type       : "Point",
-                            coordinates: [body.longitude, body.latitude]
-                        },
-                        $minDistance: 0,
-                        $maxDistance: 500
-                    }
-                };
+            if(_wifiInfo.sec_level){
+                _ssidCondition.sec_level = _wifiInfo.sec_level;
             }
+            //todo 暂时取消 看以后数据采集结果再定
+            //按照地区过滤以上报点为圆心周围500米有密码wifi
+            //if (_.isNumber(body.latitude) && _.isNumber(body.longitude)) {
+            //    _ssidCondition.location = {
+            //        $nearSphere: {
+            //            $geometry   : {
+            //                type       : "Point",
+            //                coordinates: [body.longitude, body.latitude]
+            //            },
+            //            $minDistance: 0,
+            //            $maxDistance: 500
+            //        }
+            //    };
+            //}
             ssidQuerys.push(_ssidCondition);
         }
+
     });
     async.parallel([
         function (cb) {
@@ -343,6 +371,10 @@ var findWifiInfo = function (req, res, next) {
         }
     ], function (err, results) {
         if (err) return next(err);
+        var idResults = results[0]||[],ssidResults = results[1],bssidResults = results[2];
+        matchingLog.idMatched = idResults.length;
+        matchingLog.ssidMatched = ssidResults.length;
+        matchingLog.bssidMatched = bssidResults.length;
         var data = _.flatten(results);
         var resultData = [];
         var hasData = {};
@@ -407,6 +439,7 @@ var findWifiInfo = function (req, res, next) {
             infos: resultData
         };
         next();
+        ApiStatictis.create({deviceId:body.deviceId,type:'findWifi',meta:matchingLog});
     });
 };
 
@@ -432,7 +465,7 @@ var avatarStorage = multer.diskStorage({
         if (!req.deviceInfo) {
             return cb(new error.Header('no deviceInfo gathered'));
         }
-        var deviceId = req.deviceInfo[1];
+        var deviceId = req.deviceInfo.guid;
         cb(null, deviceId + '_' + Date.now())
     }
 });

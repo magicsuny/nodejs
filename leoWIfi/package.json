@@ -27,6 +27,7 @@
     "morgan": "~1.6.1",
     "multer": "^1.1.0",
     "node-rsa": "^0.2.26",
+    "pmx": "^0.5.5",
     "request": "2.55.0",
     "serve-favicon": "~2.3.0",
     "underscore": "1.8.3",

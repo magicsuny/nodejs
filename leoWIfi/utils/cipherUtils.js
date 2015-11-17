@@ -2,13 +2,13 @@
  * Created by sunharuka on 15/10/20.
  */
 var crypto = require('crypto');
-var NodeRSA = require('node-rsa');
+//var NodeRSA = require('node-rsa');
 var config = require('../profile/config');
 var fs = require('fs');
-var rsa = {
-    /*server:new NodeRSA(fs.readFileSync(config.rsaKeyPath.server)),
-    client:new NodeRSA(fs.readFileSync(config.rsaKeyPath.client))*/
-}
+//var rsa = {
+//    /*server:new NodeRSA(fs.readFileSync(config.rsaKeyPath.server)),
+//    client:new NodeRSA(fs.readFileSync(config.rsaKeyPath.client))*/
+//}
 
 
 exports.aesEncrypt = function(data, secretKey) {
@@ -74,21 +74,21 @@ exports.desDecrypt = function(param){
     return result;
 };
 
-/**
- * rsa私钥加密
- * @param data
- * @returns {string}
- */
-exports.rsaPrivateEncrypt = function(data){
-    var encryptedData = rsa.server.encryptPrivate(new Buffer(data), 'base64');
-    return encryptedData.toString('base64');
-};
-
-/**
- * rsa私钥解密
- * @param data
- * @returns {Buffer|Object|string|Buffer|*}
- */
-exports.rsaPrivateDecrypt = function(data){
-    return rsa.server.decrypt(data, 'utf8');
-}
+///**
+// * rsa私钥加密
+// * @param data
+// * @returns {string}
+// */
+//exports.rsaPrivateEncrypt = function(data){
+//    var encryptedData = rsa.server.encryptPrivate(new Buffer(data), 'base64');
+//    return encryptedData.toString('base64');
+//};
+//
+///**
+// * rsa私钥解密
+// * @param data
+// * @returns {Buffer|Object|string|Buffer|*}
+// */
+//exports.rsaPrivateDecrypt = function(data){
+//    return rsa.server.decrypt(data, 'utf8');
+//}

@@ -11,7 +11,6 @@ global._ = require('underscore');
 require('./utils/encoder');
 var os = require('os');
 
-var cm = require('./routes/common');
 var wifi = require('./routes/wifi');
 var configuration = require('./routes/configuration');
 var testApi = require('./routes/testApi');
@@ -27,11 +26,18 @@ var auth = require('./routes/auth');
 var base = express();
 var app = express();
 var v1 = express();
-var v2 = express();
+
+require('pmx').init({
+    network       : true,  // Network monitoring at the application level
+    ports         : true,
+    http : true
+
+});
+
 
 // view engine setup
 base.set('views', path.join(__dirname, 'views'));
-base.set('view engine', 'html');
+base.set('view engine', 'ejs');
 base.set('trust proxy', config.trustProxy);
 //base.engine('html', require('ejs').renderFile);
 base.use(morgan('dev'));
@@ -58,13 +64,11 @@ app.use('/heartbeat',function(req,res,next){
    res.send('ok');
 });
 app.use('/v1', v1);
-app.use('/v2', v2);
-//v1.use(cm.gatherDeviceInfo);                    //暂时只在需要收集的API上设置中间件
-v1.use(auth.router);                              //暂时关闭，客户端完成后开始联调
-v1.use('/docs', docs(wifi,configuration,testApi));
+v1.use('/docs', docs(wifi,configuration));
+v1.use(auth.router);
 v1.use(wifi.router);
 v1.use(configuration.router);
-v1.use(testApi.router);
+//v1.use(testApi.router);
 v1.use(function (req, res, next) {
     res.set('X-Powered-By','Leomaster');
     if (res.body) {
@@ -97,8 +101,7 @@ if (app.get('env') === 'development') {
             stack: err.stack
         };
         res.json(result);
-        console.error(result);
-        // res.json(err);
+        log.error(result);
     });
 }
 
@@ -106,7 +109,6 @@ if (app.get('env') === 'development') {
 // production error handler
 // no stacktraces leaked to user
 app.use(function (err, req, res, next) {
-    console.error(err);
     req.failure = true;
     res.status(err.status || 200);
     res.json({
@@ -114,6 +116,7 @@ app.use(function (err, req, res, next) {
         msg : err.msg || err.err,
         data: []
     });
+    log.error(err);
 });
 
 //

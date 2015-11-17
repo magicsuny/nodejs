@@ -131,13 +131,13 @@ function findAndCountAllPlugin(schema, options) {
                             }
 
                             result = Promise.resolve({
-                                data  : r,
+                                data: r,
                                 length: r.length,
-                                prev  : prevUrl,
-                                next  : nextUrl,
-                                total : count,
-                                start : start,
-                                rows  : rows
+                                prev: prevUrl,
+                                next: nextUrl,
+                                total: count,
+                                start: start,
+                                rows: rows
                             });
                             return cb ? result.nodeify(cb) : result;
                         })
@@ -228,10 +228,8 @@ var wifiSchema = new Schema({
     location       : {type: [Number]},
     accuracy       : Number,
     is_root        : Boolean,
-    is_hotspot     : {type:Boolean,index:true},
-    hotspotInfo    : {
-        deviceId: String
-    },
+    is_hotspot     : {type: Boolean, index: true},
+    deviceId       : String,
     sharedable     : Boolean,
     connectable    : Boolean,
     country        : String,
@@ -243,8 +241,10 @@ var wifiSchema = new Schema({
     },
     lastConnectedAt: Date,
     gatherTimes    : {type: Number, default: 1},          //上报次数
-    other_settings : String
-},{collection:'wifis'});
+    other_settings : String,
+    createdAt      : Date,
+    updatedAt      : Date
+}, {collection: 'wifis'});
 wifiSchema.index({"country": 1, "bssid": 1});
 wifiSchema.index({connectable: 1, sec_level: 1, bssid: 1})
 wifiSchema.index({connectable: 1, sec_level: 1, ssid: 1, location: "2dsphere"});
@@ -269,15 +269,25 @@ var deviceSchema = new Schema({
     timezone   : String,
     imei       : String,
     imsi       : String,
-    mac        : String
+    mac        : String,
+    android_id : String
 },{collection:'devices'});
-
 
 deviceSchema.plugin(commonPlugin);
 deviceSchema.plugin(findAndCountAllPlugin);
-deviceSchema.statics.findAndModify = function(query,sort,doc,options,callback){
-    return this.collection.findAndModify(query,sort,doc,options,callback);
+deviceSchema.statics.findAndModify = function (query, sort, doc, options, callback) {
+    return this.collection.findAndModify(query, sort, doc, options, callback);
 };
+
+
+var apiStatictisSchema = new Schema({
+    deviceId : {type: String},
+    type     : {type: String, index: true},
+    meta     : {type: mongoose.Schema.Types.Mixed},
+    createdAt: Date,
+    updatedAt: Date
+}, {collection: 'apiStatictis'});
+apiStatictisSchema.plugin(commonPlugin);
 
 function promisify(model) {
     Promise.promisifyAll(model);
@@ -288,5 +298,5 @@ function promisify(model) {
 
 exports.Wifi = promisify(mongoose.model('Wifi', wifiSchema));
 exports.Device = promisify(mongoose.model('Device', deviceSchema));
-
+exports.ApiStatictis = promisify(mongoose.model('ApiStatictis', apiStatictisSchema));
 //end

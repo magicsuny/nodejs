@@ -3,9 +3,23 @@
  */
 var request = require('request'),
     assert  = require('assert'),
-    _ = require('underscore');
+    _ = require('underscore'),
+    hashUtils = require('../utils/hashUtils'),
+    config = require('../profile/config'),
+    cipherUtils = require('../utils/cipherUtils');
 
 var rootUrl = 'http://127.0.0.1:3000/wifi/v1';
+
+function getTestToken(){
+    var guid = '6d51d63ff20c3b769e94440ab2dd59e8',
+        currentTime = (new Date()).getTime(),
+        privateKey = config.tokenPrivateKey;
+
+    var hash = hashUtils.checksum(guid+currentTime+privateKey);
+
+    var token = guid+":"+currentTime+":"+hash;
+    return token;
+}
 
 describe('wifiTest', function() {
 
@@ -40,13 +54,21 @@ describe('wifiTest', function() {
 
         it('test gather wifi info', function (done) {
             var url = rootUrl + '/wifi';
+            var token = getTestToken();
             console.log(url);
-            request.post(url, {json:testWifi},function (err, resp, body) {
+            var request_token = request.defaults({
+                headers:{
+                    'token':token,
+                    'content-type':'text/plain'
+                }
+            })
+            request_token.post(url, {body:cipherUtils.aesEncrypt(JSON.stringify(testWifi))},function (err, resp, body) {
                 if(err){
                     return done(err);
                 }
+                console.log(body);
                 var result = body instanceof Object ? body : JSON.parse(body);
-                assert.equal(result.code,0,'gather wifi info error');
+                assert.equal(result.code,0,'gather wifi info error'+result.code);
                 done();
             })
         })
@@ -70,8 +92,15 @@ describe('wifiTest', function() {
 
         it('test gather wifi hotSpot info', function (done) {
             var url = rootUrl + '/hotspot';
+            var token = getTestToken();
+            var request_token = request.defaults({
+                headers:{
+                    token:token,
+                    'content-type':'text/plain'
+                }
+            })
             console.log(url);
-            request.post(url, {json:testHotSpot},function (err, resp, body) {
+            request_token.post(url, {body:cipherUtils.aesEncrypt(JSON.stringify(testHotSpot))},function (err, resp, body) {
                 if(err){
                     return done(err);
                 }
@@ -113,11 +142,19 @@ describe('wifiTest', function() {
 
         it('test find wifi', function (done) {
             var url = rootUrl + '/findwifi';
+            var token = getTestToken();
+            var request_token = request.defaults({
+                headers:{
+                    token:token,
+                    'content-type':'text/plain'
+                }
+            })
             console.log(url);
-            request.post(url, {json:testWifi},function (err, resp, body) {
+            request_token.post(url, {body:cipherUtils.aesEncrypt(JSON.stringify(testWifi))},function (err, resp, body) {
                 if(err){
                     return done(err);
                 }
+
                 var result = body instanceof Object ? body : JSON.parse(body);
                 assert.equal(result.code,0,'test find wifi info error');
                 done();
@@ -137,8 +174,14 @@ describe('wifiTest', function() {
 
         it('test find poster', function (done) {
             var url = rootUrl + '/findposter';
+            var token = getTestToken();
+            var request_token = request.defaults({
+                headers:{
+                    token:token,
+                }
+            })
             console.log(url);
-            request.post(url, {json:testWifi},function (err, resp, body) {
+            request_token.post(url, {json:testWifi},function (err, resp, body) {
                 if(err){
                     return done(err);
                 }

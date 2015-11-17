@@ -81,14 +81,6 @@ exports.mongoDbConfig = {
 };
 
 /*
- * rsa key
- */
-exports.rsaKeyPath = {
-    client:'/develop/git/nodejs/leoWifi/certs/client/wifimaster.pub',
-    server:'/develop/git/nodejs/leoWifi/certs/server/wifimaster.key.pem'
-}
-
-/*
  * token key
  */
 exports.tokenPrivateKey = 'l!e@o#w$i%f&i&**(@(#';        //token密钥
@@ -140,9 +132,9 @@ exports.dlsTestList = {
         'https://downloads.yahoo.com/download/ff/us/mac',
         'https://www.microsoft.com/en-us/download/confirmation.aspx?id=47046'],
     //印度
-    IN: ['https://support.apple.com/downloads/DL1846/en_US/secupd2015-007mavericks.dmg',
-        'https://downloads.yahoo.com/download/ff/in/mac',
-        'https://www.microsoft.com/en-in/download/confirmation.aspx?id=47046'],
+    IN: ['https://downloads.yahoo.com/download/ff/in/mac',
+        'https://www.microsoft.com/en-in/download/confirmation.aspx?id=47046',
+        'https://support.apple.com/downloads/DL1846/en_US/secupd2015-007mavericks.dmg'],
     //印度尼西亚
     ID: ['https://support.apple.com/downloads/DL1834/id_ID/secupd2015-006mavericks.dmg',
         'https://downloads.yahoo.com/download/ff/id/mac',
@@ -156,13 +148,13 @@ exports.dlsTestList = {
         'https://downloads.yahoo.com/download/ff/th/mac',
         'http://www.microsoft.com/th-th/download/confirmation.aspx?id=36367'],
     //马来西亚
-    MY: ['https://support.apple.com/downloads/DL1846/en_US/secupd2015-007mavericks.dmg',
-        'https://downloads.yahoo.com/download/ff/my/mac',
-        'http://www.microsoft.com/en-my/download/confirmation.aspx?id=5555'],
+    MY: ['https://downloads.yahoo.com/download/ff/my/mac',
+        'http://www.microsoft.com/en-my/download/confirmation.aspx?id=5555',
+        'https://support.apple.com/downloads/DL1846/en_US/secupd2015-007mavericks.dmg'],
     //新加坡
-    SG: ['https://support.apple.com/downloads/DL1846/en_US/secupd2015-007mavericks.dmg',
-        'https://downloads.yahoo.com/download/ff/sg/mac',
-        'http://www.microsoft.com/en-sg/download/confirmation.aspx?id=42642']
+    SG: ['https://downloads.yahoo.com/download/ff/sg/mac',
+        'http://www.microsoft.com/en-sg/download/confirmation.aspx?id=42642',
+        'https://support.apple.com/downloads/DL1846/en_US/secupd2015-007mavericks.dmg']
 }
 
 /**
@@ -175,7 +167,6 @@ exports.dlsTestList = {
 exports.mergeConfig = mergeConfig;
 function mergeConfig(dest, src, name) {
     name = name || '';
-
     for (var p in dest) {
         if (typeof dest[p] === 'object' && typeof src[p] === 'object') {
             //var nested = name === '' ? '' : name + '.' + p;
@@ -190,12 +181,12 @@ function mergeConfig(dest, src, name) {
 var defaultFile = './override';
 var override;
 try {
-    var env = process.env.NODE_ENV;
-    if (env) {
-        override = require('./' + env);
-    } else {
-        override = require(defaultFile);
-    }
+    //var env = process.env.NODE_ENV;
+    //if (env) {
+    //    override = require('./' + env);
+    //} else {
+    override = require(defaultFile);
+    //}
 } catch (err) {
     log.error('can not load property file ', './' + env + '.js using ', defaultFile, '.js');
     //override = require(defaultFile);

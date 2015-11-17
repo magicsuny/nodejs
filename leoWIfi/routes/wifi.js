@@ -171,8 +171,9 @@ var _saveWifiInfos = function (body, options, cb) {
  * @returns {*}
  */
 var gatherWifiInfo = function (req, res, next) {
-    //console.log('gather wifi header:', req.get('content-type'));
-    //console.log('gatherwifi :', req.body);
+    console.log('gather wifi Accept-Encoding:', req.get('Accept-Encoding'));
+    console.log('gather wifi content-length:', req.get('Content-Length'));
+    console.log('gatherwifi :', req.body);
     var body = req.body;
     //TODO 校验上传信息
     if (!body) {

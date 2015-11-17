@@ -183,7 +183,7 @@ exports.validate = function (req, res, next) {
 
 
 exports.decryptData = function(req,res,next){
-    console.log('gather wifi Content-Encoding:', req.get('Content-Encoding'));
+    console.log('gather wifi Content-Encoding:', req.get('content-encoding'));
     console.log('gather wifi content-length:', req.get('Content-Length'));
     console.log('gatherwifi :', req.body);
     var body = req.body;

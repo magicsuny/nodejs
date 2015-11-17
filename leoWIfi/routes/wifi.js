@@ -27,6 +27,8 @@ var awsS3 = require('../utils/AwsS3Deploy');
  * @param cb
  * @private
  */
+
+
 var _saveWifiInfos = function (body, options, cb) {
     var infos = body.infos,
         deviceId = body.device_id;
@@ -119,7 +121,8 @@ var _saveWifiInfos = function (body, options, cb) {
         }
         if(_wifiInfo.ssid&&deviceId) {
             var _ssidCondition = _.extend({ssid: _wifiInfo.ssid,deviceId: deviceId,is_hotspot:false},baseCondition);
-            bulk.find(_ssidCondition).upsert().updateOne({$set:_wifiInfo,$setOnInsert:{createdAt: new Date}});
+
+            bulk.find(_ssidCondition).upsert().updateOne({$set:_wifiInfo,$setOnInsert:{createdAt: new Date},$inc: {gatherTimes: 1}});
             isExecute = true;
             return;
         }
@@ -142,7 +145,7 @@ var _saveWifiInfos = function (body, options, cb) {
             delete bssidContents[bssidInDb.bssid];//删除更新的内容
         });
         for(var insertBssid in bssidContents){//插入bssid
-           var instertContent =  bssidContents[insertBssid];
+            var instertContent =  bssidContents[insertBssid];
             if(!instertContent){
                 return;
             }
@@ -232,7 +235,7 @@ var gatherWifiHotSpotInfo = function (req, res, next) {
     _wifiInfo.is_hotspot = true;
     _wifiInfo.connectable = true;
     _wifiInfo.sharedable = true;
-    _wifiInfo.deviceId = _wifiInfo.device_id;
+    _wifiInfo.deviceId=_wifiInfo.device_id;
     delete _wifiInfo.device_id;
 
     //保存经纬度
@@ -267,16 +270,6 @@ var gatherWifiHotSpotInfo = function (req, res, next) {
         next();
     });
 };
-
-var findWifiBasePolicy = function () {
-    //匹配非开放性并且可怜接的wifi
-    var baseCondition = {connectable: true,is_hotspot: false,sec_level: {'$ne': 1},password:{$exists:true}};
-    //分享隐私策略匹配
-    if (!config.wifiServerSetting.matchPrivateWifi) {
-        baseCondition.sharedable = true;
-    }
-    return baseCondition;
-}
 
 /**
  * wifi挖掘
@@ -442,6 +435,18 @@ var findWifiInfo = function (req, res, next) {
         ApiStatictis.create({deviceId:body.deviceId,type:'findWifi',meta:matchingLog});
     });
 };
+
+var findWifiBasePolicy = function () {
+    //匹配非开放性并且可怜接的wifi
+    var baseCondition = {connectable: true,is_hotspot: false,sec_level: {'$ne': 1},password:{$exists:true}};
+    //分享隐私策略匹配
+    if (!config.wifiServerSetting.matchPrivateWifi) {
+        baseCondition.sharedable = true;
+    }
+    //匹配个人热点
+    //baseCondition = _.extend(baseCondition, {$or: [{is_hotspot: true}, {sec_level: {'$ne': 1}}]});
+    return baseCondition;
+}
 
 /**
  * multer 存储配置

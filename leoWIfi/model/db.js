@@ -228,7 +228,7 @@ var wifiSchema = new Schema({
     location       : {type: [Number]},
     accuracy       : Number,
     is_root        : Boolean,
-    is_hotspot     : {type: Boolean, index: true},
+    is_hotspot     : {type:Boolean,index:true},
     deviceId       : String,
     sharedable     : Boolean,
     connectable    : Boolean,

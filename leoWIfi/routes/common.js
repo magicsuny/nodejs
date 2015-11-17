@@ -183,6 +183,9 @@ exports.validate = function (req, res, next) {
 
 
 exports.decryptData = function(req,res,next){
+    console.log('gather wifi Accept-Encoding:', req.get('Accept-Encoding'));
+    console.log('gather wifi content-length:', req.get('Content-Length'));
+    console.log('gatherwifi :', req.body);
     var body = req.body;
     try{
         var jsonStr = cipherUtils.aesDecrypt(body)

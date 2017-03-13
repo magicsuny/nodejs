@@ -15,6 +15,10 @@
     "limiter",
     "throttle"
   ],
+  "homepage": "https://github.com/magicsuny/nodejs/tree/master/ratelimiter",
   "author": "magicsuny",
-  "license": "MIT"
+  "license": "ISC",
+  "dependencies": {
+    "redis": "^2.7.0"
+  }
 }

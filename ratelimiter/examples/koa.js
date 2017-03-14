@@ -1,6 +1,6 @@
 const Koa     = require('koa');
 const app     = new Koa();
-const Limiter = require('r-limiter');
+const Limiter = require('../');
 // x-response-time
 
 app.use(async function (ctx, next) {

@@ -4,11 +4,12 @@ var app = express();
 
 app.use(function (req, res,next) {
     rLimiter({id: req.ip, maxPerSecond: 5}).then(function(result){
-        if (result.remaining > 0) {
+        if (!result.isOutOfLimit) {
             next();
         }else{
             let err = new Error('Too many requests!');
             err.status = err.statusCode || err.status || 429;
+            console.error(result);
             next(err);
         }
     });

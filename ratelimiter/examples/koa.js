@@ -13,7 +13,7 @@ app.use(async function (ctx, next) {
 //use the r-limiter middleware to limit ip request
 app.use(async(ctx, next) => {
     let result = await Limiter({id: ctx.ip, maxPerSecond: 5});
-    if (result.remaining > 0) {
+    if (!result.isOutOfLimit) {
         await next();
     }else{
         let err = new Error('Too many requests!');

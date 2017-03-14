@@ -3,7 +3,7 @@ var rLimiter = require('../');
 var app = express();
 
 app.use(function (req, res,next) {
-    rLimiter({id: req.ip, interval: 10, maxInInterval: 5}).then(function(result){
+    rLimiter({id: req.ip, maxPerSecond: 5}).then(function(result){
         if (result.remaining > 0) {
             next();
         }else{

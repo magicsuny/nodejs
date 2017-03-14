@@ -18,7 +18,10 @@
   "homepage": "https://github.com/magicsuny/nodejs/tree/master/ratelimiter",
   "author": "magicsuny",
   "license": "ISC",
-  "engines" : { "node" : ">=4.6.x" },
+  "engines": {
+    "node": ">=4.6.x"
+  },
   "dependencies": {
+    "microtime-nodejs": "^1.0.0"
   }
 }

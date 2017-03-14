@@ -1,7 +1,16 @@
 const rLimiter = require('../');
+const redis = require('redis');
 
-for(let i=0;i<20;i++){
-    rLimiter({id:'test',interval:10,maxInInterval:5}).then((result)=>{
+
+let client = redis.createClient({host:'192.168.99.100'});
+
+function redisTest(){
+    rLimiter({id:'test',db:client,maxPerSecond:10}).then((result)=>{
         console.dir(result);
     })
+    setTimeout(redisTest,90)
 }
+
+redisTest();
+
+

@@ -1,7 +1,6 @@
 /**
  * Created by sunyao on 2017/3/13.
  */
-const redis  = require('redis');
 const assert = require('assert');
 
 module.exports = Limiter;
